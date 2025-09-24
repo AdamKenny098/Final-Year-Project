@@ -1,0 +1,65 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DungeonGenerator : MonoBehaviour
+{
+
+    public enum DungeonSize
+    {
+        Small, //50x50
+        Medium, //100 x 100
+        Large //150 x 150
+    }
+
+    public Vector3 floorSize;
+
+    [Header("Prefabs")]
+    public Room[] dungeonRooms;   // Array of room prefabs to be used in the dungeon
+    public Room[] hallways;       // Array of hallway prefabs to be used in the dungeon
+    public GameObject nodePrefab;
+
+    [Header("Dungeon Settings")]
+    public int dungeonWidth;      // Grid width (not used yet)
+    public int dungeonLength;     // Grid length (not used yet)
+    public int minRoomWidth;      // For BSP or advanced gen later
+    public int minRoomLength;     // For BSP or advanced gen later
+    public int maxDungeonRooms;   // Max number of dungeonRooms to be generated
+
+    [Header("Tracking")]
+    public List<GameObject> nodes = new List<GameObject>(); // List of rooms already placed
+
+    void Start()
+    {
+        CreateDungeon();
+    }
+
+    public void CreateDungeon()
+    {
+        // Step 1: Spawn the starting node / level bounds
+        int size = Random.Range(0, 3);
+        switch (size)
+        {
+            case 0:
+                {
+                    floorSize = new Vector3(50, 1, 50);
+                    break;
+                }
+
+            case 1:
+                {
+                    floorSize = new Vector3(100, 1, 100);
+                    break;
+                }
+            
+            case 2:
+            {
+                floorSize = new Vector3(150, 1, 150);
+                break;
+            }
+        }
+        GameObject starterNode = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity);
+        BoxCollider boxC = starterNode.GetComponent<BoxCollider>();
+        boxC.size = floorSize;
+        nodes.Add(starterNode);
+    }
+}
