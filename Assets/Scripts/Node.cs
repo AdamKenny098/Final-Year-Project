@@ -4,40 +4,36 @@ using UnityEngine;
 
 public class Node : MonoBehaviour
 {
-    public int left, right, up, down;
+    public float length, width;
 
-    public int getLeft()
+    public Vector3 center;
+
+    public BoxCollider box;
+    public Node aChild, bChild;
+    public bool isLeaf;
+
+    public float getLength()
     {
-        return left;
+        return box.bounds.size.x;
     }
 
-    public int getRight()
+    public float getWidth()
     {
-        return right;
+        return box.bounds.size.z;
     }
 
-    public int getUp()
+    public Vector3 GetCenter()
     {
-        return up;
+        return new Vector3(length / 2f, 0, width / 2f);
     }
 
-    public int getDown()
+    public Node(float length, float width, Vector3 center)
     {
-        return down;
-    }
-
-    public int getHeight()
-    {
-        return up - down;
-    }
-
-    public int getWidth()
-    {
-        return left - right;
-    }
-
-    public Vector2 GetCenter()
-    {
-        return new Vector2((left + right) / 2f, (down + up) / 2f);
+        this.length = length;
+        this.width = width;
+        this.center = center;
+        this.aChild = null;
+        this.bChild = null;
+        this.isLeaf = true;
     }
 }

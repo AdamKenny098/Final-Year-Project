@@ -176,8 +176,8 @@ MonoBehaviour:
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
   dungeonWidth: 200
   dungeonLength: 200
-  minRoomWidth: 1
-  minRoomLength: 1
+  minRoomWidth: 5
+  minRoomLength: 5
   maxDungeonRooms: 50
   nodes: []
 --- !u!1 &705507993

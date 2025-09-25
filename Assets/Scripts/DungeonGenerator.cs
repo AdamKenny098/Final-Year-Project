@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class DungeonGenerator : MonoBehaviour
         Large //150 x 150
     }
 
-    public Vector3 floorSize;
+    public int floorSize;
 
     [Header("Prefabs")]
     public Room[] dungeonRooms;   // Array of room prefabs to be used in the dungeon
@@ -23,7 +25,8 @@ public class DungeonGenerator : MonoBehaviour
     public int dungeonLength;     // Grid length (not used yet)
     public int minRoomWidth;      // For BSP or advanced gen later
     public int minRoomLength;     // For BSP or advanced gen later
-    public int maxDungeonRooms;   // Max number of dungeonRooms to be generated
+    public double maxDungeonRooms;   // Max number of dungeonRooms to be generated
+    public int maxTreeLevels;
 
     [Header("Tracking")]
     public List<GameObject> nodes = new List<GameObject>(); // List of rooms already placed
@@ -36,91 +39,91 @@ public class DungeonGenerator : MonoBehaviour
     public void CreateDungeon()
     {
         // Step 1: Spawn the starting node / level bounds
-        int size = Random.Range(0, 3);
+        int size = UnityEngine.Random.Range(0, 3);
         switch (size)
         {
             case 0:
                 {
-                    floorSize = new Vector3(50, 1, 50);
+                    floorSize = 50;
                     break;
                 }
 
             case 1:
                 {
-                    floorSize = new Vector3(100, 1, 100);
+                    floorSize = 100;
                     break;
                 }
 
             case 2:
                 {
-                    floorSize = new Vector3(150, 1, 150);
+                    floorSize = 150;
                     break;
                 }
         }
-        GameObject starterNode = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity);
-        BoxCollider boxC = starterNode.GetComponent<BoxCollider>();
-        boxC.size = floorSize;
-        nodes.Add(starterNode);
+        Node starterNode = new Node(floorSize, floorSize, Vector3.zero);
+        GameObject starterCollider = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity);
+        BoxCollider boxC = starterCollider.GetComponent<BoxCollider>();
+        boxC.size = new Vector3(floorSize , 0 , floorSize);
+        SplitNode(starterNode, 0); // Start at 2^0 aka 1 node
+    }
 
-        //The center for starter node
-        Transform nodeCenter = nodes[0].transform;
-        Bounds bounds = nodes[0].GetComponent<BoxCollider>().bounds;
-        Vector3 center = bounds.center;
-        Vector3 extents = bounds.extents;
+    public void SplitNode(Node node, int numGenerations)
+    {
+        // 2 to the power of maxTreeLevels
+        double maxDungeonRooms = Math.Pow(2, maxTreeLevels);
 
-        // Step 2: Attempt to split first node.
-        int direction = Random.Range(0, 2);
+        if (numGenerations >= maxTreeLevels)
+        {
+            return;
+        }
+        
+        if (node.width < minRoomWidth || node.length < minRoomLength)
+        {
+            return;
+        }
+
+        if (nodes.Count >= maxDungeonRooms)
+        {
+            return;
+        }
+
+        int direction = UnityEngine.Random.Range(0, 2);
+
+        float splitPercent = UnityEngine.Random.Range(0.15f, 0.85f);
+
         if (direction == 0) //Vertical
         {
-            float splitPercent = Random.Range(0.1f, .85f);
-            //Get x axis somehow?
-            float width = bounds.size.x;
-            float depth = bounds.size.z;
+            float aWidth = node.width * splitPercent;
+            float bWidth = node.width - aWidth;
 
-            //split in two
-            float aWidth = width * splitPercent;
-            float bWidth = width - aWidth;
+            float aCenterX = node.center.x - (node.width / 2f - aWidth / 2f);
+            float bCenterX = node.center.x + (node.width / 2f - bWidth / 2f);
 
-            float aCenter = (center.x - extents.x) + (aWidth / 2);
-            float bCenter = (center.x + extents.x) - (bWidth / 2);
-
-            GameObject childA = Instantiate(nodePrefab, new Vector3(aCenter, 0, 0), Quaternion.identity);
-            GameObject childB = Instantiate(nodePrefab, new Vector3(bCenter, 0, 0), Quaternion.identity);
-
-            BoxCollider boxA = childA.GetComponent<BoxCollider>();
-            boxA.size = new Vector3(aWidth, 0, depth);
-
-            BoxCollider boxB = childB.GetComponent<BoxCollider>();
-            boxB.size = new Vector3(bWidth, 0, depth);
-
-
+            node.aChild = new Node(node.length, aWidth, new Vector3(aCenterX, 0, node.center.z));
+            node.bChild = new Node(node.length, bWidth, new Vector3(bCenterX, 0, node.center.z));
 
         }
 
-        else if (direction == 1)
+        if (direction == 1) //Horizontal
         {
-            //Vertical
-            float splitPercent = Random.Range(0.1f, .85f);
-            //Get x axis somehow?
-            float width = bounds.size.x;
-            float depth = bounds.size.z;
+            float aLength = node.length * splitPercent;
+            float bLength = node.length - aLength;
 
-            //split in two
-            float aWidth = width * splitPercent;
-            float bWidth = width - aWidth;
+            float aCenterZ = node.center.z - (node.length / 2f - aLength / 2f);
+            float bCenterZ = node.center.z + (node.length / 2f - bLength / 2f);
 
-            float aCenter = (center.x - extents.x) + (aWidth / 2);
-            float bCenter = (center.x + extents.x) - (bWidth / 2);
-
-            GameObject childA = Instantiate(nodePrefab, new Vector3(aCenter, 0, 0), Quaternion.identity);
-            GameObject childB = Instantiate(nodePrefab, new Vector3(bCenter, 0, 0), Quaternion.identity);
-
-            BoxCollider boxA = childA.GetComponent<BoxCollider>();
-            boxA.size = new Vector3(aWidth, 0, depth);
-            
-            BoxCollider boxB = childB.GetComponent<BoxCollider>();
-            boxB.size = new Vector3(bWidth, 0 , depth);
+            node.aChild = new Node(aLength, node.width, new Vector3(node.center.x, 0, aCenterZ));
+            node.bChild = new Node(bLength, node.width, new Vector3(node.center.x, 0, bCenterZ));
 
         }
+
+        node.isLeaf = false;
+
+        SplitNode(node.aChild, numGenerations + 1);
+        SplitNode(node.bChild, numGenerations + 1);
     }
 }
+
+//UnityEngine namespace used for Random.Range to differ from System.Random
+//System included to use a 2^ in SplitNode()
+
