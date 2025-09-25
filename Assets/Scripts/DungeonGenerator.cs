@@ -50,16 +50,77 @@ public class DungeonGenerator : MonoBehaviour
                     floorSize = new Vector3(100, 1, 100);
                     break;
                 }
-            
+
             case 2:
-            {
-                floorSize = new Vector3(150, 1, 150);
-                break;
-            }
+                {
+                    floorSize = new Vector3(150, 1, 150);
+                    break;
+                }
         }
         GameObject starterNode = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity);
         BoxCollider boxC = starterNode.GetComponent<BoxCollider>();
         boxC.size = floorSize;
         nodes.Add(starterNode);
+
+        //The center for starter node
+        Transform nodeCenter = nodes[0].transform;
+        Bounds bounds = nodes[0].GetComponent<BoxCollider>().bounds;
+        Vector3 center = bounds.center;
+        Vector3 extents = bounds.extents;
+
+        // Step 2: Attempt to split first node.
+        int direction = Random.Range(0, 2);
+        if (direction == 0) //Vertical
+        {
+            float splitPercent = Random.Range(0.1f, .85f);
+            //Get x axis somehow?
+            float width = bounds.size.x;
+            float depth = bounds.size.z;
+
+            //split in two
+            float aWidth = width * splitPercent;
+            float bWidth = width - aWidth;
+
+            float aCenter = (center.x - extents.x) + (aWidth / 2);
+            float bCenter = (center.x + extents.x) - (bWidth / 2);
+
+            GameObject childA = Instantiate(nodePrefab, new Vector3(aCenter, 0, 0), Quaternion.identity);
+            GameObject childB = Instantiate(nodePrefab, new Vector3(bCenter, 0, 0), Quaternion.identity);
+
+            BoxCollider boxA = childA.GetComponent<BoxCollider>();
+            boxA.size = new Vector3(aWidth, 0, depth);
+
+            BoxCollider boxB = childB.GetComponent<BoxCollider>();
+            boxB.size = new Vector3(bWidth, 0, depth);
+
+
+
+        }
+
+        else if (direction == 1)
+        {
+            //Vertical
+            float splitPercent = Random.Range(0.1f, .85f);
+            //Get x axis somehow?
+            float width = bounds.size.x;
+            float depth = bounds.size.z;
+
+            //split in two
+            float aWidth = width * splitPercent;
+            float bWidth = width - aWidth;
+
+            float aCenter = (center.x - extents.x) + (aWidth / 2);
+            float bCenter = (center.x + extents.x) - (bWidth / 2);
+
+            GameObject childA = Instantiate(nodePrefab, new Vector3(aCenter, 0, 0), Quaternion.identity);
+            GameObject childB = Instantiate(nodePrefab, new Vector3(bCenter, 0, 0), Quaternion.identity);
+
+            BoxCollider boxA = childA.GetComponent<BoxCollider>();
+            boxA.size = new Vector3(aWidth, 0, depth);
+            
+            BoxCollider boxB = childB.GetComponent<BoxCollider>();
+            boxB.size = new Vector3(bWidth, 0 , depth);
+
+        }
     }
 }
