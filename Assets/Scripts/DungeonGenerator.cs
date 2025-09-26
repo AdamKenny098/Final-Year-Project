@@ -87,6 +87,16 @@ public class DungeonGenerator : MonoBehaviour
 
         int direction = UnityEngine.Random.Range(0, 2);
 
+        if (node.width > node.length)
+        {
+            direction = 0;
+        }
+
+        else
+        {
+            direction = 1;    
+        }
+
         float splitPercent = UnityEngine.Random.Range(0.35f, 0.65f);
 
         if (direction == 0) //Vertical
