@@ -61,10 +61,8 @@ public class DungeonGenerator : MonoBehaviour
                 }
         }
         Node starterNode = new Node(floorSize, floorSize, Vector3.zero);
-        GameObject starterCollider = Instantiate(nodePrefab, Vector3.zero, Quaternion.identity);
-        BoxCollider boxC = starterCollider.GetComponent<BoxCollider>();
-        boxC.size = new Vector3(floorSize , 0 , floorSize);
         SplitNode(starterNode, 0); // Start at 2^0 aka 1 node
+        CheckIsLeaf(starterNode);
     }
 
     public void SplitNode(Node node, int numGenerations)
@@ -76,7 +74,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             return;
         }
-        
+
         if (node.width < minRoomWidth || node.length < minRoomLength)
         {
             return;
@@ -89,7 +87,7 @@ public class DungeonGenerator : MonoBehaviour
 
         int direction = UnityEngine.Random.Range(0, 2);
 
-        float splitPercent = UnityEngine.Random.Range(0.15f, 0.85f);
+        float splitPercent = UnityEngine.Random.Range(0.35f, 0.65f);
 
         if (direction == 0) //Vertical
         {
@@ -101,7 +99,8 @@ public class DungeonGenerator : MonoBehaviour
 
             node.aChild = new Node(node.length, aWidth, new Vector3(aCenterX, 0, node.center.z));
             node.bChild = new Node(node.length, bWidth, new Vector3(bCenterX, 0, node.center.z));
-
+            node.aChild.isLeaf = true;
+            node.bChild.isLeaf = true;
         }
 
         if (direction == 1) //Horizontal
@@ -114,13 +113,36 @@ public class DungeonGenerator : MonoBehaviour
 
             node.aChild = new Node(aLength, node.width, new Vector3(node.center.x, 0, aCenterZ));
             node.bChild = new Node(bLength, node.width, new Vector3(node.center.x, 0, bCenterZ));
-
+            node.aChild.isLeaf = true;
+            node.bChild.isLeaf = true;
         }
 
         node.isLeaf = false;
 
         SplitNode(node.aChild, numGenerations + 1);
         SplitNode(node.bChild, numGenerations + 1);
+    }
+
+    public void CheckIsLeaf(Node node)
+    {
+        if (node.isLeaf)
+        {
+            SpawnCollider(node);
+        }
+        
+        else
+        {
+            CheckIsLeaf(node.aChild);
+            CheckIsLeaf(node.bChild);
+        }
+    }
+
+    public void SpawnCollider(Node node)
+    {
+        GameObject nodeObject = Instantiate(nodePrefab, node.center, Quaternion.identity);
+        BoxCollider boxC = nodeObject.GetComponent<BoxCollider>();
+        boxC.size = new Vector3(node.width, 1, node.length);
+        nodes.Add(nodeObject);
     }
 }
 
