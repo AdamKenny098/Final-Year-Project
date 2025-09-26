@@ -178,8 +178,8 @@ MonoBehaviour:
   dungeonLength: 200
   minRoomWidth: 5
   minRoomLength: 5
-  maxDungeonRooms: 8
-  maxTreeLevels: 3
+  maxDungeonRooms: 32
+  maxTreeLevels: 5
   nodes: []
 --- !u!1 &705507993
 GameObject:

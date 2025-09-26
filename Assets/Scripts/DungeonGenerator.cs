@@ -94,6 +94,11 @@ public class DungeonGenerator : MonoBehaviour
             float aWidth = node.width * splitPercent;
             float bWidth = node.width - aWidth;
 
+            if (aWidth < minRoomWidth || bWidth < minRoomWidth)
+            {
+                return;
+            }
+
             float aCenterX = node.center.x - (node.width / 2f - aWidth / 2f);
             float bCenterX = node.center.x + (node.width / 2f - bWidth / 2f);
 
@@ -107,6 +112,11 @@ public class DungeonGenerator : MonoBehaviour
         {
             float aLength = node.length * splitPercent;
             float bLength = node.length - aLength;
+
+            if (aLength < minRoomLength || bLength < minRoomLength)
+            {
+                return;
+            }
 
             float aCenterZ = node.center.z - (node.length / 2f - aLength / 2f);
             float bCenterZ = node.center.z + (node.length / 2f - bLength / 2f);
@@ -129,7 +139,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             SpawnCollider(node);
         }
-        
+
         else
         {
             CheckIsLeaf(node.aChild);
