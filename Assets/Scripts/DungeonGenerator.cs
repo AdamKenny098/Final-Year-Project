@@ -195,7 +195,7 @@ public class DungeonGenerator : MonoBehaviour
         BoxCollider boxC = corridor.GetComponent<BoxCollider>();
 
         //If distance along x is longer than z then horizontal corridor
-        if (distanceX > distanceZ)
+        if (Mathf.Abs(distanceX) > Mathf.Abs(distanceZ))
         {
             //If it is a positive value then attach the door to the right wall
             if (distanceX > 0)
@@ -209,11 +209,18 @@ public class DungeonGenerator : MonoBehaviour
                 doorA.x = centerA.x - (node.aChild.width / 2);
                 doorB.x = centerB.x + (node.bChild.width / 2);
             }
+            
+            
+            //Have the corridor.x = halfway between the two and z = constant (could be doorB.z either)
+            Vector3 corridorCenter = new Vector3((doorA.x + doorB.x) / 2f, 0, doorA.z);
+            corridor.transform.position = corridorCenter;
 
-            boxC.size = new Vector3(doorB.x - doorA.x, 1f, 5f);
+            //make the width of the corridor absolute to avoid it being nonexistant / negative
+            float corridorWidth = Mathf.Abs(doorB.x - doorA.x);
+            boxC.size = new Vector3(corridorWidth, 1f, 5f);
         }
 
-        else if (distanceZ > distanceX)
+        else if (Mathf.Abs(distanceZ) > Mathf.Abs(distanceX))
         {
             if (distanceZ > 0)
             {
@@ -227,7 +234,12 @@ public class DungeonGenerator : MonoBehaviour
                 doorB.z = centerB.z + (node.bChild.length / 2);
             }
 
-            boxC.size = new Vector3(5f, 1f, doorB.z - doorA.z);
+            
+            Vector3 corridorCenter = new Vector3(doorA.x, 0, (doorA.z + doorB.z) / 2f);
+            corridor.transform.position = corridorCenter;
+
+            float corridorLength = Mathf.Abs(doorB.z - doorA.z);
+            boxC.size = new Vector3(5f, 1f, corridorLength);
         }
 
     }
