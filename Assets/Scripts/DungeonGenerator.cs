@@ -112,8 +112,8 @@ public class DungeonGenerator : MonoBehaviour
             float aCenterX = node.center.x - (node.width / 2f - aWidth / 2f);
             float bCenterX = node.center.x + (node.width / 2f - bWidth / 2f);
 
-            node.aChild = new Node(node.length, aWidth, new Vector3(aCenterX, 0, node.center.z));
-            node.bChild = new Node(node.length, bWidth, new Vector3(bCenterX, 0, node.center.z));
+            node.aChild = new Node(node.length -1.5f, aWidth-1.5f, new Vector3(aCenterX, 0, node.center.z));
+            node.bChild = new Node(node.length -1.5f, bWidth-1.5f, new Vector3(bCenterX, 0, node.center.z));
             node.aChild.isLeaf = true;
             node.bChild.isLeaf = true;
         }
@@ -131,8 +131,8 @@ public class DungeonGenerator : MonoBehaviour
             float aCenterZ = node.center.z - (node.length / 2f - aLength / 2f);
             float bCenterZ = node.center.z + (node.length / 2f - bLength / 2f);
 
-            node.aChild = new Node(aLength, node.width, new Vector3(node.center.x, 0, aCenterZ));
-            node.bChild = new Node(bLength, node.width, new Vector3(node.center.x, 0, bCenterZ));
+            node.aChild = new Node(aLength-1.5f, node.width-1.5f, new Vector3(node.center.x, 0, aCenterZ));
+            node.bChild = new Node(bLength-1.5f, node.width-1.5f, new Vector3(node.center.x, 0, bCenterZ));
             node.aChild.isLeaf = true;
             node.bChild.isLeaf = true;
         }
