@@ -63,8 +63,9 @@ public class DungeonGenerator : MonoBehaviour
         Node starterNode = new Node(floorSize, floorSize, Vector3.zero);
         SplitNode(starterNode, 0); // Start at 2^0 aka 1 node
         CheckIsLeaf(starterNode);
-        
+
         SpawnCorridor(starterNode);
+        ConnectRooms(starterNode);
     }
 
     public void SplitNode(Node node, int numGenerations)
@@ -163,7 +164,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             ConnectNode(node);
         }
-            
+
     }
 
     public void SpawnCollider(Node node)
@@ -176,73 +177,69 @@ public class DungeonGenerator : MonoBehaviour
 
     public void ConnectNode(Node node)
     {
-        Vector3 centerA = node.aChild.center;
-        Vector3 centerB = node.bChild.center;
+        if (node.aChild == null || node.bChild == null) return;
 
-        Vector3 midpoint = new Vector3(
-            ((centerA.x + centerB.x) / 2),
-            (0),
-            ((centerA.z + centerB.z) / 2));
+        Vector3 centerA = node.aChild.roomCenter;
+        Vector3 centerB = node.bChild.roomCenter;
 
-        //Start at the center and work to the approriate edge
+        // Start door positions at the centers
         Vector3 doorA = centerA;
         Vector3 doorB = centerB;
 
-        float distanceX = midpoint.x - centerA.x;
-        float distanceZ = midpoint.z - centerA.z;
+        // Directional differences
+        float dx = centerB.x - centerA.x;
+        float dz = centerB.z - centerA.z;
 
-        GameObject corridor = Instantiate(nodePrefab, midpoint, Quaternion.identity);
-        BoxCollider boxC = corridor.GetComponent<BoxCollider>();
-
-        //If distance along x is longer than z then horizontal corridor
-        if (Mathf.Abs(distanceX) > Mathf.Abs(distanceZ))
+        // Horizontal corridor (rooms are left/right relative to each other)
+        if (Mathf.Abs(dx) > Mathf.Abs(dz))
         {
-            //If it is a positive value then attach the door to the right wall
-            if (distanceX > 0)
+            if (dx > 0)
             {
-                doorA.x = centerA.x + (node.aChild.width / 2);
-                doorB.x = centerB.x - (node.bChild.width / 2);
+                // B is to the right of A
+                doorA.x = centerA.x + (node.aChild.width / 2f);
+                doorB.x = centerB.x - (node.bChild.width / 2f);
+            }
+            else
+            {
+                // B is to the left of A
+                doorA.x = centerA.x - (node.aChild.width / 2f);
+                doorB.x = centerB.x + (node.bChild.width / 2f);
             }
 
-            else if (distanceX < 0)
-            {
-                doorA.x = centerA.x - (node.aChild.width / 2);
-                doorB.x = centerB.x + (node.bChild.width / 2);
-            }
-            
-            
-            //Have the corridor.x = halfway between the two and z = constant (could be doorB.z either)
+            // Corridor center & size
             Vector3 corridorCenter = new Vector3((doorA.x + doorB.x) / 2f, 0, doorA.z);
-            corridor.transform.position = corridorCenter;
+            float corridorLength = Mathf.Abs(doorB.x - doorA.x);
 
-            //make the width of the corridor absolute to avoid it being nonexistant / negative
-            float corridorWidth = Mathf.Abs(doorB.x - doorA.x);
-            boxC.size = new Vector3(corridorWidth, 1f, 5f);
+            GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
+            BoxCollider boxC = corridor.GetComponent<BoxCollider>();
+            boxC.size = new Vector3(corridorLength, 1f, 5f); // 5 units thick
         }
-
-        else if (Mathf.Abs(distanceZ) > Mathf.Abs(distanceX))
+        // Vertical corridor (rooms are above/below relative to each other)
+        else
         {
-            if (distanceZ > 0)
+            if (dz > 0)
             {
-                doorA.z = centerA.z + (node.aChild.length / 2);
-                doorB.z = centerB.z - (node.bChild.length / 2);
+                // B is above A
+                doorA.z = centerA.z + (node.aChild.length / 2f);
+                doorB.z = centerB.z - (node.bChild.length / 2f);
+            }
+            else
+            {
+                // B is below A
+                doorA.z = centerA.z - (node.aChild.length / 2f);
+                doorB.z = centerB.z + (node.bChild.length / 2f);
             }
 
-            else if (distanceZ < 0)
-            {
-                doorA.z = centerA.z - (node.aChild.length / 2);
-                doorB.z = centerB.z + (node.bChild.length / 2);
-            }
-
-            
+            // Corridor center & size
             Vector3 corridorCenter = new Vector3(doorA.x, 0, (doorA.z + doorB.z) / 2f);
-            corridor.transform.position = corridorCenter;
-
             float corridorLength = Mathf.Abs(doorB.z - doorA.z);
-            boxC.size = new Vector3(5f, 1f, corridorLength);
-        }
 
+            GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
+            BoxCollider boxC = corridor.GetComponent<BoxCollider>();
+            boxC.size = new Vector3(5f, 1f, corridorLength); // 5 units thick
+        }
     }
+
 
     public void SpawnCorridor(Node node)
     {
@@ -257,6 +254,40 @@ public class DungeonGenerator : MonoBehaviour
         }
 
         else return;
+    }
+
+    public Vector3 ConnectRooms(Node node)
+    {
+        if (node == null)
+        {
+            return Vector3.zero;
+        }
+
+        if (node.isLeaf)
+        {
+            node.roomCenter = node.center;
+            return node.roomCenter;
+        }
+
+        Vector3 centerA = ConnectRooms(node.aChild);
+        Vector3 centerB = ConnectRooms(node.bChild);
+
+        ConnectNode(node);
+
+        int choice = UnityEngine.Random.Range(0, 2);
+
+        if (choice == 0)
+        {
+            node.roomCenter = centerA;
+            return node.roomCenter;
+        }
+
+        else
+        {
+            node.roomCenter = centerB;
+            return node.roomCenter;
+        }
+
     }
 
 }

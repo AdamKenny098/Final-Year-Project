@@ -167,6 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa83c4ac4aa535946a7ad8265c5e0215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  smallFloorSize: 250
+  mediumFloorSize: 375
+  largeFloorSize: 500
   floorSize: 0
   dungeonRooms:
   - {fileID: 9211543000359892622, guid: 4329f12b21960774c9ea4f600d56e1c5, type: 3}
@@ -174,12 +177,13 @@ MonoBehaviour:
   hallways:
   - {fileID: 6022802388967508756, guid: a8e1f80c5ed66ba418c617e0a1f3f4e5, type: 3}
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
-  dungeonWidth: 200
-  dungeonLength: 200
+  dungeonWidth: 500
+  dungeonLength: 500
   minRoomWidth: 5
   minRoomLength: 5
-  maxDungeonRooms: 32
-  maxTreeLevels: 5
+  maxDungeonRooms: 4
+  maxTreeLevels: 2
+  gap: 5
   nodes: []
 --- !u!1 &705507993
 GameObject:
