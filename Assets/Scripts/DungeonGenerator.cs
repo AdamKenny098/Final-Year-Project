@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
+using DelaunatorSharp;
 
 public class DungeonGenerator : MonoBehaviour
 {
@@ -19,24 +21,21 @@ public class DungeonGenerator : MonoBehaviour
     public GameObject nodePrefab;
 
     [Header("Dungeon Settings")]
-    public int dungeonWidth;      // Grid width (not used yet)
-    public int dungeonLength;     // Grid length (not used yet)
     public int minRoomWidth;      // For BSP or advanced gen later
     public int minRoomLength;     // For BSP or advanced gen later
-    public double maxDungeonRooms;   // Max number of dungeonRooms to be generated
     public int maxTreeLevels;
 
     public float gap;
 
     [Header("Tracking")]
-    public List<GameObject> nodes = new List<GameObject>(); // List of rooms already placed
-
+    public List<Vector3> nodeCenters = new List<Vector3>(); // List of rooms already placed
+    public List<IPoint> roomCenters = new List<IPoint>();
     void Start()
     {
         CreateDungeon();
     }
 
-    public void CreateDungeon()
+    public Node CreateDungeon()
     {
         // Step 1: Spawn the starting node / level bounds
         int size = UnityEngine.Random.Range(0, 3);
@@ -64,8 +63,12 @@ public class DungeonGenerator : MonoBehaviour
         SplitNode(starterNode, 0); // Start at 2^0 aka 1 node
         CheckIsLeaf(starterNode);
 
-        SpawnCorridor(starterNode);
-        ConnectRooms(starterNode);
+        ConvertRoomCenters();
+        Debug.Log("Number of Rooms: " + roomCenters.Count);
+
+        RunDelaunator();
+
+        return starterNode;
     }
 
     public void SplitNode(Node node, int numGenerations)
@@ -73,32 +76,13 @@ public class DungeonGenerator : MonoBehaviour
         // 2 to the power of maxTreeLevels
         double maxDungeonRooms = Math.Pow(2, maxTreeLevels);
 
-        if (numGenerations >= maxTreeLevels)
-        {
-            return;
-        }
-
-        if (node.width < minRoomWidth || node.length < minRoomLength)
-        {
-            return;
-        }
-
-        if (nodes.Count >= maxDungeonRooms)
-        {
-            return;
-        }
+        if (numGenerations >= maxTreeLevels) return;
+        if (node.width < minRoomWidth || node.length < minRoomLength) return;
+        if (nodeCenters.Count >= maxDungeonRooms) return;
 
         int direction = UnityEngine.Random.Range(0, 2);
-
-        if (node.width > node.length)
-        {
-            direction = 0;
-        }
-
-        else
-        {
-            direction = 1;
-        }
+        if (node.width > node.length) direction = 0;
+        else direction = 1;
 
         float splitPercent = UnityEngine.Random.Range(0.35f, 0.65f);
 
@@ -107,10 +91,7 @@ public class DungeonGenerator : MonoBehaviour
             float aWidth = node.width * splitPercent;
             float bWidth = node.width - aWidth;
 
-            if (aWidth < minRoomWidth || bWidth < minRoomWidth)
-            {
-                return;
-            }
+            if (aWidth < minRoomWidth || bWidth < minRoomWidth) return;
 
             float aCenterX = node.center.x - (node.width / 2f - aWidth / 2f);
             float bCenterX = node.center.x + (node.width / 2f - bWidth / 2f);
@@ -126,10 +107,7 @@ public class DungeonGenerator : MonoBehaviour
             float aLength = node.length * splitPercent;
             float bLength = node.length - aLength;
 
-            if (aLength < minRoomLength || bLength < minRoomLength)
-            {
-                return;
-            }
+            if (aLength < minRoomWidth || bLength < minRoomWidth) return;
 
             float aCenterZ = node.center.z - (node.length / 2f - aLength / 2f);
             float bCenterZ = node.center.z + (node.length / 2f - bLength / 2f);
@@ -160,11 +138,6 @@ public class DungeonGenerator : MonoBehaviour
 
         }
 
-        if (node.aChild != null && node.bChild != null)
-        {
-            ConnectNode(node);
-        }
-
     }
 
     public void SpawnCollider(Node node)
@@ -172,126 +145,36 @@ public class DungeonGenerator : MonoBehaviour
         GameObject nodeObject = Instantiate(nodePrefab, node.center, Quaternion.identity);
         BoxCollider boxC = nodeObject.GetComponent<BoxCollider>();
         boxC.size = new Vector3(node.width, 1, node.length);
-        nodes.Add(nodeObject);
+
+        node.roomCenter = boxC.bounds.center;
+        nodeCenters.Add(node.roomCenter);
     }
 
-    public void ConnectNode(Node node)
+    public void ConvertRoomCenters()
     {
-        if (node.aChild == null || node.bChild == null) return;
-
-        Vector3 centerA = node.aChild.roomCenter;
-        Vector3 centerB = node.bChild.roomCenter;
-
-        // Start door positions at the centers
-        Vector3 doorA = centerA;
-        Vector3 doorB = centerB;
-
-        // Directional differences
-        float dx = centerB.x - centerA.x;
-        float dz = centerB.z - centerA.z;
-
-        // Horizontal corridor (rooms are left/right relative to each other)
-        if (Mathf.Abs(dx) > Mathf.Abs(dz))
+        foreach (Vector3 v in nodeCenters)
         {
-            if (dx > 0)
-            {
-                // B is to the right of A
-                doorA.x = centerA.x + (node.aChild.width / 2f);
-                doorB.x = centerB.x - (node.bChild.width / 2f);
-            }
-            else
-            {
-                // B is to the left of A
-                doorA.x = centerA.x - (node.aChild.width / 2f);
-                doorB.x = centerB.x + (node.bChild.width / 2f);
-            }
-
-            // Corridor center & size
-            Vector3 corridorCenter = new Vector3((doorA.x + doorB.x) / 2f, 0, doorA.z);
-            float corridorLength = Mathf.Abs(doorB.x - doorA.x);
-
-            GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
-            BoxCollider boxC = corridor.GetComponent<BoxCollider>();
-            boxC.size = new Vector3(corridorLength, 1f, 5f); // 5 units thick
-        }
-        // Vertical corridor (rooms are above/below relative to each other)
-        else
-        {
-            if (dz > 0)
-            {
-                // B is above A
-                doorA.z = centerA.z + (node.aChild.length / 2f);
-                doorB.z = centerB.z - (node.bChild.length / 2f);
-            }
-            else
-            {
-                // B is below A
-                doorA.z = centerA.z - (node.aChild.length / 2f);
-                doorB.z = centerB.z + (node.bChild.length / 2f);
-            }
-
-            // Corridor center & size
-            Vector3 corridorCenter = new Vector3(doorA.x, 0, (doorA.z + doorB.z) / 2f);
-            float corridorLength = Mathf.Abs(doorB.z - doorA.z);
-
-            GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
-            BoxCollider boxC = corridor.GetComponent<BoxCollider>();
-            boxC.size = new Vector3(5f, 1f, corridorLength); // 5 units thick
+            roomCenters.Add(new Point(v.x, v.z));
         }
     }
 
-
-    public void SpawnCorridor(Node node)
+    public void RunDelaunator()
     {
-        if (node == null) return;
+        Delaunator delaunator = new Delaunator(roomCenters.ToArray());
 
-        if (node.aChild != null && node.bChild != null)
+        foreach (var edge in delaunator.GetEdges())
         {
-            ConnectNode(node);
+            //https://github.com/nol1fe/delaunator-sharp/blob/master/DelaunatorSharp/Interfaces/IEdge.cs
+            //Converted to float due to RoomCenter being a Vector3 of flaots
+            // Since is Vector2 and RoomCenter.Y is negligible we pass RoomCenter.Z as the Y value
+            Vector2 from = new Vector2((float)edge.P.X, (float)edge.P.Y);
+            Vector2 to = new Vector2((float)edge.Q.X, (float)edge.Q.Y);
 
-            SpawnCorridor(node.aChild);
-            SpawnCorridor(node.bChild);
+            Debug.DrawLine(new Vector3(from.x, 0, from.y), new Vector3(to.x, 0, to.y), Color.red);
         }
-
-        else return;
-    }
-
-    public Vector3 ConnectRooms(Node node)
-    {
-        if (node == null)
-        {
-            return Vector3.zero;
-        }
-
-        if (node.isLeaf)
-        {
-            node.roomCenter = node.center;
-            return node.roomCenter;
-        }
-
-        Vector3 centerA = ConnectRooms(node.aChild);
-        Vector3 centerB = ConnectRooms(node.bChild);
-
-        ConnectNode(node);
-
-        int choice = UnityEngine.Random.Range(0, 2);
-
-        if (choice == 0)
-        {
-            node.roomCenter = centerA;
-            return node.roomCenter;
-        }
-
-        else
-        {
-            node.roomCenter = centerB;
-            return node.roomCenter;
-        }
-
     }
 
 }
 
 //UnityEngine namespace used for Random.Range to differ from System.Random
 //System included to use a 2^ in SplitNode()
-

@@ -5,15 +5,11 @@ using UnityEngine;
 public class Node
 {
     public float length, width;
-
     public Vector3 center;
-
     public BoxCollider box;
     public Node aChild, bChild;
     public bool isLeaf;
-
     public Vector3 roomCenter;
-
     public float getLength()
     {
         return box.bounds.size.x;
