@@ -170,7 +170,7 @@ public class DungeonGenerator : MonoBehaviour
             Vector2 from = new Vector2((float)edge.P.X, (float)edge.P.Y);
             Vector2 to = new Vector2((float)edge.Q.X, (float)edge.Q.Y);
 
-            Debug.DrawLine(new Vector3(from.x, 0, from.y), new Vector3(to.x, 0, to.y), Color.red);
+            Debug.DrawLine(new Vector3(from.x, 0, from.y), new Vector3(to.x, 0, to.y), Color.red, 1000f);
         }
     }
 
