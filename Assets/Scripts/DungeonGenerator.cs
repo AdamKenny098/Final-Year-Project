@@ -146,7 +146,8 @@ public class DungeonGenerator : MonoBehaviour
     {
         GameObject nodeObject = Instantiate(nodePrefab, node.center, Quaternion.identity);
         BoxCollider boxC = nodeObject.GetComponent<BoxCollider>();
-        boxC.size = new Vector3(node.width, 1, node.length);
+        boxC.size = new Vector3(node.width, gap / 2, node.length);
+        nodeObject.transform.localScale = boxC.size;
         node.roomCenter = boxC.bounds.center;
         nodeCenters.Add(node.roomCenter);
     }
@@ -191,11 +192,31 @@ public class DungeonGenerator : MonoBehaviour
             Vector3 from = new Vector3((float)edge.P.X, 0, (float)edge.P.Y);
             Vector3 to = new Vector3((float)edge.Q.X, 0, (float)edge.Q.Y);
 
+            SpawnCorridor(from, to);
             Debug.DrawLine(from, to, Color.yellow, 1000f); // MST edges
         }
 
         return mstEdges;
     }
+    
+    void SpawnCorridor(Vector3 a, Vector3 b)
+    {
+        Vector3 corridorCenter = (a + b) / 2f;
+
+        //goes to b from a w corridorCenter in the middle
+        Vector3 distance = b - a;
+        float length = distance.magnitude;
+        GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
+        corridor.transform.localScale = new Vector3(gap / 2, gap/2 -1, length);
+        
+        // rotate corridor along direction of distance (z)
+        corridor.transform.rotation = Quaternion.LookRotation(distance);
+
+        // update collider (so it matches new scale)
+        BoxCollider boxC = corridor.GetComponent<BoxCollider>();
+        boxC.size = Vector3.one; // reset collider to match 1×1×1 scaled object
+    }
+
     
 }
 
