@@ -66,7 +66,9 @@ public class DungeonGenerator : MonoBehaviour
         ConvertRoomCenters();
         Debug.Log("Number of Rooms: " + roomCenters.Count);
 
-        RunDelaunator();
+        List<IEdge> delaunayEdges = RunDelaunator();
+
+        List<IEdge> mstEdges = RunKruskals(delaunayEdges);
 
         return starterNode;
     }
@@ -145,7 +147,6 @@ public class DungeonGenerator : MonoBehaviour
         GameObject nodeObject = Instantiate(nodePrefab, node.center, Quaternion.identity);
         BoxCollider boxC = nodeObject.GetComponent<BoxCollider>();
         boxC.size = new Vector3(node.width, 1, node.length);
-
         node.roomCenter = boxC.bounds.center;
         nodeCenters.Add(node.roomCenter);
     }
@@ -158,9 +159,11 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    public void RunDelaunator()
+    public List<IEdge> RunDelaunator()
     {
         Delaunator delaunator = new Delaunator(roomCenters.ToArray());
+
+        List<IEdge> edges = new List<IEdge>(delaunator.GetEdges());
 
         foreach (var edge in delaunator.GetEdges())
         {
@@ -170,10 +173,30 @@ public class DungeonGenerator : MonoBehaviour
             Vector2 from = new Vector2((float)edge.P.X, (float)edge.P.Y);
             Vector2 to = new Vector2((float)edge.Q.X, (float)edge.Q.Y);
 
-            Debug.DrawLine(new Vector3(from.x, 0, from.y), new Vector3(to.x, 0, to.y), Color.red, 1000f);
+            //Debug.DrawLine(new Vector3(from.x, 0, from.y), new Vector3(to.x, 0, to.y), Color.red, 1000f);
         }
+        return edges;
     }
 
+    public List<IEdge> RunKruskals(List<IEdge> edges)
+    {
+        KruskalsAlgorithm kruskal = new KruskalsAlgorithm();
+        kruskal.Vertices = roomCenters.Count;
+
+        List<IEdge> mstEdges = kruskal.Kruskal(roomCenters.Count, edges, roomCenters);
+
+        // Debug: show MST edges in yellow
+        foreach (var edge in mstEdges)
+        {
+            Vector3 from = new Vector3((float)edge.P.X, 0, (float)edge.P.Y);
+            Vector3 to = new Vector3((float)edge.Q.X, 0, (float)edge.Q.Y);
+
+            Debug.DrawLine(from, to, Color.yellow, 1000f); // MST edges
+        }
+
+        return mstEdges;
+    }
+    
 }
 
 //UnityEngine namespace used for Random.Range to differ from System.Random
