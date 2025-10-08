@@ -28,27 +28,29 @@ public class DungeonRoomBuilder : MonoBehaviour
         int roomWidth = Mathf.FloorToInt(width);
         int roomLength = Mathf.FloorToInt(length);
 
-        float excessWidth = width - roomWidth;
-        float excessLength = length - roomLength;
-
-        Vector3 cornerA = new Vector3(-width / 2, 0, -length / 2);
-        Vector3 cornerB = new Vector3(width / 2, 0, -length / 2);
-        Vector3 cornerC = new Vector3(-width / 2, 0, length / 2);
-        Vector3 cornerD = new Vector3(width / 2, 0, length / 2);
-
-
         for (int i = 0; i < roomWidth; i++)
         {
             for (int j = 0; j < 4; j++)
             {
-                Vector3 posWallA = node.center + new Vector3((-width / 2) + i + (excessWidth / 2), j, roomWidth / 2 + (excessLength / 2));
+                Vector3 posWallA = node.center + new Vector3((-roomWidth / 2f) + i + 0.5f, j, roomLength / 2f - 0.5f);
                 Instantiate(blockPrefab, posWallA, Quaternion.identity);
 
-                Vector3 posWallB = node.center + new Vector3((-width / 2) + i + (excessWidth / 2), j, -roomWidth / 2 - (excessLength / 2));   // mirrored Z
+                Vector3 posWallB = node.center + new Vector3((-roomWidth / 2f) + i + 0.5f, j, -roomLength / 2f + 0.5f);
                 Instantiate(blockPrefab, posWallB, Quaternion.identity);
-
             }
-            
         }
+
+        for (int k = 0; k < roomLength; k++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                Vector3 posWallC = node.center + new Vector3(roomWidth / 2f - 0.5f, j, (-roomLength / 2f) + k + 0.5f);
+                Instantiate(blockPrefab, posWallC, Quaternion.identity);
+
+                Vector3 posWallD = node.center + new Vector3(-roomWidth / 2f + 0.5f, j,(-roomLength / 2f) + k + 0.5f);
+                Instantiate(blockPrefab, posWallD, Quaternion.identity);
+            }
+        }
+
     }
 }
