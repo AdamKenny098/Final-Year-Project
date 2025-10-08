@@ -222,6 +222,9 @@ public class DungeonGenerator : MonoBehaviour
         // update collider (so it matches new scale)
         BoxCollider boxC = corridor.GetComponent<BoxCollider>();
         boxC.size = Vector3.one; // reset collider to match 1×1×1 scaled object
+
+        Node node = new Node(length, gap / 2, corridorCenter);
+        dungeonRoomBuilder.BuildRoom(node, corridor.transform.eulerAngles.y);
     }
 
     void BuildLeafNodes()
