@@ -30,6 +30,9 @@ public class DungeonGenerator : MonoBehaviour
     [Header("Tracking")]
     public List<Vector3> nodeCenters = new List<Vector3>(); // List of rooms already placed
     public List<IPoint> roomCenters = new List<IPoint>();
+    public List<Node> leafNodes = new List<Node>();
+
+    public DungeonRoomBuilder dungeonRoomBuilder;
     void Start()
     {
         CreateDungeon();
@@ -69,6 +72,8 @@ public class DungeonGenerator : MonoBehaviour
         List<IEdge> delaunayEdges = RunDelaunator();
 
         List<IEdge> mstEdges = RunKruskals(delaunayEdges);
+
+        BuildLeafNodes();
 
         return starterNode;
     }
@@ -131,6 +136,7 @@ public class DungeonGenerator : MonoBehaviour
         if (node.isLeaf)
         {
             SpawnCollider(node);
+            leafNodes.Add(node);
         }
 
         else
@@ -198,7 +204,7 @@ public class DungeonGenerator : MonoBehaviour
 
         return mstEdges;
     }
-    
+
     void SpawnCorridor(Vector3 a, Vector3 b)
     {
         Vector3 corridorCenter = (a + b) / 2f;
@@ -206,15 +212,24 @@ public class DungeonGenerator : MonoBehaviour
         //goes to b from a w corridorCenter in the middle
         Vector3 distance = b - a;
         float length = distance.magnitude;
+
         GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
-        corridor.transform.localScale = new Vector3(gap / 2, gap/2 -1, length);
-        
+        corridor.transform.localScale = new Vector3(gap / 2, gap / 2 - 1, length);
+
         // rotate corridor along direction of distance (z)
         corridor.transform.rotation = Quaternion.LookRotation(distance);
 
         // update collider (so it matches new scale)
         BoxCollider boxC = corridor.GetComponent<BoxCollider>();
         boxC.size = Vector3.one; // reset collider to match 1×1×1 scaled object
+    }
+
+    void BuildLeafNodes()
+    {
+        foreach (var node in leafNodes)
+        {
+            dungeonRoomBuilder.BuildRoom(node);
+        }
     }
 
     

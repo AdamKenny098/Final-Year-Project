@@ -177,14 +177,11 @@ MonoBehaviour:
   hallways:
   - {fileID: 6022802388967508756, guid: a8e1f80c5ed66ba418c617e0a1f3f4e5, type: 3}
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
-  dungeonWidth: 500
-  dungeonLength: 500
   minRoomWidth: 5
   minRoomLength: 5
-  maxDungeonRooms: 4
-  maxTreeLevels: 2
+  maxTreeLevels: 7
   gap: 5
-  nodes: []
+  nodeCenters: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
