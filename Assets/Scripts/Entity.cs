@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public string species;
-    public bool isHostile;
-    public int currentHitPoints, maxHitPoints, attack, defense, speed, stamina, mana, level, height;
+    public int currentHealth, maxHealth;
     // Start is called before the first frame update
     void Start()
     {
-        currentHitPoints = maxHitPoints;
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -21,8 +19,8 @@ public class Entity : MonoBehaviour
 
     void TakeDamage(int amount)
     {
-        currentHitPoints = currentHitPoints - amount;
-        if (currentHitPoints <= 0)
+        currentHealth = currentHealth - amount;
+        if (currentHealth <= 0)
         {
             Die();
         }
@@ -30,10 +28,10 @@ public class Entity : MonoBehaviour
 
     void Heal(int amount)
     {
-        currentHitPoints = currentHitPoints + amount;
-        if (currentHitPoints >= maxHitPoints)
+        currentHealth = currentHealth + amount;
+        if (currentHealth >= maxHealth)
         {
-            currentHitPoints = maxHitPoints;
+            currentHealth = maxHealth;
         }
     }
 
