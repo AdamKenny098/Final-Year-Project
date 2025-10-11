@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 642468280}
   - component: {fileID: 642468281}
+  - component: {fileID: 642468282}
   m_Layer: 0
   m_Name: DungeonGenerator
   m_TagString: Untagged
@@ -179,9 +180,23 @@ MonoBehaviour:
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
   minRoomWidth: 5
   minRoomLength: 5
-  maxTreeLevels: 7
+  maxTreeLevels: 3
   gap: 5
   nodeCenters: []
+  dungeonRoomBuilder: {fileID: 642468282}
+--- !u!114 &642468282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642468279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e745e299f8c695f4f9ceff1df2ff3ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockPrefab: {fileID: 8986612410854924030, guid: 35d427faeb0fe354888c53f8a84e764b, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -75,6 +75,8 @@ public class DungeonGenerator : MonoBehaviour
 
         BuildLeafNodes();
 
+        dungeonRoomBuilder.DeleteExcessBlocks();
+
         return starterNode;
     }
 
@@ -224,7 +226,7 @@ public class DungeonGenerator : MonoBehaviour
         boxC.size = Vector3.one; // reset collider to match 1×1×1 scaled object
 
         Node node = new Node(length, gap / 2, corridorCenter);
-        dungeonRoomBuilder.BuildRoom(node, corridor.transform.eulerAngles.y);
+        dungeonRoomBuilder.BuildRoom(node, corridor.transform.eulerAngles.y, true);
     }
 
     void BuildLeafNodes()
