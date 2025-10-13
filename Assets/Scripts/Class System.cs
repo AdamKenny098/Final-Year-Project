@@ -15,6 +15,7 @@ public class ClassSystem : MonoBehaviour
     }
 
     public Dictionary<Classes, ClassStats> classData;
+    public Dictionary<Classes, List<Unlock>> classUnlocks;
 
     void Awake()
     {
@@ -111,6 +112,59 @@ public class ClassSystem : MonoBehaviour
                 }
             }
         };
+
+        classUnlocks = new Dictionary<Classes, List<Unlock>>()
+        {
+            {
+                Classes.Warrior, new List<Unlock>()
+                {
+                    new Unlock { unlockName = "Power Strike", unlockLevel = 3, description = "A heavy melee attack dealing 200% damage.", unlockCoolDown = 5f },
+                    new Unlock { unlockName = "Shield Bash", unlockLevel = 5, description = "Stuns an enemy for 1.5 seconds.", unlockCoolDown = 8f },
+                    new Unlock { unlockName = "War Cry", unlockLevel = 8, description = "Boosts damage by 20% for a short duration.", unlockCoolDown = 12f }
+                }
+            },
+            {
+                Classes.Archer, new List<Unlock>()
+                {
+                    new Unlock { unlockName = "Piercing Shot", unlockLevel = 3, description = "Fires an arrow that passes through multiple enemies.", unlockCoolDown = 6f },
+                    new Unlock { unlockName = "Eagle Eye", unlockLevel = 6, description = "Increases chance of critical hits and overall damage for 10 seconds.", unlockCoolDown = 15f }
+                }
+            },
+            {
+                Classes.Mage, new List<Unlock>()
+                {
+                    new Unlock { unlockName = "Firebolt", unlockLevel = 2, description = "Launches a ball of fire that explodes on impact.", unlockCoolDown = 3f },
+                    new Unlock { unlockName = "Teleport", unlockLevel = 5, description = "Instantly move to a nearby location.", unlockCoolDown = 10f },
+                    new Unlock { unlockName = "Arcane Storm", unlockLevel = 8, description = "Unleash a storm of arcane energy around you.", unlockCoolDown = 20f }
+                }
+            },
+            {
+                Classes.Thief, new List<Unlock>()
+                {
+                    new Unlock { unlockName = "Backstab", unlockLevel = 2, description = "Deals extra damage when attacking from behind.", unlockCoolDown = 4f },
+                    new Unlock { unlockName = "Shadowstep", unlockLevel = 4, description = "Instantly dash behind your target.", unlockCoolDown = 6f },
+                    new Unlock { unlockName = "Smoke Bomb", unlockLevel = 6, description = "Escape combat by blinding enemies briefly.", unlockCoolDown = 10f }
+                }
+            }
+        };
+    }
+
+    public ClassStats GetStats(Classes characterClass )
+    {
+        if (classData.ContainsKey(characterClass))
+        {
+            return classData[characterClass];
+        }
+        return new ClassStats();
+    }
+
+    public List<Unlock> GetUnlocks(Classes characterClass)
+    {
+        if (classUnlocks.ContainsKey(characterClass))
+        {
+            return classUnlocks[characterClass];
+        }
+        return new List<Unlock>();
     }
 
     // Start is called before the first frame update
@@ -140,6 +194,14 @@ public class ClassStats
     public int healthPerLevel;
     public int manaPerLevel;
     public int staminaPerLevel;
+}
+
+public class Unlock
+{
+    public string unlockName;
+    public int unlockLevel;
+    public string description;
+    public float unlockCoolDown;
 }
 
 
