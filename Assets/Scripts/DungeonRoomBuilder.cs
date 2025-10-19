@@ -8,10 +8,13 @@ public class DungeonRoomBuilder : MonoBehaviour
 
     public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false)
     {
-        string blockTag = isCorridor ? "CorridorBlock" : "Block";
         if (node == null) return;
 
-        GameObject roomAsGameObject = new GameObject("Room");
+        string wallTag = isCorridor ? "CorridorBlock" : "wallBlock";
+        string floorTag = isCorridor ? "CorridorBlock" : "floorBlock";
+        string ceilingTag = isCorridor ? "CorridorBlock" : "ceilingBlock";
+
+        GameObject roomAsGameObject = new GameObject(isCorridor ? "Corridor" : "Room");
         roomAsGameObject.transform.position = node.center;
         roomAsGameObject.transform.rotation = Quaternion.Euler(0, rotationDegrees, 0);
 
@@ -19,19 +22,17 @@ public class DungeonRoomBuilder : MonoBehaviour
         roomComponent.node = node;
         roomComponent.isCorridor = isCorridor;
 
-        //Node is passed from DungeonGenerator
         float width = node.width;
         float length = node.length;
-
         int roomWidth = Mathf.FloorToInt(width);
         int roomLength = Mathf.FloorToInt(length);
 
         int floorLevel = -1;
-        int ceilingLevel = 5; //Change it later to roomHeight+1
+        int ceilingLevel = 5;
 
         Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
 
-
+        // === Walls ===
         for (int i = 0; i < roomWidth; i++)
         {
             for (int j = 0; j < 5; j++)
@@ -44,8 +45,8 @@ public class DungeonRoomBuilder : MonoBehaviour
 
                 GameObject blockA = Instantiate(blockPrefab, posWallA, rotation, roomAsGameObject.transform);
                 GameObject blockB = Instantiate(blockPrefab, posWallB, rotation, roomAsGameObject.transform);
-                blockA.tag = blockTag;
-                blockB.tag = blockTag;
+                blockA.tag = wallTag;
+                blockB.tag = wallTag;
             }
         }
 
@@ -61,8 +62,8 @@ public class DungeonRoomBuilder : MonoBehaviour
 
                 GameObject blockC = Instantiate(blockPrefab, posWallC, rotation, roomAsGameObject.transform);
                 GameObject blockD = Instantiate(blockPrefab, posWallD, rotation, roomAsGameObject.transform);
-                blockC.tag = blockTag;
-                blockD.tag = blockTag;
+                blockC.tag = wallTag;
+                blockD.tag = wallTag;
             }
         }
 
@@ -74,7 +75,7 @@ public class DungeonRoomBuilder : MonoBehaviour
                 Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
                 Vector3 posFloor = node.center + rotation * offset;
                 GameObject block = Instantiate(blockPrefab, posFloor, rotation, roomAsGameObject.transform);
-                block.tag = blockTag;
+                block.tag = floorTag;
             }
         }
 
@@ -84,54 +85,51 @@ public class DungeonRoomBuilder : MonoBehaviour
             for (int k = 0; k < roomLength; k++)
             {
                 Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, ceilingLevel, (-roomLength / 2f) + k + 0.5f);
-                Vector3 posFloor = node.center + rotation * offset;
-                GameObject block = Instantiate(blockPrefab, posFloor, rotation, roomAsGameObject.transform);
-                block.tag = blockTag;
+                Vector3 posCeil = node.center + rotation * offset;
+                GameObject block = Instantiate(blockPrefab, posCeil, rotation, roomAsGameObject.transform);
+                block.tag = ceilingTag;
             }
         }
 
         BoxCollider boxC = roomAsGameObject.AddComponent<BoxCollider>();
-        boxC.center = new Vector3(0, (ceilingLevel - floorLevel -1)  / 2f, 0);
-        boxC.size = new Vector3(roomWidth, ceilingLevel + 1, roomLength);
+        boxC.center = new Vector3(0, (ceilingLevel - floorLevel - 1) / 2f, 0);
+        boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 2, roomLength - 2);
     }
-
+    
     public void DeleteExcessBlocks()
     {
         Room[] everyRoom = FindObjectsOfType<Room>();
+
         foreach (Room room in everyRoom)
         {
-            if (room.isCorridor) continue;
-
             BoxCollider boxC = room.GetComponent<BoxCollider>();
             if (boxC == null) continue;
 
-            // TransformPoint converts collider center to world space
             Vector3 worldCenter = boxC.transform.TransformPoint(boxC.center);
-            Vector3 halfExtents = (boxC.size / 2f) * .965f;
+            Vector3 halfExtents = (boxC.size / 2f) * 0.965f;
 
-            // Find everything overlapping this room volume
-            Collider[] blocks = Physics.OverlapBox(worldCenter,halfExtents,boxC.transform.rotation);
+            Collider[] overlaps = Physics.OverlapBox(worldCenter, halfExtents, boxC.transform.rotation);
 
-            foreach (Collider col in blocks)
+            foreach (Collider col in overlaps)
             {
-                if (col == null)
-                    continue;
+                if (col == null) continue;
 
-                // Only affect corridor blocks
-                if (!col.CompareTag("CorridorBlock"))
-                    continue;
-
-                // Check if this collider belongs to a corridor Room
-                Room parentRoom = col.GetComponentInParent<Room>();
-                if (parentRoom == null)
-                    continue;
-
-                // If this collider is part of a corridor, remove it
-                if (parentRoom.isCorridor)
+                // === CASE 1: Room deleting corridor overlap ===
+                if (!room.isCorridor && col.CompareTag("CorridorBlock"))
                 {
                     Destroy(col.gameObject);
+                    continue;
+                }
+
+                // === CASE 2: Corridor carving through walls ===
+                if (room.isCorridor && col.CompareTag("wallBlock"))
+                {
+                    Destroy(col.gameObject);
+                    continue;
                 }
             }
         }
     }
+
+
 }
