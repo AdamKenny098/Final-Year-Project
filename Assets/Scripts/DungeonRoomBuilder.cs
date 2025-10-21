@@ -113,10 +113,13 @@ public class DungeonRoomBuilder : MonoBehaviour
                 if (col == null) continue;
 
                 // === CASE 1: Room deleting corridor overlap ===
-                if (!room.isCorridor && col.CompareTag("CorridorBlock"))
+                if (!room.isCorridor)
                 {
-                    Destroy(col.gameObject);
-                    continue;
+                    if(col.CompareTag("wallBlock")) //|| col.CompareTag("floorBlock") || col.CompareTag("ceilingBlock") Add this when colider increases bounds
+                    {
+                        Destroy(col.gameObject);
+                        continue;
+                    }
                 }
 
                 // === CASE 2: Corridor carving through walls ===
