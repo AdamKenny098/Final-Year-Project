@@ -22,8 +22,18 @@ public class DungeonRoomBuilder : MonoBehaviour
         roomComponent.node = node;
         roomComponent.isCorridor = isCorridor;
 
+        // room sub components
+        GameObject wallsParent = new GameObject("Walls");
+        GameObject floorParent = new GameObject("Floor");
+        GameObject ceilingParent = new GameObject("Ceiling");
+
+        wallsParent.transform.SetParent(roomAsGameObject.transform);
+        floorParent.transform.SetParent(roomAsGameObject.transform);
+        ceilingParent.transform.SetParent(roomAsGameObject.transform);
+
         float width = node.width;
         float length = node.length;
+
         int roomWidth = Mathf.FloorToInt(width);
         int roomLength = Mathf.FloorToInt(length);
 
@@ -40,13 +50,8 @@ public class DungeonRoomBuilder : MonoBehaviour
                 Vector3 offsetA = new Vector3((-roomWidth / 2f) + i + 0.5f, j, roomLength / 2f - 0.5f);
                 Vector3 offsetB = new Vector3((-roomWidth / 2f) + i + 0.5f, j, -roomLength / 2f + 0.5f);
 
-                Vector3 posWallA = node.center + rotation * offsetA;
-                Vector3 posWallB = node.center + rotation * offsetB;
-
-                GameObject blockA = Instantiate(blockPrefab, posWallA, rotation, roomAsGameObject.transform);
-                GameObject blockB = Instantiate(blockPrefab, posWallB, rotation, roomAsGameObject.transform);
-                blockA.tag = wallTag;
-                blockB.tag = wallTag;
+                SpawnBlock(wallsParent, node, rotation, offsetA, "wallBlock");
+                SpawnBlock(wallsParent, node, rotation, offsetB, "wallBlock");
             }
         }
 
@@ -57,13 +62,8 @@ public class DungeonRoomBuilder : MonoBehaviour
                 Vector3 offsetC = new Vector3(roomWidth / 2f - 0.5f, j, (-roomLength / 2f) + k + 0.5f);
                 Vector3 offsetD = new Vector3(-roomWidth / 2f + 0.5f, j, (-roomLength / 2f) + k + 0.5f);
 
-                Vector3 posWallC = node.center + rotation * offsetC;
-                Vector3 posWallD = node.center + rotation * offsetD;
-
-                GameObject blockC = Instantiate(blockPrefab, posWallC, rotation, roomAsGameObject.transform);
-                GameObject blockD = Instantiate(blockPrefab, posWallD, rotation, roomAsGameObject.transform);
-                blockC.tag = wallTag;
-                blockD.tag = wallTag;
+                SpawnBlock(wallsParent, node, rotation, offsetC, "wallBlock");
+                SpawnBlock(wallsParent, node, rotation, offsetD, "wallBlock");
             }
         }
 
@@ -73,9 +73,8 @@ public class DungeonRoomBuilder : MonoBehaviour
             for (int k = 0; k < roomLength; k++)
             {
                 Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
-                Vector3 posFloor = node.center + rotation * offset;
-                GameObject block = Instantiate(blockPrefab, posFloor, rotation, roomAsGameObject.transform);
-                block.tag = floorTag;
+                
+                SpawnBlock(floorParent, node, rotation, offset, "floorBlock");
             }
         }
 
@@ -85,9 +84,8 @@ public class DungeonRoomBuilder : MonoBehaviour
             for (int k = 0; k < roomLength; k++)
             {
                 Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, ceilingLevel, (-roomLength / 2f) + k + 0.5f);
-                Vector3 posCeil = node.center + rotation * offset;
-                GameObject block = Instantiate(blockPrefab, posCeil, rotation, roomAsGameObject.transform);
-                block.tag = ceilingTag;
+                
+                SpawnBlock(ceilingParent, node, rotation, offset, "ceilingBlock");
             }
         }
 
@@ -95,7 +93,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         boxC.center = new Vector3(0, (ceilingLevel - floorLevel - 1) / 2f, 0);
         boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 2, roomLength - 2);
     }
-    
+
     public void DeleteExcessBlocks()
     {
         Room[] everyRoom = FindObjectsOfType<Room>();
@@ -129,6 +127,13 @@ public class DungeonRoomBuilder : MonoBehaviour
                 }
             }
         }
+    }
+    
+    public void SpawnBlock(GameObject parentofBlock, Node node, Quaternion rotation, Vector3 offset, string tag)
+    {
+        Vector3 pos = node.center + rotation * offset;
+        GameObject block = Instantiate(blockPrefab, pos, rotation, parentofBlock.transform);
+        block.tag = tag;
     }
 
 
