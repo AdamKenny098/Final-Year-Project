@@ -67,7 +67,6 @@ public class DungeonGenerator : MonoBehaviour
         CheckIsLeaf(starterNode);
 
         ConvertRoomCenters();
-        Debug.Log("Number of Rooms: " + roomCenters.Count);
 
         List<IEdge> delaunayEdges = RunDelaunator();
 
@@ -75,7 +74,7 @@ public class DungeonGenerator : MonoBehaviour
 
         BuildLeafNodes();
 
-        dungeonRoomBuilder.DeleteExcessBlocks();
+        dungeonRoomBuilder.StartBuildProcess();
 
         return starterNode;
     }
@@ -153,6 +152,7 @@ public class DungeonGenerator : MonoBehaviour
     public void SpawnCollider(Node node)
     {
         GameObject nodeObject = Instantiate(nodePrefab, node.center, Quaternion.identity);
+        nodeObject.tag = "Node";
         BoxCollider boxC = nodeObject.GetComponent<BoxCollider>();
         boxC.size = new Vector3(node.width, gap / 2, node.length);
         nodeObject.transform.localScale = boxC.size;
@@ -201,7 +201,7 @@ public class DungeonGenerator : MonoBehaviour
             Vector3 to = new Vector3((float)edge.Q.X, 0, (float)edge.Q.Y);
 
             SpawnCorridor(from, to);
-            Debug.DrawLine(from, to, Color.yellow, 1000f); // MST edges
+            //Debug.DrawLine(from, to, Color.yellow, 1000f); // MST edges
         }
 
         return mstEdges;
@@ -216,6 +216,7 @@ public class DungeonGenerator : MonoBehaviour
         float length = distance.magnitude;
 
         GameObject corridor = Instantiate(nodePrefab, corridorCenter, Quaternion.identity);
+        corridor.tag = "Node";
         corridor.transform.localScale = new Vector3(gap / 2, gap / 2 - 1, length);
 
         // rotate corridor along direction of distance (z)

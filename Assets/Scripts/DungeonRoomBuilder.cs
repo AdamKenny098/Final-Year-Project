@@ -6,6 +6,15 @@ public class DungeonRoomBuilder : MonoBehaviour
 {
     public GameObject blockPrefab;
 
+    public void StartBuildProcess()
+    {
+        DeleteExcessBlocks();
+        DeleteNodes();
+        ReduceColliders("dungeonFloor");
+        ReduceColliders("dungeonCeiling");
+        ReduceColliders("dungeonWall");
+    }
+
     public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false)
     {
         if (node == null) return;
@@ -23,11 +32,26 @@ public class DungeonRoomBuilder : MonoBehaviour
         roomComponent.isCorridor = isCorridor;
 
         // room sub components
-        GameObject wallsParent = new GameObject("Walls");
+        GameObject wallsParent1 = new GameObject("Walls");
+        GameObject wallsParent2 = new GameObject("Walls");
+        GameObject wallsParent3 = new GameObject("Walls");
+        GameObject wallsParent4 = new GameObject("Walls");
+
         GameObject floorParent = new GameObject("Floor");
         GameObject ceilingParent = new GameObject("Ceiling");
 
-        wallsParent.transform.SetParent(roomAsGameObject.transform);
+        floorParent.tag = "dungeonFloor";
+        ceilingParent.tag = "dungeonCeiling";
+        wallsParent1.tag = "dungeonWall";
+        wallsParent2.tag = "dungeonWall";
+        wallsParent3.tag = "dungeonWall";
+        wallsParent4.tag = "dungeonWall";
+
+        wallsParent1.transform.SetParent(roomAsGameObject.transform);
+        wallsParent2.transform.SetParent(roomAsGameObject.transform);
+        wallsParent3.transform.SetParent(roomAsGameObject.transform);
+        wallsParent4.transform.SetParent(roomAsGameObject.transform);
+
         floorParent.transform.SetParent(roomAsGameObject.transform);
         ceilingParent.transform.SetParent(roomAsGameObject.transform);
 
@@ -50,8 +74,8 @@ public class DungeonRoomBuilder : MonoBehaviour
                 Vector3 offsetA = new Vector3((-roomWidth / 2f) + i + 0.5f, j, roomLength / 2f - 0.5f);
                 Vector3 offsetB = new Vector3((-roomWidth / 2f) + i + 0.5f, j, -roomLength / 2f + 0.5f);
 
-                SpawnBlock(wallsParent, node, rotation, offsetA, "wallBlock");
-                SpawnBlock(wallsParent, node, rotation, offsetB, "wallBlock");
+                SpawnBlock(wallsParent1, node, rotation, offsetA, "wallBlock");
+                SpawnBlock(wallsParent2, node, rotation, offsetB, "wallBlock");
             }
         }
 
@@ -62,8 +86,8 @@ public class DungeonRoomBuilder : MonoBehaviour
                 Vector3 offsetC = new Vector3(roomWidth / 2f - 0.5f, j, (-roomLength / 2f) + k + 0.5f);
                 Vector3 offsetD = new Vector3(-roomWidth / 2f + 0.5f, j, (-roomLength / 2f) + k + 0.5f);
 
-                SpawnBlock(wallsParent, node, rotation, offsetC, "wallBlock");
-                SpawnBlock(wallsParent, node, rotation, offsetD, "wallBlock");
+                SpawnBlock(wallsParent3, node, rotation, offsetC, "wallBlock");
+                SpawnBlock(wallsParent4, node, rotation, offsetD, "wallBlock");
             }
         }
 
@@ -72,7 +96,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         {
             for (int k = 0; k < roomLength; k++)
             {
-                Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
+                Vector3 offset = new Vector3((-roomWidth / 2f) + i -0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
                 
                 SpawnBlock(floorParent, node, rotation, offset, "floorBlock");
             }
@@ -131,7 +155,7 @@ public class DungeonRoomBuilder : MonoBehaviour
             }
         }
     }
-    
+
     public void SpawnBlock(GameObject parentofBlock, Node node, Quaternion rotation, Vector3 offset, string tag)
     {
         Vector3 pos = node.center + rotation * offset;
@@ -139,5 +163,44 @@ public class DungeonRoomBuilder : MonoBehaviour
         block.tag = tag;
     }
 
+    public void ReduceColliders(string targetTag)
+    {
+
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag(targetTag))
+        {
+            Collider[] childColliders = obj.GetComponentsInChildren<Collider>();
+
+            //New bounds is not empty. Check what happens when nothing is passed in (Colliders with massive areas)
+            Bounds singleBounds = new Bounds(childColliders[0].bounds.center, Vector3.zero);
+            foreach (Collider col in childColliders)
+            {
+                singleBounds.Encapsulate(col.bounds);
+            }
+
+            BoxCollider boxC = obj.GetComponent<BoxCollider>();
+            if (boxC == null)
+            {
+                boxC = obj.AddComponent<BoxCollider>();
+            }
+            boxC.center = obj.transform.InverseTransformPoint(singleBounds.center);
+            boxC.size = singleBounds.size;
+
+            foreach (Collider col in childColliders)
+            {
+
+                Destroy(col);
+            }
+
+        }
+    }
+
+    public void DeleteNodes()
+    {
+        GameObject[] nodes = GameObject.FindGameObjectsWithTag("Node");
+        foreach (GameObject node in nodes)
+        {
+            Destroy(node);
+        }
+    }
 
 }
