@@ -69,7 +69,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         // === Walls ===
         for (int i = 0; i < roomWidth; i++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int j = 2; j < 5; j++)
             {
                 Vector3 offsetA = new Vector3((-roomWidth / 2f) + i + 0.5f, j, roomLength / 2f - 0.5f);
                 Vector3 offsetB = new Vector3((-roomWidth / 2f) + i + 0.5f, j, -roomLength / 2f + 0.5f);
@@ -81,7 +81,7 @@ public class DungeonRoomBuilder : MonoBehaviour
 
         for (int k = 0; k < roomLength; k++)
         {
-            for (int j = 0; j < 5; j++)
+            for (int j = 2; j < 5; j++)
             {
                 Vector3 offsetC = new Vector3(roomWidth / 2f - 0.5f, j, (-roomLength / 2f) + k + 0.5f);
                 Vector3 offsetD = new Vector3(-roomWidth / 2f + 0.5f, j, (-roomLength / 2f) + k + 0.5f);
@@ -96,7 +96,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         {
             for (int k = 0; k < roomLength; k++)
             {
-                Vector3 offset = new Vector3((-roomWidth / 2f) + i -0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
+                Vector3 offset = new Vector3((-roomWidth / 2f) + i +0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
                 
                 SpawnBlock(floorParent, node, rotation, offset, "floorBlock");
             }
@@ -128,7 +128,7 @@ public class DungeonRoomBuilder : MonoBehaviour
             if (boxC == null) continue;
 
             Vector3 worldCenter = boxC.transform.TransformPoint(boxC.center);
-            Vector3 halfExtents = (boxC.size / 2f) * 0.965f;
+            Vector3 halfExtents = boxC.size * 0.5f * 0.965f;
 
             Collider[] overlaps = Physics.OverlapBox(worldCenter, halfExtents, boxC.transform.rotation);
 
@@ -161,6 +161,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         Vector3 pos = node.center + rotation * offset;
         GameObject block = Instantiate(blockPrefab, pos, rotation, parentofBlock.transform);
         block.tag = tag;
+        block.isStatic = true;
     }
 
     public void ReduceColliders(string targetTag)
@@ -174,6 +175,7 @@ public class DungeonRoomBuilder : MonoBehaviour
             Bounds singleBounds = new Bounds(childColliders[0].bounds.center, Vector3.zero);
             foreach (Collider col in childColliders)
             {
+                //Engulf all child colliders into one
                 singleBounds.Encapsulate(col.bounds);
             }
 
