@@ -114,8 +114,8 @@ public class DungeonRoomBuilder : MonoBehaviour
         }
 
         BoxCollider boxC = roomAsGameObject.AddComponent<BoxCollider>();
-        boxC.center = new Vector3(0, (ceilingLevel - floorLevel - 1) / 2f, 0);
-        boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 2, roomLength - 2);
+        boxC.center = new Vector3(0, (ceilingLevel - floorLevel) / 2f, 0);
+        boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 1.5f, roomLength - 2);
     }
 
     public void DeleteExcessBlocks()
@@ -128,7 +128,7 @@ public class DungeonRoomBuilder : MonoBehaviour
             if (boxC == null) continue;
 
             Vector3 worldCenter = boxC.transform.TransformPoint(boxC.center);
-            Vector3 halfExtents = boxC.size * 0.5f * 0.965f;
+            Vector3 halfExtents = boxC.size * 0.5f * 0.97f;
 
             Collider[] overlaps = Physics.OverlapBox(worldCenter, halfExtents, boxC.transform.rotation);
 
@@ -139,11 +139,23 @@ public class DungeonRoomBuilder : MonoBehaviour
                 // === CASE 1: Room deleting corridor overlap ===
                 if (!room.isCorridor)
                 {
-                    if(col.CompareTag("wallBlock")) //|| col.CompareTag("floorBlock") || col.CompareTag("ceilingBlock") Add this when colider increases bounds
+                    if(col.CompareTag("wallBlock"))
                     {
                         Destroy(col.gameObject);
                         continue;
                     }
+                }
+
+                if (!room.isCorridor && col.CompareTag("floorBlock") && col.transform.parent.gameObject.transform.parent.name =="Corridor")
+                {
+                    Destroy(col.gameObject);
+                    continue;
+                }
+
+                if (!room.isCorridor && col.CompareTag("ceilingBlock") && col.transform.parent.gameObject.transform.parent.name =="Corridor")
+                {
+                    Destroy(col.gameObject);
+                    continue;
                 }
 
                 // === CASE 2: Corridor carving through walls ===
