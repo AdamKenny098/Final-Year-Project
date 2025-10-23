@@ -116,6 +116,7 @@ public class DungeonRoomBuilder : MonoBehaviour
 
         BoxCollider boxC = roomAsGameObject.AddComponent<BoxCollider>();
         boxC.center = new Vector3(0, (ceilingLevel - floorLevel) / 2f, 0);
+        roomComponent.roomArea = roomWidth * roomLength;
         boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 1.5f, roomLength - 2);
     }
 

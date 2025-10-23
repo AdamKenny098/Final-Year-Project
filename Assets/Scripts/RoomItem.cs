@@ -9,10 +9,19 @@ public class RoomItem
     public GameObject prefab;
     public Priority priority;
 
+    public BoxCollider boxC;
+    public float areaOccupied;
+
     public enum Priority
     {
         Primary,
         Secondary,
         Tertiary
+    }
+
+    void Awake()
+    {
+        boxC = prefab.GetComponent<BoxCollider>();
+        areaOccupied = boxC.size.x * boxC.size.z;
     }
 }
