@@ -5,6 +5,9 @@ using UnityEngine;
 public class DungeonRoomBuilder : MonoBehaviour
 {
     public GameObject blockPrefab;
+    public DunegonRoomDecorator decorator;
+
+    public List<Room> allRooms = new List<Room>();
 
     public void StartBuildProcess()
     {
@@ -13,6 +16,11 @@ public class DungeonRoomBuilder : MonoBehaviour
         ReduceColliders("dungeonFloor");
         ReduceColliders("dungeonCeiling");
         ReduceColliders("dungeonWall");
+
+        foreach (Room room in allRooms)
+        {
+            decorator.DecorateRoom(room);
+        }
     }
 
     public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false, Room.RoomType type = Room.RoomType.Default)
@@ -31,6 +39,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         roomComponent.node = node;
         roomComponent.isCorridor = isCorridor;
         roomComponent.roomType = type;
+        allRooms.Add(roomComponent);
 
         // room sub components
         GameObject wallsParent1 = new GameObject("Walls");
@@ -163,6 +172,10 @@ public class DungeonRoomBuilder : MonoBehaviour
                 // === CASE 2: Corridor carving through walls ===
                 if (room.isCorridor && col.CompareTag("wallBlock"))
                 {
+                    // if(col.gameObject.transform.position.y ==2f)
+                    // {
+                        
+                    // }
                     Destroy(col.gameObject);
                     continue;
                 }

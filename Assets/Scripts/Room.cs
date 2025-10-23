@@ -28,4 +28,5 @@ public class Room : MonoBehaviour
     public bool isCorridor = false;
     public RoomType roomType = RoomType.Default;
     public float roomArea;
+    public float availableArea;
 }

@@ -10,5 +10,6 @@ public class DunegonRoomDecorator : MonoBehaviour
         float availableRoomArea = totalRoomArea * Random.Range(0.3f, 0.6f);
 
         availableRoomArea = Mathf.Floor(availableRoomArea);
+        room.availableArea = availableRoomArea;
     }
 }
