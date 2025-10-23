@@ -6,6 +6,13 @@ TagManager:
   tags:
   - Block
   - CorridorBlock
+  - wallBlock
+  - ceilingBlock
+  - floorBlock
+  - dungeonFloor
+  - dungeonWall
+  - dungeonCeiling
+  - Node
   layers:
   - Default
   - TransparentFX

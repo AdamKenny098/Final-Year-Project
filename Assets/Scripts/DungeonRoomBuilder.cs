@@ -15,7 +15,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         ReduceColliders("dungeonWall");
     }
 
-    public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false)
+    public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false, Room.RoomType type = Room.RoomType.Default)
     {
         if (node == null) return;
 
@@ -30,6 +30,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         Room roomComponent = roomAsGameObject.AddComponent<Room>();
         roomComponent.node = node;
         roomComponent.isCorridor = isCorridor;
+        roomComponent.roomType = type;
 
         // room sub components
         GameObject wallsParent1 = new GameObject("Walls");

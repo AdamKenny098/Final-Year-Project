@@ -227,14 +227,14 @@ public class DungeonGenerator : MonoBehaviour
         boxC.size = Vector3.one; // reset collider to match 1×1×1 scaled object
 
         Node node = new Node(length, gap / 2, corridorCenter);
-        dungeonRoomBuilder.BuildRoom(node, corridor.transform.eulerAngles.y, true);
+        dungeonRoomBuilder.BuildRoom(node, corridor.transform.eulerAngles.y, true, Room.RoomType.Default);
     }
 
     void BuildLeafNodes()
     {
         foreach (var node in leafNodes)
         {
-            dungeonRoomBuilder.BuildRoom(node);
+            dungeonRoomBuilder.BuildRoom(node, 0f, false, Room.RoomType.Default);
         }
     }
 
