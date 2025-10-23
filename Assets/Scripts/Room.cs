@@ -4,7 +4,27 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public Node node;
 
+    public enum RoomType
+    {
+        Default,
+        Tomb,
+        Forge,
+        Library,
+        Armory,
+        Barracks,
+        Altar,
+        Treasury,
+        DiningHall,
+        Warehouse,
+        ShopKeeper,
+        Kitchen,
+        Tavern,
+        Prison,
+
+    }
+
+    public Node node;
     public bool isCorridor = false;
+    public RoomType roomType = RoomType.Default;
 }
