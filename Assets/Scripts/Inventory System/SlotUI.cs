@@ -27,25 +27,16 @@ public class SlotUI : MonoBehaviour
     // Sets the icon and amount text for this slot.
     public void Set(Item item, int amount)
     {
-        if (item)
-        {
-            icon.enabled = true;
-            icon.sprite = item.icon != null ? item.icon : null;
-            nameText.text = item.name;
+        icon.enabled = true;
+        icon.sprite = item.icon != null ? item.icon : null;
+        nameText.text = item.name;
 
-            if (amount > 1)
-            {
-                amountText.text = amount.ToString();
-            }
-            else
-            {
-                amountText.text = "";
-            }
+        if (amount > 1)
+        {
+            amountText.text = amount.ToString();
         }
         else
         {
-            icon.enabled = false;
-            icon.sprite = null; // Clears out old icons
             amountText.text = "";
         }
     }
