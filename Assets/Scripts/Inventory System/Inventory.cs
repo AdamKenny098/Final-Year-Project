@@ -46,7 +46,7 @@ public class Inventory : MonoBehaviour
     // Removes an item from a given slot.
     public void RemoveItemAt(int index)
     {
-        if (index >= 0 && index < invSlots.Length)
+        if (index >= 0 && index < invSlots.Count)
         {
             invSlots.RemoveAt(index);
         }
@@ -62,7 +62,7 @@ public class Inventory : MonoBehaviour
         
         InventorySlot slot = invSlots[index];
 
-        bool wasAdded = targetInventory.AddItem(oldSlot.item, oldSlot.amount);
+        bool wasAdded = targetInventory.AddItem(slot.item, slot.amount);
 
         if (wasAdded)
         {
