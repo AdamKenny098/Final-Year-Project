@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Data/Item")]
 public class Item : ScriptableObject
 {
-    public string Name;
+    public string name;
     public int maxStack = 100;
     public Sprite icon;
 }
