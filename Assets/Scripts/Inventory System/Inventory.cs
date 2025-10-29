@@ -9,6 +9,8 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+    public bool isMerchant = false;
+
     // List of Inventory Slots
     public List<InventorySlot> invSlots = new List<InventorySlot>();
 
@@ -44,12 +46,30 @@ public class Inventory : MonoBehaviour
     }
 
     // Removes an item from a given slot.
-    public void RemoveItemAt(int index)
+    public void RemoveItem(int index)
     {
         if (index >= 0 && index < invSlots.Count)
         {
             invSlots.RemoveAt(index);
         }
+    }
+
+    public bool RemoveItem(Item item, int amountToRemove)
+    {
+        for (int i = 0; i < invSlots.Count; i++)
+        {
+            InventorySlot slot = invSlots[i];
+            if (slot.item == item)
+            {
+                slot.amount -= amountToRemove;
+                if (slot.amount <= 0)
+                {
+                    invSlots.RemoveAt(i);
+                }
+                return true;
+            }
+        }
+        return false; // item not found
     }
 
     // Transfers an item from this inventory to another.

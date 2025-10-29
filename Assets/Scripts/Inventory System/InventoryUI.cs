@@ -1,0 +1,303 @@
+// Author: Adam Kenny
+// Student: Applied Computing (Game Development) 3rd Year (20102588)
+// Date Created: 2025-08-19
+// Description: Manages the inventory UI for both player and container inventories, handles slot creation and item transfer logic. 
+//              Also shows UI for player Upgrades
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class InventoryUI : MonoBehaviour
+{
+    [Header("Data")]
+    public Inventory playerInventory;
+
+    [Header("UI Prefabs & Parents")]
+    public GameObject rowPrefab;
+    public GameObject playerPanel;
+    public Transform playerContent;
+    public GameObject tradePanel;
+    public Transform tradePlayerContent;
+    public Transform tradeContainerContent;
+
+    public GameObject itemPanel;
+
+    [Header("Input")]
+    public KeyCode toggleInventoryKey = KeyCode.I;
+    public KeyCode closeKey = KeyCode.Escape;
+
+    [Header("Item Panel")]
+    public Image itemIcon;
+    public TMP_Text itemNameText;
+    public TMP_Text rarityValueText;
+    public Button primaryButton;
+    public Button secondaryButton;
+    public Button tertiaryButton;
+
+    private Inventory containerInventory = null;
+    private Inventory selectedInventory = null;
+    private InventorySlot selectedSlot = null;
+    private int selectedIndex = -1;
+
+    void Start()
+    {
+        if (playerPanel)
+        {
+            playerPanel.SetActive(false);
+        }
+
+        if (tradePanel)
+        {
+            tradePanel.SetActive(false);
+        }
+
+        if (itemPanel)
+        {
+            itemPanel.SetActive(false);
+        }
+        
+        primaryButton.onClick.AddListener(HandleprimaryButton);
+    }
+
+    void Update()
+    {
+        // Toggle only if not trading
+        if (Input.GetKeyDown(toggleInventoryKey) && (!tradePanel.activeSelf))
+        {
+            if (playerPanel.activeSelf)
+            {
+                ClosePlayerInventory();
+            }
+                
+            else
+            {
+                OpenPlayerInventory();
+            }
+                
+        }
+
+        // Escape key closes both
+        if (Input.GetKeyDown(closeKey))
+        {
+            if (tradePanel.activeSelf)
+            {
+                CloseTrade();
+            }
+                
+            else if (playerPanel.activeSelf)
+            {
+                ClosePlayerInventory();
+            }  
+        }
+    }
+
+    public void OpenPlayerInventory()
+    {
+        playerPanel.SetActive(true);
+        itemPanel.SetActive(true);
+        BuildPlayerList();
+        ClearSelection();
+    }
+
+    public void ClosePlayerInventory()
+    {
+        ClearChildren(playerContent);
+        itemPanel.SetActive(false);
+        playerPanel.SetActive(false);
+        ClearSelection();
+    }
+
+    public void OpenTrade(Inventory container)
+    {
+        containerInventory = container;
+
+        if (playerPanel.activeSelf)
+        {
+            ClosePlayerInventory();
+        }
+
+        itemPanel.SetActive(true);
+        tradePanel.SetActive(true);
+        BuildTradeLists();
+        ClearSelection();
+    }
+
+    public void CloseTrade()
+    {
+        ClearChildren(tradePlayerContent);
+        ClearChildren(tradeContainerContent);
+        itemPanel.SetActive(false);
+        tradePanel.SetActive(false);
+        containerInventory = null;
+        ClearSelection();
+    }
+
+    private void BuildPlayerList()
+    {
+        ClearChildren(playerContent);
+
+        for (int i = 0; i < playerInventory.invSlots.Count; i++)
+        {
+            InventorySlot slot = playerInventory.invSlots[i];
+            if (slot == null) continue;
+
+            GameObject row = Instantiate(rowPrefab, playerContent);
+            TMP_Text[] texts = row.GetComponentsInChildren<TMP_Text>();
+
+            texts[0].text = slot.item.name;
+            texts[1].text = $"x{slot.amount}";
+
+            int index = i;
+            Button btn = row.GetComponent<Button>();
+            if (btn)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => HandleSlotClick(playerInventory, index));
+            }
+        }
+    }
+
+    private void BuildTradeLists()
+    {
+        // Player
+        ClearChildren(tradePlayerContent);
+        for (int i = 0; i < playerInventory.invSlots.Count; i++)
+        {
+            InventorySlot slot = playerInventory.invSlots[i];
+            if (slot == null) continue;
+
+            GameObject row = Instantiate(rowPrefab, tradePlayerContent);
+            TMP_Text[] texts = row.GetComponentsInChildren<TMP_Text>();
+            
+            texts[0].text = slot.item.name;
+            texts[1].text = $"x{slot.amount}";
+
+            int index = i;
+            Button btn = row.GetComponent<Button>();
+            if (btn)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => HandleSlotClick(playerInventory, index));
+            }
+        }
+
+        // Other
+        ClearChildren(tradeContainerContent);
+        for (int i = 0; i < containerInventory.invSlots.Count; i++)
+        {
+            InventorySlot slot = containerInventory.invSlots[i];
+            if (slot == null) continue;
+
+            GameObject row = Instantiate(rowPrefab, tradeContainerContent);
+            TMP_Text[] texts = row.GetComponentsInChildren<TMP_Text>();
+            if (texts.Length >= 2)
+            {
+                texts[0].text = slot.item.name;
+                texts[1].text = $"x{slot.amount}";
+            }
+
+            int index = i;
+            Button btn = row.GetComponent<Button>();
+            if (btn)
+            {
+                btn.onClick.RemoveAllListeners();
+                btn.onClick.AddListener(() => HandleSlotClick(containerInventory, index));
+            }
+        }
+    }
+
+    private void HandleSlotClick(Inventory inventory, int index)
+    {
+        selectedInventory = inventory;
+        selectedIndex = index;
+        selectedSlot = inventory.invSlots[index];
+
+        DisplaySelectedItem(selectedSlot.item, inventory == playerInventory);
+    }
+
+    private void DisplaySelectedItem(Item item, bool isPlayerItem)
+    {
+        if (item == null) return;
+
+        itemIcon.enabled = true;
+        itemIcon.sprite = item.icon;
+        itemNameText.text = item.name;
+        rarityValueText.text = $"Rarity: {item.rarity}   Value: {item.value}";
+
+        primaryButton.gameObject.SetActive(true);
+        secondaryButton.gameObject.SetActive(true);
+        tertiaryButton.gameObject.SetActive(true);
+
+        if (containerInventory == null)
+        {
+            primaryButton.GetComponentInChildren<TMP_Text>().text = "Use";
+        }
+        else if (isPlayerItem)
+        {
+            primaryButton.GetComponentInChildren<TMP_Text>().text = "Sell";
+        }
+        else
+        {
+            // context for if buying or taking
+            string context = containerInventory.isMerchant ? "Buy" : "Take";
+            primaryButton.GetComponentInChildren<TMP_Text>().text = context;
+        }
+    }
+
+    private void HandleprimaryButton()
+    {
+        if (selectedInventory == null || selectedSlot == null) return;
+
+        if (containerInventory == null)
+        {
+            Debug.Log($"Used {selectedSlot.item.name}");
+            return;
+        }
+
+        if (selectedInventory == playerInventory)
+        {
+            if (playerInventory.RemoveItem(selectedSlot.item, 1))
+            {
+                containerInventory.AddItem(selectedSlot.item, 1);
+                BuildTradeLists();
+            }
+        }
+
+        else if (selectedInventory == containerInventory)
+        {
+            if (containerInventory.RemoveItem(selectedSlot.item, 1))
+            {
+                playerInventory.AddItem(selectedSlot.item, 1);
+                BuildTradeLists();
+            }
+        }
+
+        ClearSelection();
+    }
+
+    private void ClearChildren(Transform parent)
+    {
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(parent.GetChild(i).gameObject);
+        }
+    }
+
+    private void ClearSelection()
+    {
+        selectedInventory = null;
+        selectedSlot = null;
+        selectedIndex = -1;
+
+        itemIcon.enabled = false;
+        itemNameText.text = "";
+        rarityValueText.text = "";
+
+        primaryButton.gameObject.SetActive(false);
+        secondaryButton.gameObject.SetActive(false);
+        tertiaryButton.gameObject.SetActive(false);
+    }
+}
