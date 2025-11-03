@@ -8,6 +8,5 @@ using TMPro;
 public class DialogueContainer : MonoBehaviour
 {
     public GameObject root;
-    public TMP_Text dialogueText;
-    public TMP_Text nameText;
+    public TextMeshProUGUI dialogueText;
 }

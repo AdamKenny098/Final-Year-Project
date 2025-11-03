@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
-public class NPC : Entity
+public class NPC : Entity, IInteractable
 {
     public ClassSystem classSystem;
     public ClassSystem.Classes entityClass;
@@ -10,6 +11,7 @@ public class NPC : Entity
     public List<Unlock> unlocks;
     public List<Unlock> unlockedAbilities = new List<Unlock>();
     public  Dictionary<string, float> abilityCooldownTimers = new Dictionary<string, float>();
+    public TextAsset dialogueInkJSON;
 
 
     public int attack, defense, speed, stamina, mana, level, height,
@@ -99,8 +101,32 @@ public class NPC : Entity
         {
             return;
         }
-        
+
         abilityCooldownTimers[abilityName] = ability.unlockCoolDown;
         UnityEngine.Debug.Log("Ability used");
+    }
+
+    public bool HasInventory()
+    {
+        if (GetComponent<Inventory>() != null)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public void Interact()
+    {
+        if (HasInventory())
+        {
+            Inventory npcInventory = GetComponent<Inventory>();
+            ShopSystem.Instance.merchantInventory = npcInventory;
+            InventoryUI.Instance.containerInventory = npcInventory;
+        }
+
+        DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
+        dialogueSystem.StartDialogue(this);
+
+        
     }
 }

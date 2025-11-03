@@ -37,10 +37,24 @@ public class InventoryUI : MonoBehaviour
     public Button secondaryButton;
     public Button tertiaryButton;
 
-    private Inventory containerInventory = null;
+    public Inventory containerInventory = null;
     private Inventory selectedInventory = null;
     private InventorySlot selectedSlot = null;
     private int selectedIndex = -1;
+
+    public static InventoryUI Instance;
+
+    public void Awake()
+    {
+        if (!Instance)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
@@ -160,7 +174,7 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void BuildTradeLists()
+    public void BuildTradeLists()
     {
         // Player
         ClearChildren(tradePlayerContent);
