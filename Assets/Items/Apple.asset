@@ -9,11 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7c951db01315854a98f76ff74db766e, type: 3}
-  m_Name: New Item 1
+  m_Script: {fileID: 11500000, guid: 360f43ce733a7214d996638168ce8f49, type: 3}
+  m_Name: Apple
   m_EditorClassIdentifier: 
-  name: Axe
-  maxStack: 1
-  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  rarity: 4
-  value: 3000
+  name: 
+  maxStack: 100
+  icon: {fileID: 0}
+  rarity: 1
+  value: 10
+  consumableType: 0
+  restoreValue: 0
+  duration: 0
