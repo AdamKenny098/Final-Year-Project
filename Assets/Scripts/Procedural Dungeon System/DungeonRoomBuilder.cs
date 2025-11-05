@@ -8,17 +8,22 @@ public class DungeonRoomBuilder : MonoBehaviour
     public DunegonRoomDecorator decorator;
 
     public List<Room> allRooms = new List<Room>();
+    public static DungeonRoomBuilder Instance;
+    public void Awake()
+    {
+        if (!Instance)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void StartBuildProcess()
     {
         DeleteExcessBlocks();
-        DeleteNodes();
-        ReduceColliders("dungeonFloor");
-        ReduceColliders("dungeonCeiling");
-        ReduceColliders("dungeonWall");
-
-        CombineBlockMeshes();
-
         foreach (Room room in allRooms)
         {
             decorator.DecorateRoom(room);
@@ -51,13 +56,14 @@ public class DungeonRoomBuilder : MonoBehaviour
 
         GameObject floorParent = new GameObject("Floor");
         GameObject ceilingParent = new GameObject("Ceiling");
-
-        floorParent.tag = "dungeonFloor";
-        ceilingParent.tag = "dungeonCeiling";
+        
         wallsParent1.tag = "dungeonWall";
         wallsParent2.tag = "dungeonWall";
         wallsParent3.tag = "dungeonWall";
         wallsParent4.tag = "dungeonWall";
+
+        floorParent.tag = "dungeonFloor";
+        ceilingParent.tag = "dungeonCeiling";
 
         wallsParent1.transform.SetParent(roomAsGameObject.transform);
         wallsParent2.transform.SetParent(roomAsGameObject.transform);
@@ -108,8 +114,8 @@ public class DungeonRoomBuilder : MonoBehaviour
         {
             for (int k = 0; k < roomLength; k++)
             {
-                Vector3 offset = new Vector3((-roomWidth / 2f) + i +0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
-                
+                Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, -floorLevel, (-roomLength / 2f) + k + 0.5f);
+
                 SpawnBlock(floorParent, node, rotation, offset, "floorBlock");
             }
         }
@@ -120,7 +126,7 @@ public class DungeonRoomBuilder : MonoBehaviour
             for (int k = 0; k < roomLength; k++)
             {
                 Vector3 offset = new Vector3((-roomWidth / 2f) + i + 0.5f, ceilingLevel, (-roomLength / 2f) + k + 0.5f);
-                
+
                 SpawnBlock(ceilingParent, node, rotation, offset, "ceilingBlock");
             }
         }
@@ -131,6 +137,14 @@ public class DungeonRoomBuilder : MonoBehaviour
         boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 1.5f, roomLength - 2);
     }
 
+    public void SpawnBlock(GameObject parentofBlock, Node node, Quaternion rotation, Vector3 offset, string tag)
+    {
+        Vector3 pos = node.center + rotation * offset;
+        GameObject block = Instantiate(blockPrefab, pos, rotation, parentofBlock.transform);
+        block.tag = tag;
+        block.isStatic = true;
+    }
+    
     public void DeleteExcessBlocks()
     {
         Room[] everyRoom = FindObjectsOfType<Room>();
@@ -185,121 +199,5 @@ public class DungeonRoomBuilder : MonoBehaviour
         }
     }
 
-    public void SpawnBlock(GameObject parentofBlock, Node node, Quaternion rotation, Vector3 offset, string tag)
-    {
-        Vector3 pos = node.center + rotation * offset;
-        GameObject block = Instantiate(blockPrefab, pos, rotation, parentofBlock.transform);
-        block.tag = tag;
-        block.isStatic = true;
-    }
-
-    public void ReduceColliders(string targetTag)
-    {
-
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag(targetTag))
-        {
-            Collider[] childColliders = obj.GetComponentsInChildren<Collider>();
-
-            //New bounds is not empty. Check what happens when nothing is passed in (Colliders with massive areas)
-            Bounds singleBounds = new Bounds(childColliders[0].bounds.center, Vector3.zero);
-            foreach (Collider col in childColliders)
-            {
-                //Engulf all child colliders into one
-                singleBounds.Encapsulate(col.bounds);
-            }
-
-            BoxCollider boxC = obj.GetComponent<BoxCollider>();
-            if (boxC == null)
-            {
-                boxC = obj.AddComponent<BoxCollider>();
-            }
-            boxC.center = obj.transform.InverseTransformPoint(singleBounds.center);
-            boxC.size = singleBounds.size;
-
-            foreach (Collider col in childColliders)
-            {
-
-                Destroy(col);
-            }
-
-        }
-    }
-
-    public void DeleteNodes()
-    {
-        GameObject[] nodes = GameObject.FindGameObjectsWithTag("Node");
-        foreach (GameObject node in nodes)
-        {
-            Destroy(node);
-        }
-    }
-
-    public void CombineBlockMeshes()
-    {
-        foreach (Room room in allRooms)
-        {
-            foreach (Transform child in room.transform)
-            {
-                BoxCollider boxC = child.gameObject.GetComponent<BoxCollider>();
-                if (child.name == "Walls" || child.name == "Floor" || child.name == "Ceiling")
-                {
-
-                    List<MeshFilter> meshesToCombine = new List<MeshFilter>();
-
-                    foreach (Transform grandChild in child)
-                    {
-                        BoxCollider boxD = grandChild.gameObject.GetComponent<BoxCollider>();
-                        if (boxC.bounds.Intersects(boxD.bounds))
-                        {
-                            MeshFilter filter = grandChild.GetComponent<MeshFilter>();
-                            if (filter != null)
-                            {
-                                meshesToCombine.Add(filter);
-                            }
-                                
-                        }
-                    }
-
-                    if (meshesToCombine.Count == 0) continue;
-
-                    // Combine meshes: https://docs.unity3d.com/6000.2/Documentation/ScriptReference/CombineInstance.html
-                    // CombineInstance holds which mesh and where it is.
-                    CombineInstance[] combine = new CombineInstance[meshesToCombine.Count];
-                    for (int i = 0; i < meshesToCombine.Count; i++)
-                    {
-                        combine[i].mesh = meshesToCombine[i].sharedMesh;
-                        combine[i].transform = meshesToCombine[i].transform.localToWorldMatrix;
-                    }
-
-                    Mesh combinedMesh = new Mesh();
-                    combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // Avoid the limitation of 65535 vertices
-                    //Combine into one mesh and use the transforms of world space
-                    //https://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html
-                    combinedMesh.CombineMeshes(combine, true, true);
-
-                    MeshFilter childMF = child.GetComponent<MeshFilter>();
-                    if (childMF == null)
-                    {
-                        childMF = child.gameObject.AddComponent<MeshFilter>();
-                    }
-
-                    MeshRenderer childMR = child.GetComponent<MeshRenderer>();
-                    
-                    if (childMR == null)
-                    {
-                        childMR = child.gameObject.AddComponent<MeshRenderer>();
-                    }
-
-                    childMF.sharedMesh = combinedMesh;
-                    childMR.sharedMaterial = meshesToCombine[0].GetComponent<MeshRenderer>().sharedMaterial;
-
-                    foreach (Transform grandChild in child)
-                    {
-                        Destroy(grandChild.gameObject);
-                    }
-                        
-                }
-            }
-        }
-    }
+    
 }

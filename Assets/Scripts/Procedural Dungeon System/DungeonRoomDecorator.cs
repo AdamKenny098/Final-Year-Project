@@ -12,33 +12,41 @@ public class DunegonRoomDecorator : MonoBehaviour
 
     void Awake()
     {
-        genericRoomItems.Add(new  GenericRoomItem()
+        genericRoomItems.Add(new GenericRoomItem()
         {
             name = "Torch",
             prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Torch"),
-            type =  GenericRoomItem.GenericType.Torch
+            type = GenericRoomItem.GenericType.Torch
         });
 
-        genericRoomItems.Add(new  GenericRoomItem()
+        genericRoomItems.Add(new GenericRoomItem()
         {
             name = "Pillar",
             prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Pillar"),
-            type =  GenericRoomItem.GenericType.Pillar
+            type = GenericRoomItem.GenericType.Pillar
         });
 
-        genericRoomItems.Add(new  GenericRoomItem()
+        genericRoomItems.Add(new GenericRoomItem()
         {
             name = "TorchPillar",
             prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/TorchPillar"),
-            type =  GenericRoomItem.GenericType.TorchPillar
+            type = GenericRoomItem.GenericType.TorchPillar
         });
 
-        genericRoomItems.Add(new  GenericRoomItem()
+        genericRoomItems.Add(new GenericRoomItem()
         {
             name = "Banner",
             prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Banner"),
-            type =  GenericRoomItem.GenericType.Banner
+            type = GenericRoomItem.GenericType.Banner
         });
+    }
+    
+    public void StartDecorationProcess()
+    {
+        foreach (Room room in dungeonRoomBuilder.allRooms)
+        {
+            DecorateRoom(room);
+        }
     }
 
     public void DecorateRoomGenerically(Room room)
@@ -51,7 +59,34 @@ public class DunegonRoomDecorator : MonoBehaviour
 
         Quaternion rot = room.transform.rotation;
 
-        // === Pillars ===
+        GeneratePillars(room, rot, roomCenter, roomWidth, roomLength);
+        
+    }
+
+    public void DecorateRoom(Room room)
+    {
+        DecorateRoomGenerically(room);
+
+        float availableRoomArea = room.roomArea * Random.Range(0.3f, 0.6f);
+
+        availableRoomArea = Mathf.Floor(availableRoomArea);
+        room.availableArea = availableRoomArea;
+    }
+
+    public Vector3 RandomRoomPosition(Room room)
+    {
+        Vector3 roomCenter = room.node.center;
+        float roomWidth = room.node.width;
+        float roomLength = room.node.length;
+
+        float randomX = Random.Range(roomCenter.x - roomWidth / 2f + 1f, roomCenter.x + roomWidth / 2f - 1f);
+        float randomZ = Random.Range(roomCenter.z - roomLength / 2f + 1f, roomCenter.z + roomLength / 2f - 1f);
+
+        return new Vector3(randomX, roomCenter.y, randomZ);
+    }
+
+    void GeneratePillars(Room room, Quaternion rot, Vector3 roomCenter, float roomWidth, float roomLength)
+    {
         float pillarSpacing = Random.Range(5f, 10f);
         pillarSpacing = Mathf.Floor(pillarSpacing); ;
 
@@ -88,27 +123,5 @@ public class DunegonRoomDecorator : MonoBehaviour
             Instantiate(pillarPrefab, posC, rot, room.transform);
             Instantiate(pillarPrefab, posD, rot, room.transform);
         }
-    }
-
-    public void DecorateRoom(Room room)
-    {
-        DecorateRoomGenerically(room);
-
-        float availableRoomArea = room.roomArea * Random.Range(0.3f, 0.6f);
-
-        availableRoomArea = Mathf.Floor(availableRoomArea);
-        room.availableArea = availableRoomArea;
-    }
-
-    public Vector3 RandomRoomPosition(Room room)
-    {
-        Vector3 roomCenter = room.node.center;
-        float roomWidth = room.node.width;
-        float roomLength = room.node.length;
-
-        float randomX = Random.Range(roomCenter.x - roomWidth / 2f + 1f, roomCenter.x + roomWidth / 2f - 1f);
-        float randomZ = Random.Range(roomCenter.z - roomLength / 2f + 1f, roomCenter.z + roomLength / 2f - 1f);
-
-        return new Vector3(randomX, roomCenter.y, randomZ);
     }
 }

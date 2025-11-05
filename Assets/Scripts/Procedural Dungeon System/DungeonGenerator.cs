@@ -33,10 +33,6 @@ public class DungeonGenerator : MonoBehaviour
     public List<Node> leafNodes = new List<Node>();
 
     public DungeonRoomBuilder dungeonRoomBuilder;
-    void Start()
-    {
-        CreateDungeon();
-    }
 
     public Node CreateDungeon()
     {
