@@ -24,10 +24,6 @@ public class DungeonRoomBuilder : MonoBehaviour
     public void StartBuildProcess()
     {
         DeleteExcessBlocks();
-        foreach (Room room in allRooms)
-        {
-            decorator.DecorateRoom(room);
-        }
     }
 
     public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = false, Room.RoomType type = Room.RoomType.Default)
