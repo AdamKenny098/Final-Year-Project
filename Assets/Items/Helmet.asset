@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06584bc5395bb7c4b82e7d5c5221ed13, type: 3}
   m_Name: Helmet
   m_EditorClassIdentifier: 
-  name: 
+  name: Helmet
   maxStack: 100
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 5977f6c44cd1384459533efa5ddd92ff, type: 3}
   rarity: 1
   value: 10
   armorType: 0

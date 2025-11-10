@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077e8a43857bb1e44b9c03dd8e72bb16, type: 3}
   m_Name: Wood
   m_EditorClassIdentifier: 
-  name: 
+  name: Wood
   maxStack: 100
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4017211dad4016641aacd946fe13ae66, type: 3}
   rarity: 1
   value: 10

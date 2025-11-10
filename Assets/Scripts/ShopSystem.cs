@@ -86,7 +86,7 @@ public class ShopSystem : MonoBehaviour
     {
         if (merchantInventory == null || item == null)
             return false;
-
+        
         // Transfer item from player → merchant
         if (playerInventory.RemoveItem(item, amount))
         {

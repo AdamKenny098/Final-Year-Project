@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da35610c0870df4cbe5410dfba7f2bc, type: 3}
   m_Name: Bone
   m_EditorClassIdentifier: 
-  name: 
+  name: Bone
   maxStack: 100
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: bdb78f2cb28316b46ad332b6857d8756, type: 3}
   rarity: 1
   value: 10

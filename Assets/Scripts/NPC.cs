@@ -123,9 +123,8 @@ public class NPC : Entity, IInteractable
             ShopSystem.Instance.merchantInventory = npcInventory;
             InventoryUI.Instance.containerInventory = npcInventory;
         }
-
-        DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
-        dialogueSystem.StartDialogue(this);
+        
+        DialogueSystem.Instance.StartDialogue(this);
 
         
     }

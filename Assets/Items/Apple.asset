@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 360f43ce733a7214d996638168ce8f49, type: 3}
   m_Name: Apple
   m_EditorClassIdentifier: 
-  name: 
+  name: Apple
   maxStack: 100
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: bef56024e78708a40a24e6c8f00ff980, type: 3}
   rarity: 1
   value: 10
   consumableType: 0

@@ -9,7 +9,7 @@ using Ink.Runtime;
 
 public class DialogueSystem : MonoBehaviour
 {
-    [Range(-.1f, .1f)]public float typingSpeed = .04f;
+    [Range(-.1f, .1f)]public float typingSpeed = .2f;
 
     [Header("Dialogue UI")]
     public TextMeshProUGUI dialogueText;
@@ -61,6 +61,7 @@ public class DialogueSystem : MonoBehaviour
             choicesText[index] = choice.GetComponentInChildren<TextMeshProUGUI>();
             index++;
         }
+        HideChoices();
     }
 
     public void Update()
@@ -78,16 +79,16 @@ public class DialogueSystem : MonoBehaviour
         }
     }
 
-    public void SkipDialogue()
-    {
-        if (!canContinueToNextLine)
-        {
-            isSkipping = true;
-            return;
-        }
+    // public void SkipDialogue()
+    // {
+    //     if (!canContinueToNextLine)
+    //     {
+    //         isSkipping = true;
+    //         return;
+    //     }
 
-        ContinueStory();
-    }
+    //     ContinueStory();
+    // }
 
     public void ContinueStory()
     {
@@ -253,6 +254,7 @@ public class DialogueSystem : MonoBehaviour
 
     public void StartDialogue(NPC npc)
     {
+        HideChoices();
         dialogueUI.SetActive(true);
         dialogueText = dialoguePanel.dialogueText;
         story = new Story(npc.dialogueInkJSON.text);

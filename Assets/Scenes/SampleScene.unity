@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -273,7 +273,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &642468280
 Transform:
   m_ObjectHideFlags: 0
@@ -702,6 +702,8 @@ GameObject:
   - component: {fileID: 918940870}
   - component: {fileID: 918940869}
   - component: {fileID: 918940871}
+  - component: {fileID: 918940873}
+  - component: {fileID: 918940872}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -723,7 +725,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMerchant: 1
   invSlots:
-  - item: {fileID: 11400000, guid: 8ce31d48a5a8beb41b8b735c87706edb, type: 2}
+  - item: {fileID: 11400000, guid: ebfb25d88399aa2478ab0bed7f4a0e85, type: 2}
+    amount: 300
+  - item: {fileID: 11400000, guid: 8a012ad36626f744c9f5ed43b9d8f880, type: 2}
     amount: 1
 --- !u!114 &918940867
 MonoBehaviour:
@@ -822,6 +826,56 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &918940872
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918940865}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: f3def7a4d5f6ed0489fa9e2286856f2d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &918940873
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918940865}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1563,11 +1617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMerchant: 0
-  invSlots:
-  - item: {fileID: 11400000, guid: 1fd5515aad9870d46b68d5949727ea49, type: 2}
-    amount: 1
-  - item: {fileID: 11400000, guid: d1eac5973cd248d4eb8938d4930dda29, type: 2}
-    amount: 1
+  invSlots: []
 --- !u!114 &1349725340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1596,6 +1646,7 @@ MonoBehaviour:
   primaryButton: {fileID: 7951683521878560251}
   secondaryButton: {fileID: 2571483600285342633}
   tertiaryButton: {fileID: 4357866116215545076}
+  containerInventory: {fileID: 0}
 --- !u!82 &1349725341
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1704,7 +1755,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a7b4cddd553bb419e6145fdc48fa27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  typingSpeed: 0.04
+  typingSpeed: 0.01
   dialogueText: {fileID: 1810988768}
   dialoguePanel: {fileID: 1905127639}
   dialogueUI: {fileID: 1905127637}
@@ -1721,6 +1772,7 @@ MonoBehaviour:
   maxPitch: 0.5
   stopAudioSource: 0
   makePredictable: 0
+  canContinueToNextLine: 1
 --- !u!114 &1349725343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1734,7 +1786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInventory: {fileID: 1349725339}
-  inventoryUI: {fileID: 1349725340}
+  merchantInventory: {fileID: 0}
   playerGold: 0
   shopUI: {fileID: 5654037574667470811}
   middlePanel: {fileID: 1714394140}
