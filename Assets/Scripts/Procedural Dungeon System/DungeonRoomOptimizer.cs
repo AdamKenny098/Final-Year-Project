@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 public class DungeonRoomOptimizer : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class DungeonRoomOptimizer : MonoBehaviour
         ReduceColliders("dungeonWall");
 
         CombineBlockMeshes();
+        DungeonRoomBuilder.Instance.AddNavMeshSurface();
+        StartCoroutine(DelayedNavMeshAddition());
     }
 
     public void DeleteNodes()
@@ -81,7 +84,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
                             {
                                 meshesToCombine.Add(filter);
                             }
-                                
+
                         }
                     }
 
@@ -109,7 +112,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
                     }
 
                     MeshRenderer childMR = child.GetComponent<MeshRenderer>();
-                    
+
                     if (childMR == null)
                     {
                         childMR = child.gameObject.AddComponent<MeshRenderer>();
@@ -122,9 +125,20 @@ public class DungeonRoomOptimizer : MonoBehaviour
                     {
                         Destroy(grandChild.gameObject);
                     }
-                        
+
                 }
             }
+        }
+    }
+
+    public IEnumerator DelayedNavMeshAddition()
+    {
+        yield return new WaitForEndOfFrame();
+        
+        foreach (GameObject floor in DungeonRoomBuilder.Instance.floors)
+        {
+            NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
+            navMeshSurface.BuildNavMesh();
         }
     }
 }

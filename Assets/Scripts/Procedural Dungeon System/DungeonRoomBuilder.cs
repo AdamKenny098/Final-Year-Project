@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.AI.Navigation;
 
 public class DungeonRoomBuilder : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class DungeonRoomBuilder : MonoBehaviour
     public DunegonRoomDecorator decorator;
 
     public List<Room> allRooms = new List<Room>();
+    public List<GameObject> floors = new List<GameObject>();
     public static DungeonRoomBuilder Instance;
     public void Awake()
     {
@@ -116,6 +118,8 @@ public class DungeonRoomBuilder : MonoBehaviour
             }
         }
 
+        floors.Add(floorParent);
+
         // === Ceiling ===
         for (int i = 0; i < roomWidth; i++)
         {
@@ -140,7 +144,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         block.tag = tag;
         block.isStatic = true;
     }
-    
+
     public void DeleteExcessBlocks()
     {
         Room[] everyRoom = FindObjectsOfType<Room>();
@@ -162,20 +166,20 @@ public class DungeonRoomBuilder : MonoBehaviour
                 // === CASE 1: Room deleting corridor overlap ===
                 if (!room.isCorridor)
                 {
-                    if(col.CompareTag("wallBlock"))
+                    if (col.CompareTag("wallBlock"))
                     {
                         Destroy(col.gameObject);
                         continue;
                     }
                 }
 
-                if (!room.isCorridor && col.CompareTag("floorBlock") && col.transform.parent.gameObject.transform.parent.name =="Corridor")
+                if (!room.isCorridor && col.CompareTag("floorBlock") && col.transform.parent.gameObject.transform.parent.name == "Corridor")
                 {
                     Destroy(col.gameObject);
                     continue;
                 }
 
-                if (!room.isCorridor && col.CompareTag("ceilingBlock") && col.transform.parent.gameObject.transform.parent.name =="Corridor")
+                if (!room.isCorridor && col.CompareTag("ceilingBlock") && col.transform.parent.gameObject.transform.parent.name == "Corridor")
                 {
                     Destroy(col.gameObject);
                     continue;
@@ -186,12 +190,20 @@ public class DungeonRoomBuilder : MonoBehaviour
                 {
                     // if(col.gameObject.transform.position.y ==2f)
                     // {
-                        
+
                     // }
                     Destroy(col.gameObject);
                     continue;
                 }
             }
+        }
+    }
+
+    public void AddNavMeshSurface()
+    {
+        foreach (GameObject floor in floors)
+        {
+            NavMeshSurface navMeshSurface = floor.AddComponent<NavMeshSurface>();
         }
     }
 
