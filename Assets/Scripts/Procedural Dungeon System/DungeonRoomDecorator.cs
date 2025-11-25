@@ -14,6 +14,12 @@ public class DunegonRoomDecorator : MonoBehaviour
 
     public List<GenericRoomItem> genericRoomItems = new List<GenericRoomItem>();
     public DungeonRoomBuilder dungeonRoomBuilder;
+    [SerializeField] private RoomItemDatabase roomItemDatabase;
+
+    public bool generatePillars = false;
+    public bool replacePillarsWithTorchPillars = false;
+    public bool generateTorches = false;
+    public bool cleanGenericDecor = false;
 
     void Awake()
     {
@@ -46,38 +52,148 @@ public class DunegonRoomDecorator : MonoBehaviour
         });
     }
 
-    public void StartDecorationProcess()
+    public void DecorateRoomsGenerically()
     {
         foreach (Room room in dungeonRoomBuilder.allRooms)
         {
-            DecorateRoomGenerically(room);
+            if (room.isCorridor) continue;
+
+            Vector3 roomCenter = room.transform.position;
+            float roomWidth = room.node.width;
+            float roomLength = room.node.length;
+            Quaternion rot = room.transform.rotation;
+            room.roomType = GetRandomRoomType();
+
+            // Only perform what’s enabled this pass
+            if (generatePillars)
+                GeneratePillars(room, rot, roomCenter, roomWidth, roomLength);
+
+            if (replacePillarsWithTorchPillars)
+                ReplacePillarsWithTorchPillars(room);
+
+            if (generateTorches)
+                GenerateTorches(room, rot, roomCenter, roomWidth, roomLength);
+
+            if (cleanGenericDecor)
+            DeleteRandomGenericDecor(room);
         }
+
+        // Reset flags automatically after all rooms are processed
+        generatePillars = false;
+        replacePillarsWithTorchPillars = false;
+        generateTorches = false;
     }
 
-    public void DecorateRoomGenerically(Room room)
+
+    public void DecorateRooms()
     {
-        if (room.isCorridor) return;
+        foreach (Room room in dungeonRoomBuilder.allRooms)
+        {
+            float availableRoomArea = room.roomArea * Random.Range(0.3f, 0.6f);
+            availableRoomArea = Mathf.Floor(availableRoomArea);
+            room.availableArea = availableRoomArea;
 
-        Vector3 roomCenter = room.transform.position;
-        float roomWidth = room.node.width;
-        float roomLength = room.node.length;
+            if (room.isCorridor) continue;
+            if (availableRoomArea <= 0) continue;
 
-        Quaternion rot = room.transform.rotation;
+            if (!roomItemDatabase.roomItems.TryGetValue(room.roomType, out List<RoomItem> items))
+            {
+                continue;
+            }
 
-        GeneratePillars(room, rot, roomCenter, roomWidth, roomLength);
-        PlaceTorches(room, rot, roomCenter, roomWidth, roomLength);
-        ReplacePillarsWithTorchPillars(room);
+            // Split items by priority
+            List<RoomItem> primaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Primary);
+            List<RoomItem> secondaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Secondary);
+            List<RoomItem> tertiaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Tertiary);
 
-        DeleteRandomGenericDecor(room);
+            // === PRIMARY ===
+            foreach (RoomItem item in primaryItems)
+            {
+                float itemArea = GetItemArea(item.prefab);
+                if (room.availableArea - itemArea <= 0) continue;
 
-    }
+                Collider col = item.prefab.GetComponent<Collider>();
+                Bounds b = col.bounds;
+                float itemHeight = b.size.y;
 
-    public void DecorateRoom(Room room)
-    {
-        float availableRoomArea = room.roomArea * Random.Range(0.3f, 0.6f);
+                // Always spawn once
+                Vector3 position = RandomRoomPosition(room);
+                position = new Vector3(
+                            Mathf.Floor(position.x), 
+                            position.y + b.size.y / 2f + 2f, 
+                            Mathf.Floor(position.z)
+                );
+                Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                Instantiate(item.prefab, position, rotation, room.transform);
 
-        availableRoomArea = Mathf.Floor(availableRoomArea);
-        room.availableArea = availableRoomArea;
+                room.availableArea -= itemArea;
+            }
+
+            // === SECONDARY ===
+            if (secondaryItems.Count > 0 && room.availableArea > 0)
+            {
+                // Decide count dynamically based on remaining space
+                int secondaryCount = Mathf.Clamp(
+                    Mathf.FloorToInt(room.availableArea / 20f),
+                    1,
+                    Random.Range(2, 6)
+                );
+
+                for (int i = 0; i < secondaryCount; i++)
+                {
+                    RoomItem item = secondaryItems[Random.Range(0, secondaryItems.Count)];
+                    float itemArea = GetItemArea(item.prefab);
+                    if (room.availableArea - itemArea <= 0) break;
+
+                    Collider col = item.prefab.GetComponent<Collider>();
+                    Bounds b = col.bounds;
+                    float itemHeight = b.size.y;
+
+                    Vector3 position = RandomRoomPosition(room);
+                    position = new Vector3(
+                            Mathf.Floor(position.x), 
+                            position.y + b.size.y / 2f + 2f, 
+                            Mathf.Floor(position.z)
+                    );
+                    Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    Instantiate(item.prefab, position, rotation, room.transform);
+
+                    room.availableArea -= itemArea;
+                }
+            }
+
+            // === TERTIARY ===
+            if (tertiaryItems.Count > 0 && room.availableArea > 0)
+            {
+                int tertiaryCount = Mathf.Clamp(
+                    Mathf.FloorToInt(room.availableArea / 10f),
+                    1,
+                    Random.Range(3, 8)
+                );
+
+                for (int i = 0; i < tertiaryCount; i++)
+                {
+                    RoomItem item = tertiaryItems[Random.Range(0, tertiaryItems.Count)];
+                    float itemArea = GetItemArea(item.prefab);
+                    if (room.availableArea - itemArea <= 0) break;
+
+                    Collider col = item.prefab.GetComponent<Collider>();
+                    Bounds b = col.bounds;
+                    float itemHeight = b.size.y;
+
+                    Vector3 position = RandomRoomPosition(room);
+                    position = new Vector3(
+                            Mathf.Floor(position.x), 
+                            position.y + b.size.y / 2f + 2f, 
+                            Mathf.Floor(position.z)
+                    );
+                    Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+                    Instantiate(item.prefab, position, rotation, room.transform);
+
+                    room.availableArea -= itemArea;
+                }
+            }
+        }
     }
 
     public Vector3 RandomRoomPosition(Room room)
@@ -138,7 +254,7 @@ public class DunegonRoomDecorator : MonoBehaviour
         }
     }
 
-    void PlaceTorches(Room room, Quaternion rot, Vector3 roomCenter, float roomWidth, float roomLength)
+    void GenerateTorches(Room room, Quaternion rot, Vector3 roomCenter, float roomWidth, float roomLength)
     {
         if (room.isCorridor) return;
 
@@ -213,11 +329,11 @@ public class DunegonRoomDecorator : MonoBehaviour
         GameObject pillars = room.transform.Find("Pillars").gameObject;
         GameObject torches = room.transform.Find("Torches").gameObject;
 
-        float deleteChance = Random.Range(0f, 1f);
+        float deleteChance = Random.Range(0.3f, 0.6f);
         for(int i = 0; i < pillars.transform.childCount; i++)
         {
             Transform child = pillars.transform.GetChild(i);
-            float chance = Random.Range(0f, 1f);
+            float chance = Random.Range(0.3f, 1f);
             if (chance < deleteChance)
             {
                 Destroy(child.gameObject);
@@ -227,11 +343,28 @@ public class DunegonRoomDecorator : MonoBehaviour
         for(int i = 0; i < torches.transform.childCount; i++)
         {
             Transform child = torches.transform.GetChild(i);
-            float chance = Random.Range(0f, 1f);
+            float chance = Random.Range(0.3f, 1f);
             if (chance < deleteChance)
             {
                 Destroy(child.gameObject);
             }
         }
     }
+
+    float GetItemArea(GameObject prefab)
+    {
+        Collider col = prefab.GetComponent<Collider>();
+        if (col == null) return 1f;
+        Bounds b = col.bounds;
+        return b.size.x * b.size.z;
+    }
+
+
+    Room.RoomType GetRandomRoomType()
+    {
+        var values = System.Enum.GetValues(typeof(Room.RoomType));
+        return (Room.RoomType)values.GetValue(Random.Range(0, values.Length));
+    }
+
+
 }

@@ -11,122 +11,152 @@ public class RoomItemDatabase : MonoBehaviour
         roomItems = new Dictionary<Room.RoomType, List<RoomItem>>()
         {
             {
+                Room.RoomType.Default,
+                new List<RoomItem>()
+                {
+                    MakeItem("GenericTable", "Prefabs/RoomItems/Chair", RoomItem.Priority.Primary)
+                }
+            },
+            {
                 Room.RoomType.Tomb,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Tomb", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Tomb"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Bones", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bones"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Cobwebs", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Cobwebs"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Tomb", "Prefabs/RoomItems/Tomb", RoomItem.Priority.Primary),
+                    MakeItem("Bones", "Prefabs/RoomItems/Bones", RoomItem.Priority.Secondary),
+                    MakeItem("Cobwebs", "Prefabs/RoomItems/Cobwebs", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Forge,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Anvil", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Anvil"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Forge", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Forge"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "ToolRack", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ToolRack"), priority = RoomItem.Priority.Secondary }
+                    MakeItem("Anvil", "Prefabs/RoomItems/Anvil", RoomItem.Priority.Primary),
+                    MakeItem("Forge", "Prefabs/RoomItems/Forge", RoomItem.Priority.Primary),
+                    MakeItem("ToolRack", "Prefabs/RoomItems/ToolRack", RoomItem.Priority.Secondary)
                 }
             },
             {
                 Room.RoomType.Library,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Bookshelf", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bookshelf"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "ReadingTable", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ReadingTable"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Chair", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Bookshelf", "Prefabs/RoomItems/Bookshelf", RoomItem.Priority.Primary),
+                    MakeItem("ReadingTable", "Prefabs/RoomItems/ReadingTable", RoomItem.Priority.Secondary),
+                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Armory,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "WeaponRack", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/WeaponRack"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "ArmorStand", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ArmorStand"), priority = RoomItem.Priority.Secondary }
+                    MakeItem("WeaponRack", "Prefabs/RoomItems/WeaponRack", RoomItem.Priority.Primary),
+                    MakeItem("ArmorStand", "Prefabs/RoomItems/ArmorStand", RoomItem.Priority.Secondary)
                 }
             },
             {
                 Room.RoomType.Barracks,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Bed", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bed"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Locker", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Locker"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Table", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"), priority = RoomItem.Priority.Tertiary },
-                    new RoomItem() { name = "Chair", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Bed", "Prefabs/RoomItems/Bed", RoomItem.Priority.Primary),
+                    MakeItem("Locker", "Prefabs/RoomItems/Locker", RoomItem.Priority.Secondary),
+                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Tertiary),
+                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Altar,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Altar", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Altar"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Candles", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Candles"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "ReligiousStatue", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ReligiousStatue"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Altar", "Prefabs/RoomItems/Altar", RoomItem.Priority.Primary),
+                    MakeItem("Candles", "Prefabs/RoomItems/Candles", RoomItem.Priority.Secondary),
+                    MakeItem("ReligiousStatue", "Prefabs/RoomItems/ReligiousStatue", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Treasury,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "TreasureChest", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/TreasureChest"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "GoldPile", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GoldPile"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "GemDisplay", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GemDisplay"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("TreasureChest", "Prefabs/RoomItems/TreasureChest", RoomItem.Priority.Primary),
+                    MakeItem("GoldPile", "Prefabs/RoomItems/GoldPile", RoomItem.Priority.Secondary),
+                    MakeItem("GemDisplay", "Prefabs/RoomItems/GemDisplay", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.DiningHall,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Table", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Chair", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Chandelier", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chandelier"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Primary),
+                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Secondary),
+                    MakeItem("Chandelier", "Prefabs/RoomItems/Chandelier", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Warehouse,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Crate", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Crate"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Barrel", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Barrel"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Shelf", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Shelf"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Crate", "Prefabs/RoomItems/Crate", RoomItem.Priority.Primary),
+                    MakeItem("Barrel", "Prefabs/RoomItems/Barrel", RoomItem.Priority.Secondary),
+                    MakeItem("Shelf", "Prefabs/RoomItems/Shelf", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.ShopKeeper,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Counter", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Counter"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "DisplayCase", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/DisplayCase"), priority = RoomItem.Priority.Secondary }
+                    MakeItem("Counter", "Prefabs/RoomItems/Counter", RoomItem.Priority.Primary),
+                    MakeItem("DisplayCase", "Prefabs/RoomItems/DisplayCase", RoomItem.Priority.Secondary)
                 }
             },
             {
                 Room.RoomType.Kitchen,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Stove", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Stove"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Table", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Chair", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Stove", "Prefabs/RoomItems/Stove", RoomItem.Priority.Primary),
+                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Secondary),
+                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Tavern,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "BarCounter", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/BarCounter"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "Stool", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Stool"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Keg", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Keg"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("BarCounter", "Prefabs/RoomItems/BarCounter", RoomItem.Priority.Primary),
+                    MakeItem("Stool", "Prefabs/RoomItems/Stool", RoomItem.Priority.Secondary),
+                    MakeItem("Keg", "Prefabs/RoomItems/Keg", RoomItem.Priority.Tertiary)
                 }
             },
             {
                 Room.RoomType.Prison,
                 new List<RoomItem>()
                 {
-                    new RoomItem() { name = "Cell", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Cell"), priority = RoomItem.Priority.Primary },
-                    new RoomItem() { name = "GuardPost", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GuardPost"), priority = RoomItem.Priority.Secondary },
-                    new RoomItem() { name = "Crates", prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Crates"), priority = RoomItem.Priority.Tertiary }
+                    MakeItem("Cell", "Prefabs/RoomItems/Cell", RoomItem.Priority.Primary),
+                    MakeItem("GuardPost", "Prefabs/RoomItems/GuardPost", RoomItem.Priority.Secondary),
+                    MakeItem("Crates", "Prefabs/RoomItems/Crates", RoomItem.Priority.Tertiary)
                 }
             }
+        };
+    }
 
+    private RoomItem MakeItem(string name, string resourcePath, RoomItem.Priority priority)
+    {
+        GameObject prefab = Resources.Load<GameObject>(resourcePath);
+        float area = 1f;
+        if (prefab != null)
+        {
+            BoxCollider col = prefab.GetComponent<BoxCollider>();
+            if (col != null)
+                area = col.size.x * col.size.z;
+        }
+        else
+        {
+            Debug.LogWarning($"[RoomItemDatabase] Missing prefab at path: {resourcePath}");
+        }
+
+        return new RoomItem
+        {
+            name = name,
+            prefab = prefab,
+            priority = priority,
+            areaOccupied = area
         };
     }
 }

@@ -9,47 +9,62 @@ public class DungeonManager : MonoBehaviour
         Generating,
         Built,
         Optimizing,
-        Decorated
+        DecoratedGenerically,
+        DecoratedSpecifically,
+        Completed
     }
 
     public DungeonState currentState = DungeonState.Generating;
 
-    public bool dungeonGenerated = false;
-    public bool dungeonOptimized = false;
-    public bool dungeonDecorated = false;
-    public bool dungeonBuilt = false;
+    // Flags for pipeline control
+    public bool dungeonGenerated;
+    public bool dungeonBuilt;
+    public bool dungeonOptimized;
+    public bool dungeonPillarsPlaced;
+    public bool dungeonTorchPillarsPlaced;
+    public bool dungeonTorchesPlaced;
+    public bool dungeonGenericDecorCleaned;
+    public bool dungeonDecoratedGenerically;
+    public bool dungeonDecoratedSpecifically;
 
-    public void SetDungeonState(DungeonState newState)
-    {
-        currentState = newState;
-    }
+    private DungeonGenerator dungeonGen;
+    private DungeonRoomBuilder roomBuilder;
+    private DungeonRoomOptimizer roomOptimizer;
+    private DunegonRoomDecorator roomDecorator;
 
-    public void Awake()
+    private void Awake()
     {
+        // Reset flags
         dungeonGenerated = false;
         dungeonBuilt = false;
         dungeonOptimized = false;
-        dungeonDecorated = false;
+        dungeonDecoratedGenerically = false;
+        dungeonDecoratedSpecifically = false;
+
+        dungeonPillarsPlaced = false;
+        dungeonTorchPillarsPlaced = false;
+        dungeonTorchesPlaced = false;
+        dungeonGenericDecorCleaned = false;
+        
+
+        // Cache component references
+        dungeonGen = GetComponent<DungeonGenerator>();
+        roomBuilder = GetComponent<DungeonRoomBuilder>();
+        roomOptimizer = GetComponent<DungeonRoomOptimizer>();
+        roomDecorator = GetComponent<DunegonRoomDecorator>();
     }
 
-    public void Start()
+    private void Start()
     {
-        DungeonGenerator dungeonGen = GetComponent<DungeonGenerator>();
-        DungeonRoomBuilder roomBuilder = GetComponent<DungeonRoomBuilder>();
-        DungeonRoomOptimizer roomOptimizer = GetComponent<DungeonRoomOptimizer>();
-        DunegonRoomDecorator roomDecorator = GetComponent<DunegonRoomDecorator>();
-
+        // Initial step: generate dungeon layout
         dungeonGen.CreateDungeon();
         dungeonGenerated = true;
         SetDungeonState(DungeonState.Built);
     }
 
-    public void Update()
+    private void Update()
     {
-        DungeonRoomBuilder roomBuilder = GetComponent<DungeonRoomBuilder>();
-        DungeonRoomOptimizer roomOptimizer = GetComponent<DungeonRoomOptimizer>();
-        DunegonRoomDecorator roomDecorator = GetComponent<DunegonRoomDecorator>();
-
+        // === STEP 1: BUILD STRUCTURE ===
         if (dungeonGenerated && !dungeonBuilt)
         {
             roomBuilder.StartBuildProcess();
@@ -57,17 +72,68 @@ public class DungeonManager : MonoBehaviour
             SetDungeonState(DungeonState.Optimizing);
         }
 
+        // === STEP 2: OPTIMIZE MESHES ===
         if (dungeonBuilt && !dungeonOptimized)
         {
             roomOptimizer.StartOptimization();
             dungeonOptimized = true;
-            SetDungeonState(DungeonState.Decorated);
+            SetDungeonState(DungeonState.DecoratedGenerically);
         }
 
-        if (dungeonOptimized && !dungeonDecorated)
+        // === STEP 3: GENERIC DECORATION (Pillars, Torches, etc.) ===
+        if (dungeonOptimized && !dungeonPillarsPlaced)
         {
-            roomDecorator.StartDecorationProcess();
-            dungeonDecorated = true;
+            roomDecorator.generatePillars = true;
+            roomDecorator.DecorateRoomsGenerically();
+            dungeonPillarsPlaced = true;
         }
+
+        if (dungeonPillarsPlaced && !dungeonTorchPillarsPlaced)
+        {
+            roomDecorator.replacePillarsWithTorchPillars = true;
+            roomDecorator.DecorateRoomsGenerically();
+            dungeonTorchPillarsPlaced = true;
+        }
+
+        if (dungeonTorchPillarsPlaced && !dungeonTorchesPlaced)
+        {
+            roomDecorator.generateTorches = true;
+            roomDecorator.DecorateRoomsGenerically();
+            dungeonTorchesPlaced = true;
+        }
+
+        if (dungeonTorchesPlaced && !dungeonGenericDecorCleaned)
+        {
+            roomDecorator.cleanGenericDecor = true;
+            roomDecorator.DecorateRoomsGenerically();
+            dungeonGenericDecorCleaned = true;
+        }
+
+        // Mark the generic decoration phase as done
+        if (!dungeonDecoratedGenerically && dungeonPillarsPlaced && dungeonTorchPillarsPlaced && dungeonTorchesPlaced && dungeonGenericDecorCleaned)
+        {
+            dungeonDecoratedGenerically = true;
+            SetDungeonState(DungeonState.DecoratedSpecifically);
+        }
+
+        // === STEP 4: SPECIFIC DECORATION (Room items by type) ===
+        if (dungeonDecoratedGenerically && !dungeonDecoratedSpecifically)
+        {
+            roomDecorator.DecorateRooms();
+            dungeonDecoratedSpecifically = true;
+            SetDungeonState(DungeonState.Completed);
+        }
+
+        // === STEP 5: DONE ===
+        if (dungeonDecoratedSpecifically && currentState != DungeonState.Completed)
+        {
+            SetDungeonState(DungeonState.Completed);
+            Debug.Log("Dungeon generation pipeline completed!");
+        }
+    }
+
+    private void SetDungeonState(DungeonState newState)
+    {
+        currentState = newState;
     }
 }

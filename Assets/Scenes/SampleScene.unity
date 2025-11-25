@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -264,9 +264,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 642468280}
+  - component: {fileID: 642468286}
   - component: {fileID: 642468281}
   - component: {fileID: 642468282}
   - component: {fileID: 642468283}
+  - component: {fileID: 642468285}
+  - component: {fileID: 642468284}
   m_Layer: 0
   m_Name: DungeonGenerator
   m_TagString: Untagged
@@ -302,8 +305,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smallFloorSize: 200
-  mediumFloorSize: 200
-  largeFloorSize: 200
+  mediumFloorSize: 350
+  largeFloorSize: 500
   floorSize: 0
   dungeonRooms:
   - {fileID: 9211543000359892622, guid: 4329f12b21960774c9ea4f600d56e1c5, type: 3}
@@ -313,7 +316,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
   minRoomWidth: 5
   minRoomLength: 5
-  maxTreeLevels: 2
+  maxTreeLevels: 6
   gap: 10
   nodeCenters: []
   dungeonRoomBuilder: {fileID: 642468282}
@@ -332,6 +335,7 @@ MonoBehaviour:
   blockPrefab: {fileID: 8986612410854924030, guid: 35d427faeb0fe354888c53f8a84e764b, type: 3}
   decorator: {fileID: 642468283}
   allRooms: []
+  floors: []
 --- !u!114 &642468283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,8 +349,63 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pillarPrefab: {fileID: 8748310941968948348, guid: a40e48c596e2c6d48aacfcb02f003174, type: 3}
+  torchPrefab: {fileID: 8748310941968948348, guid: e2972bd12ecc6ee47a489c0eee1259a0, type: 3}
+  torchPillarPrefab: {fileID: 8748310941968948348, guid: 9f11c8db388e821498974670e0cebb7f, type: 3}
+  torchHeight: 3.5
+  wallInset: 1
   genericRoomItems: []
   dungeonRoomBuilder: {fileID: 642468282}
+  roomItemDatabase: {fileID: 642468284}
+  generatePillars: 0
+  replacePillarsWithTorchPillars: 0
+  generateTorches: 0
+  cleanGenericDecor: 0
+--- !u!114 &642468284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642468279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 465b975f3e5318e458c185ea241c6544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &642468285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642468279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c5d0a1948ef1634db2bb96d50e9ecd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &642468286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642468279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38bf239066f50e34cbc87ead08ba594d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 0
+  dungeonGenerated: 0
+  dungeonBuilt: 0
+  dungeonOptimized: 0
+  dungeonPillarsPlaced: 0
+  dungeonTorchPillarsPlaced: 0
+  dungeonTorchesPlaced: 0
+  dungeonGenericDecorCleaned: 0
+  dungeonDecoratedGenerically: 0
+  dungeonDecoratedSpecifically: 0
 --- !u!1 &643671164
 GameObject:
   m_ObjectHideFlags: 0
