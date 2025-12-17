@@ -215,7 +215,7 @@ public class DunegonRoomDecorator : MonoBehaviour
 
         GameObject pillarParent = new GameObject("Pillars");
         pillarParent.transform.SetParent(room.transform);
-        pillarParent.transform.localPosition = Vector3.zero;
+        pillarParent.transform.localPosition = new Vector3(0, 1, 0); // Offset to align with floor
         pillarParent.transform.localRotation = Quaternion.identity;
 
 
