@@ -95,7 +95,11 @@ public class DungeonGenerator : MonoBehaviour
             float aWidth = node.width * splitPercent;
             float bWidth = node.width - aWidth;
 
-            if (aWidth < minRoomWidth || bWidth < minRoomWidth) return;
+            float aWidthAndGap = aWidth - gap;
+            float bWidthAndGap = bWidth - gap;
+            float nodeLengthAndGap = node.length - gap;
+
+            if (aWidthAndGap < minRoomWidth || bWidthAndGap < minRoomWidth || nodeLengthAndGap < minRoomLength) return;
 
             float aCenterX = node.center.x - (node.width / 2f - aWidth / 2f);
             float bCenterX = node.center.x + (node.width / 2f - bWidth / 2f);
@@ -111,7 +115,11 @@ public class DungeonGenerator : MonoBehaviour
             float aLength = node.length * splitPercent;
             float bLength = node.length - aLength;
 
-            if (aLength < minRoomWidth || bLength < minRoomWidth) return;
+            float aLengthAndGap = aLength - gap;
+            float bLengthAndGap = bLength - gap;
+            float nodeWidthAndGap = node.width - gap;
+
+            if (aLengthAndGap < minRoomLength || bLengthAndGap < minRoomLength || nodeWidthAndGap < minRoomWidth) return;
 
             float aCenterZ = node.center.z - (node.length / 2f - aLength / 2f);
             float bCenterZ = node.center.z + (node.length / 2f - bLength / 2f);
