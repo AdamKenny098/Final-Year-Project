@@ -21,6 +21,9 @@ public class DunegonRoomDecorator : MonoBehaviour
     public bool generateTorches = false;
     public bool cleanGenericDecor = false;
 
+    public List<Room> allWorkableRooms = new List<Room>();
+
+
     void Awake()
     {
         genericRoomItems.Add(new GenericRoomItem()
@@ -52,10 +55,33 @@ public class DunegonRoomDecorator : MonoBehaviour
         });
     }
 
+    public void PopulateWorkableRooms()
+    {
+        allWorkableRooms.Clear();
+
+        Transform rooms = GameObject.Find("DungeonGenerator").transform.Find("Rooms");
+
+        foreach (Transform child in rooms)
+        {
+            Room roomComp = child.GetComponent<Room>();
+            if (roomComp != null)
+            {
+                allWorkableRooms.Add(roomComp);
+            }
+        }
+    }
+
     public void DecorateRoomsGenerically()
     {
-        foreach (Room room in dungeonRoomBuilder.allRooms)
-        {
+        if (allWorkableRooms.Count == 0)
+            {
+                Debug.LogWarning("No rooms available for decoration.");
+                return;
+            }
+
+        foreach (Room room in allWorkableRooms)
+        {   
+            
             if (room.isCorridor) continue;
 
             Vector3 roomCenter = room.transform.position;
@@ -87,7 +113,7 @@ public class DunegonRoomDecorator : MonoBehaviour
 
     public void DecorateRooms()
     {
-        foreach (Room room in dungeonRoomBuilder.allRooms)
+        foreach (Room room in allWorkableRooms)
         {
             float availableRoomArea = room.roomArea * Random.Range(0.3f, 0.6f);
             availableRoomArea = Mathf.Floor(availableRoomArea);
@@ -105,6 +131,9 @@ public class DunegonRoomDecorator : MonoBehaviour
             List<RoomItem> primaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Primary);
             List<RoomItem> secondaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Secondary);
             List<RoomItem> tertiaryItems = items.FindAll(i => i.priority == RoomItem.Priority.Tertiary);
+
+            room.EnsureDecorationRoots();
+            GameObject roomItemParent = room.roomItemsRoot.gameObject;
 
             // === PRIMARY ===
             foreach (RoomItem item in primaryItems)
@@ -124,7 +153,7 @@ public class DunegonRoomDecorator : MonoBehaviour
                             Mathf.Floor(position.z)
                 );
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-                Instantiate(item.prefab, position, rotation, room.transform);
+                Instantiate(item.prefab, position, rotation, roomItemParent.transform);
 
                 room.availableArea -= itemArea;
             }
@@ -156,7 +185,7 @@ public class DunegonRoomDecorator : MonoBehaviour
                             Mathf.Floor(position.z)
                     );
                     Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-                    Instantiate(item.prefab, position, rotation, room.transform);
+                    Instantiate(item.prefab, position, rotation, roomItemParent.transform);
 
                     room.availableArea -= itemArea;
                 }
@@ -188,7 +217,7 @@ public class DunegonRoomDecorator : MonoBehaviour
                             Mathf.Floor(position.z)
                     );
                     Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-                    Instantiate(item.prefab, position, rotation, room.transform);
+                    Instantiate(item.prefab, position, rotation, roomItemParent.transform);
 
                     room.availableArea -= itemArea;
                 }
@@ -213,10 +242,10 @@ public class DunegonRoomDecorator : MonoBehaviour
         float pillarSpacing = Random.Range(5f, 10f);
         pillarSpacing = Mathf.Floor(pillarSpacing);
 
-        GameObject pillarParent = new GameObject("Pillars");
-        pillarParent.transform.SetParent(room.transform);
-        pillarParent.transform.localPosition = new Vector3(0, 1, 0); // Offset to align with floor
-        pillarParent.transform.localRotation = Quaternion.identity;
+        room.EnsureDecorationRoots();
+        Transform pillarParent = room.pillarsRoot;
+        pillarParent.localPosition = new Vector3(0, 1, 0); // Offset to align with floor
+        pillarParent.localRotation = Quaternion.identity;
 
 
         for (float i = 0; i < roomWidth - pillarSpacing; i += pillarSpacing)
@@ -232,8 +261,8 @@ public class DunegonRoomDecorator : MonoBehaviour
             Vector3 posA = roomCenter + rot * offsetA;
             Vector3 posB = roomCenter + rot * offsetB;
 
-            Instantiate(pillarPrefab, posA, rot, pillarParent.transform);
-            Instantiate(pillarPrefab, posB, rot, pillarParent.transform);
+            Instantiate(pillarPrefab, posA, rot, pillarParent);
+            Instantiate(pillarPrefab, posB, rot, pillarParent);
         }
 
         for (float k = 0; k < roomLength - pillarSpacing; k += pillarSpacing)
@@ -249,8 +278,8 @@ public class DunegonRoomDecorator : MonoBehaviour
             Vector3 posC = roomCenter + rot * offsetC;
             Vector3 posD = roomCenter + rot * offsetD;
 
-            Instantiate(pillarPrefab, posC, rot, pillarParent.transform);
-            Instantiate(pillarPrefab, posD, rot, pillarParent.transform);
+            Instantiate(pillarPrefab, posC, rot, pillarParent);
+            Instantiate(pillarPrefab, posD, rot, pillarParent);
         }
     }
 
@@ -258,10 +287,10 @@ public class DunegonRoomDecorator : MonoBehaviour
     {
         if (room.isCorridor) return;
 
-        GameObject torchParent = new GameObject("Torches");
-        torchParent.transform.SetParent(room.transform);
-        torchParent.transform.localPosition = Vector3.zero;
-        torchParent.transform.localRotation = Quaternion.identity;
+        room.EnsureDecorationRoots();
+        Transform torchParent = room.torchesRoot;
+        torchParent.localPosition = Vector3.zero;
+        torchParent.localRotation = Quaternion.identity;
 
         // === Torch placement parameters ===
 
@@ -279,8 +308,8 @@ public class DunegonRoomDecorator : MonoBehaviour
             Quaternion northRot = rot * Quaternion.Euler(0, 180, 0);
             Quaternion southRot = rot;
 
-            Instantiate(torchPrefab, northPos, northRot, torchParent.transform);
-            Instantiate(torchPrefab, southPos, southRot, torchParent.transform);
+            Instantiate(torchPrefab, northPos, northRot, torchParent);
+            Instantiate(torchPrefab, southPos, southRot, torchParent);
         }
 
         // === East/West walls ===
@@ -295,14 +324,16 @@ public class DunegonRoomDecorator : MonoBehaviour
             Quaternion eastRot = rot * Quaternion.Euler(0, 270, 0);
             Quaternion westRot = rot * Quaternion.Euler(0, 90, 0);
 
-            Instantiate(torchPrefab, eastPos, eastRot, torchParent.transform);
-            Instantiate(torchPrefab, westPos, westRot, torchParent.transform);
+            Instantiate(torchPrefab, eastPos, eastRot, torchParent);
+            Instantiate(torchPrefab, westPos, westRot, torchParent);
         }
     }
 
     void ReplacePillarsWithTorchPillars(Room room)
     {
-        Transform pillarParent = room.transform.Find("Pillars");
+        room.EnsureDecorationRoots();
+
+        Transform pillarParent = room.pillarsRoot;
 
         List<Transform> pillarsToReplace = new List<Transform>();
 
@@ -326,8 +357,10 @@ public class DunegonRoomDecorator : MonoBehaviour
 
     void DeleteRandomGenericDecor(Room room)
     {
-        GameObject pillars = room.transform.Find("Pillars").gameObject;
-        GameObject torches = room.transform.Find("Torches").gameObject;
+        room.EnsureDecorationRoots();
+
+        Transform pillars = room.pillarsRoot;
+        Transform torches = room.torchesRoot;
 
         float deleteChance = Random.Range(0.3f, 0.6f);
         for(int i = 0; i < pillars.transform.childCount; i++)
@@ -366,5 +399,11 @@ public class DunegonRoomDecorator : MonoBehaviour
         return (Room.RoomType)values.GetValue(Random.Range(0, values.Length));
     }
 
-
+    public void FinalizeDecor()
+    {
+        foreach (Room room in allWorkableRooms)
+        {
+            room.FinalizeDecorations();
+        }
+    }
 }

@@ -76,6 +76,7 @@ public class DungeonManager : MonoBehaviour
         if (dungeonBuilt && !dungeonOptimized)
         {
             roomOptimizer.StartOptimization();
+            roomDecorator.PopulateWorkableRooms();
             dungeonOptimized = true;
             SetDungeonState(DungeonState.DecoratedGenerically);
         }
@@ -121,12 +122,12 @@ public class DungeonManager : MonoBehaviour
         {
             roomDecorator.DecorateRooms();
             dungeonDecoratedSpecifically = true;
-            SetDungeonState(DungeonState.Completed);
         }
 
         // === STEP 5: DONE ===
         if (dungeonDecoratedSpecifically && currentState != DungeonState.Completed)
         {
+            roomDecorator.FinalizeDecor();
             SetDungeonState(DungeonState.Completed);
             Debug.Log("Dungeon generation pipeline completed!");
         }

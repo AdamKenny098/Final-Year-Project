@@ -11,6 +11,11 @@ public class DungeonRoomBuilder : MonoBehaviour
     public List<Room> allRooms = new List<Room>();
     public List<GameObject> floors = new List<GameObject>();
     public static DungeonRoomBuilder Instance;
+
+    public GameObject corridors;
+    public GameObject rooms;
+    public GameObject dungeonParent;
+
     public void Awake()
     {
         if (!Instance)
@@ -21,6 +26,16 @@ public class DungeonRoomBuilder : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void Start()
+    {
+        dungeonParent = GameObject.Find("DungeonGenerator");
+        corridors = new GameObject("Corridors");
+        rooms = new GameObject("Rooms");
+
+        corridors.transform.SetParent(dungeonParent.transform);
+        rooms.transform.SetParent(dungeonParent.transform);
     }
 
     public void StartBuildProcess()
@@ -39,6 +54,15 @@ public class DungeonRoomBuilder : MonoBehaviour
         GameObject roomAsGameObject = new GameObject(isCorridor ? "Corridor" : "Room");
         roomAsGameObject.transform.position = node.center;
         roomAsGameObject.transform.rotation = Quaternion.Euler(0, rotationDegrees, 0);
+
+        if(roomAsGameObject.name == "Corridor")
+        {
+            roomAsGameObject.transform.SetParent(corridors.transform);
+        }
+        else
+        {
+            roomAsGameObject.transform.SetParent(rooms.transform);
+        }
 
         Room roomComponent = roomAsGameObject.AddComponent<Room>();
         roomComponent.node = node;
