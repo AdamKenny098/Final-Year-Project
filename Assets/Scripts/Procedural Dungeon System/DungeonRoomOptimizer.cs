@@ -141,4 +141,22 @@ public class DungeonRoomOptimizer : MonoBehaviour
             navMeshSurface.BuildNavMesh();
         }
     }
+
+    public void CollectBounds()
+    {
+        foreach (Room room in DungeonRoomDecorator.Instance.allWorkableRooms)
+        {
+            room.occupiedAreas.Clear();
+
+            Transform decorRoot = room.transform.Find("Room Decorations");
+
+            Collider[] colliders = decorRoot.GetComponentsInChildren<Collider>(false);
+
+            foreach (Collider col in colliders)
+            {
+                room.occupiedAreas.Add(col.bounds);
+            }
+        }
+    }
+
 }

@@ -6,7 +6,7 @@ using Unity.AI.Navigation;
 public class DungeonRoomBuilder : MonoBehaviour
 {
     public GameObject blockPrefab;
-    public DunegonRoomDecorator decorator;
+    public DungeonRoomDecorator decorator;
 
     public List<Room> allRooms = new List<Room>();
     public List<GameObject> floors = new List<GameObject>();
@@ -159,6 +159,7 @@ public class DungeonRoomBuilder : MonoBehaviour
         boxC.center = new Vector3(0, (ceilingLevel - floorLevel) / 2f, 0);
         roomComponent.roomArea = roomWidth * roomLength;
         boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 1.5f, roomLength - 2);
+        boxC.isTrigger = true;
     }
 
     public void SpawnBlock(GameObject parentofBlock, Node node, Quaternion rotation, Vector3 offset, string tag)

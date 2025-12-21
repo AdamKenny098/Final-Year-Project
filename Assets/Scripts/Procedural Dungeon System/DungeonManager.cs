@@ -26,11 +26,15 @@ public class DungeonManager : MonoBehaviour
     public bool dungeonGenericDecorCleaned;
     public bool dungeonDecoratedGenerically;
     public bool dungeonDecoratedSpecifically;
+    public bool dungeonFinalized;
+
 
     private DungeonGenerator dungeonGen;
     private DungeonRoomBuilder roomBuilder;
     private DungeonRoomOptimizer roomOptimizer;
-    private DunegonRoomDecorator roomDecorator;
+    private DungeonRoomDecorator roomDecorator;
+    private DungeonEntitySpawner entitySpawner;
+
 
     private void Awake()
     {
@@ -51,7 +55,9 @@ public class DungeonManager : MonoBehaviour
         dungeonGen = GetComponent<DungeonGenerator>();
         roomBuilder = GetComponent<DungeonRoomBuilder>();
         roomOptimizer = GetComponent<DungeonRoomOptimizer>();
-        roomDecorator = GetComponent<DunegonRoomDecorator>();
+        roomDecorator = GetComponent<DungeonRoomDecorator>();
+        entitySpawner = GetComponent<DungeonEntitySpawner>();
+
     }
 
     private void Start()
@@ -124,17 +130,27 @@ public class DungeonManager : MonoBehaviour
             dungeonDecoratedSpecifically = true;
         }
 
-        // === STEP 5: DONE ===
-        if (dungeonDecoratedSpecifically && currentState != DungeonState.Completed)
+        // === STEP 5: FINALIZE & SPAWN ===
+        if (dungeonDecoratedSpecifically && !dungeonFinalized)
         {
             roomDecorator.FinalizeDecor();
+
+            roomOptimizer.CollectBounds();
+
+            entitySpawner.SpawnAll();
+
+            dungeonFinalized = true;
             SetDungeonState(DungeonState.Completed);
+
             Debug.Log("Dungeon generation pipeline completed!");
         }
+
+
     }
 
     private void SetDungeonState(DungeonState newState)
     {
         currentState = newState;
     }
+
 }

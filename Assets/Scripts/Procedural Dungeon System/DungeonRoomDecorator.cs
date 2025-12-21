@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DunegonRoomDecorator : MonoBehaviour
+public class DungeonRoomDecorator : MonoBehaviour
 {
 
     public GameObject pillarPrefab;
@@ -23,9 +23,20 @@ public class DunegonRoomDecorator : MonoBehaviour
 
     public List<Room> allWorkableRooms = new List<Room>();
 
+    public static DungeonRoomDecorator Instance;
+
 
     void Awake()
     {
+        if (!Instance)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
         genericRoomItems.Add(new GenericRoomItem()
         {
             name = "Torch",

@@ -315,8 +315,8 @@ MonoBehaviour:
   hallways:
   - {fileID: 6022802388967508756, guid: a8e1f80c5ed66ba418c617e0a1f3f4e5, type: 3}
   nodePrefab: {fileID: 4174745763460652868, guid: bc984870c71a07e4fa222dd1ee4c56a3, type: 3}
-  minRoomWidth: 5
-  minRoomLength: 5
+  minRoomWidth: 10
+  minRoomLength: 10
   maxTreeLevels: 6
   gap: 10
   nodeCenters: []
@@ -411,6 +411,7 @@ MonoBehaviour:
   dungeonGenericDecorCleaned: 0
   dungeonDecoratedGenerically: 0
   dungeonDecoratedSpecifically: 0
+  dungeonFinalized: 0
 --- !u!114 &642468287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,6 +424,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27c3cf594ce5dd149b44d18df9fcde03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitboxTesterPrefab: {fileID: 6714976083647716034, guid: 2d531b88a277bd34ebb4696b784b5168, type: 3}
+  playerPrefab: {fileID: 2443513151576075055, guid: a060bd83a5633e2448c575d153874e75, type: 3}
   allRooms: []
 --- !u!1 &643671164
 GameObject:
@@ -979,7 +982,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
