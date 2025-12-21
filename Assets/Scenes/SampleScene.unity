@@ -270,6 +270,7 @@ GameObject:
   - component: {fileID: 642468283}
   - component: {fileID: 642468285}
   - component: {fileID: 642468284}
+  - component: {fileID: 642468287}
   m_Layer: 0
   m_Name: DungeonGenerator
   m_TagString: Untagged
@@ -336,6 +337,9 @@ MonoBehaviour:
   decorator: {fileID: 642468283}
   allRooms: []
   floors: []
+  corridors: {fileID: 0}
+  rooms: {fileID: 0}
+  dungeonParent: {fileID: 0}
 --- !u!114 &642468283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,6 +364,7 @@ MonoBehaviour:
   replacePillarsWithTorchPillars: 0
   generateTorches: 0
   cleanGenericDecor: 0
+  allWorkableRooms: []
 --- !u!114 &642468284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +411,19 @@ MonoBehaviour:
   dungeonGenericDecorCleaned: 0
   dungeonDecoratedGenerically: 0
   dungeonDecoratedSpecifically: 0
+--- !u!114 &642468287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642468279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27c3cf594ce5dd149b44d18df9fcde03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allRooms: []
 --- !u!1 &643671164
 GameObject:
   m_ObjectHideFlags: 0
@@ -2335,63 +2353,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7776092851651109740, guid: 19a462b02a8b9034f92a757f408529ed, type: 3}
   m_PrefabInstance: {fileID: 8259243065548376276}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &7709665901640348928
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715442107976791631, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7051482141981818604, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
-      propertyPath: m_Name
-      value: Pillar
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
 --- !u!114 &7951683521878560251 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9173601985627289521, guid: 19a462b02a8b9034f92a757f408529ed, type: 3}
@@ -2610,4 +2571,3 @@ SceneRoots:
   - {fileID: 708967340}
   - {fileID: 1349725338}
   - {fileID: 918940868}
-  - {fileID: 7709665901640348928}
