@@ -121,10 +121,26 @@ public class DungeonRoomOptimizer : MonoBehaviour
                     childMF.sharedMesh = combinedMesh;
                     childMR.sharedMaterial = meshesToCombine[0].GetComponent<MeshRenderer>().sharedMaterial;
 
+                    if (child.name == "Walls")
+                    {
+                        // remove any existing colliders on the combined wall object
+                        foreach (Collider c in child.GetComponents<Collider>())
+                            Destroy(c);
+
+                        // add mesh collider
+                        MeshCollider mc = child.gameObject.AddComponent<MeshCollider>();
+                        mc.sharedMesh = combinedMesh;
+                        mc.convex = false;
+                    }
+
+
+
+                    // Destroy original blocks
                     foreach (Transform grandChild in child)
                     {
                         Destroy(grandChild.gameObject);
                     }
+
 
                 }
             }
@@ -158,5 +174,4 @@ public class DungeonRoomOptimizer : MonoBehaviour
             }
         }
     }
-
 }

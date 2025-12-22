@@ -31,6 +31,7 @@ public class Room : MonoBehaviour
     public float availableArea;
 
     public List<Bounds> occupiedAreas = new List<Bounds>();
+    public List<Transform> doorways = new List<Transform>();
     public Transform pillarsRoot;
     public Transform torchesRoot;
     public Transform roomItemsRoot;

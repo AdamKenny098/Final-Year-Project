@@ -16,7 +16,6 @@ public class DungeonEntitySpawner : MonoBehaviour
 
     public void SpawnPlayer()
     {
-        int spawnAttempts = 0;
         int maxSpawnAttempts = 20;
 
         float playerHeight = 1.5f;
