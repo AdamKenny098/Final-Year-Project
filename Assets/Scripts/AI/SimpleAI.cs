@@ -11,8 +11,6 @@ public class SimpleAI : MonoBehaviour
     public float detectRange = 12f;
     public float loseRange = 18f;
     public float attackRange = 2f;
-    public Transform[] patrolPoints;
-    public float patrolWaitTime = 1.5f;
     public float attackCooldown = 1.0f;
     public int attackDamage = 10;
     public float faceTargetSpeed = 10f;
@@ -21,6 +19,13 @@ public class SimpleAI : MonoBehaviour
     public int patrolIndex = 0;
     public float waitTimer = 0f;
     public float attackTimer = 0f;
+
+    [Header("Patrol Default and Random")]
+    public bool useRandomPatrol = true;
+    public Transform[] patrolPoints;
+    public float patrolWaitTime = 1.5f;
+    public float wanderRadius = 10f;
+    public int newPosForWander = 12;
 
     public void Awake()
     {
@@ -108,9 +113,20 @@ public class SimpleAI : MonoBehaviour
                 break;
 
             case State.Patrol:
-                agent.isStopped = false;
-                GoToNextPatrolPoint();
-                break;
+            agent.isStopped = false;
+            waitTimer = patrolWaitTime; // Instantly pick a point
+
+
+            // The below code is from the old patrol system but I am keeping it commented out in case I want a hybrid system.
+            // Also it will be useful for other projects :)
+
+
+            // if (!useRandomPatrol) 
+            // {
+            //     GoToNextPatrolPoint();
+            // }
+            // break;
+
 
             case State.Chase:
                 agent.isStopped = false;
@@ -130,22 +146,29 @@ public class SimpleAI : MonoBehaviour
 
     void TickPatrol()
     {
-        if (patrolPoints == null || patrolPoints.Length == 0)
+        if (useRandomPatrol)
         {
-            SetState(State.Idle);
+            TickRandomWander();
             return;
         }
 
-        if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-        {
-            waitTimer += Time.deltaTime;
-            if (waitTimer >= patrolWaitTime)
-            {
-                waitTimer = 0f;
-                patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
-                GoToNextPatrolPoint();
-            }
-        }
+        // Old behavior
+        // if (patrolPoints == null || patrolPoints.Length == 0)
+        // {
+        //     SetState(State.Idle);
+        //     return;
+        // }
+
+        // if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        // {
+        //     waitTimer += Time.deltaTime;
+        //     if (waitTimer >= patrolWaitTime)
+        //     {
+        //         waitTimer = 0f;
+        //         patrolIndex = (patrolIndex + 1) % patrolPoints.Length;
+        //         GoToNextPatrolPoint();
+        //     }
+        // }
     }
 
     void GoToNextPatrolPoint()
@@ -179,4 +202,57 @@ public class SimpleAI : MonoBehaviour
             Debug.Log($"{name} attacked {player.name} for {attackDamage} damage");
         }
     }
+
+    public void TickRandomWander()
+    {
+        bool arrived = !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
+
+        if (arrived)
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer >= patrolWaitTime)
+            {
+                waitTimer = 0f;
+                if (TrySetRandomDestination())
+                {
+                    //returns a destination but idrk what to put here
+                }
+                else
+                {
+                    // fails and goes again
+                }
+            }
+        }
+    }
+
+    public bool TrySetRandomDestination()
+    {
+        Vector3 origin = transform.position;
+
+        for (int i = 0; i < newPosForWander; i++)
+        {
+            //random point in sphere of given radius
+            Vector3 randomDir = Random.insideUnitSphere * wanderRadius;
+            randomDir.y = 0f; // keep on horizontal plane
+
+            Vector3 candidate = origin + randomDir;
+
+            // Snap candidate onto nearest navmesh point
+            // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AI.NavMesh.SamplePosition.html
+            if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2.0f, NavMesh.AllAreas))
+            {
+                // Check if path is valid
+                // https://docs.unity3d.com/6000.3/Documentation/ScriptReference/AI.NavMeshAgent.CalculatePath.html
+                NavMeshPath path = new NavMeshPath();
+                if (agent.CalculatePath(hit.position, path) && path.status == NavMeshPathStatus.PathComplete)
+                {
+                    agent.SetDestination(hit.position);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
