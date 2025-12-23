@@ -151,10 +151,18 @@ public class DungeonRoomOptimizer : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         
-        foreach (GameObject floor in DungeonRoomBuilder.Instance.floors)
+        GameObject floor = DungeonRoomBuilder.Instance.allRooms[0].transform.Find("Floor").gameObject;
+        NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
+        navMeshSurface.BuildNavMesh();
+
+        DungeonEntitySpawner spawner = FindObjectOfType<DungeonEntitySpawner>();
+        spawner.SpawnAll();
+
+        SimpleAI[] enemies = FindObjectsOfType<SimpleAI>();
+        foreach (SimpleAI ai in enemies)
         {
-            NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
-            navMeshSurface.BuildNavMesh();
+            ai.RebindToNavMesh();
+            ai.EnableAI();
         }
     }
 

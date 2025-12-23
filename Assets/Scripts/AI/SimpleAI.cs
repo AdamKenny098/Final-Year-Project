@@ -26,19 +26,21 @@ public class SimpleAI : MonoBehaviour
     public float patrolWaitTime = 1.5f;
     public float wanderRadius = 10f;
     public int newPosForWander = 12;
+    public bool aiEnabled = false;
+
 
     public void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
-
-        if (player == null)
-        {
-            var p = GameObject.FindGameObjectWithTag("Player");
-        }
     }
 
     public void Update()
-    {
+    {   
+        if (!aiEnabled) return;
+        if (!agent.isOnNavMesh) return;
+
+
+        ResolvePlayerIfNeeded();
         if (player == null) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
@@ -125,7 +127,7 @@ public class SimpleAI : MonoBehaviour
             // {
             //     GoToNextPatrolPoint();
             // }
-            // break;
+                break;
 
 
             case State.Chase:
@@ -254,5 +256,32 @@ public class SimpleAI : MonoBehaviour
 
         return false;
     }
+
+    public void ResolvePlayerIfNeeded()
+    {
+        if (player != null) return;
+
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null)
+        {
+            player = p.transform;
+        }
+    }
+
+    public void EnableAI()
+    {
+        aiEnabled = true;
+    }
+
+    public void RebindToNavMesh()
+    {
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agent.Warp(hit.position);
+        }
+    }
+
+
+
 
 }

@@ -7,6 +7,15 @@ public class DungeonEntitySpawner : MonoBehaviour
     public GameObject hitboxTesterPrefab;
     public GameObject playerPrefab;
     public List<Room> allRooms = new List<Room>();
+
+    [Header("Enemy Spawning")]
+    public GameObject enemyPrefab;
+    public int minEnemiesPerRoom = 1;
+    public int maxEnemiesPerRoom = 3;
+
+    public float enemyHeight = 2f;
+    public float enemyRadius = 0.5f;
+
     public void SpawnAll()
     {
         allRooms = DungeonRoomDecorator.Instance.allWorkableRooms;
@@ -64,8 +73,52 @@ public class DungeonEntitySpawner : MonoBehaviour
 
     public void SpawnEntitiesInRooms()
     {
-        
+        int maxSpawnAttempts = 15;
+
+        foreach (Room room in allRooms)
+        {
+            int enemiesToSpawn = Random.Range(minEnemiesPerRoom, maxEnemiesPerRoom + 1);
+
+            for (int i = 0; i < enemiesToSpawn; i++)
+            {
+                bool spawned = false;
+
+                for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
+                {
+                    Vector3 spawnPos = DungeonRoomDecorator.Instance.RandomRoomPosition(room);
+                    spawnPos.y = 2.5f;
+
+                    if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
+                    {
+                        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+
+                        // Register occupied space so future spawns respect it
+                        RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
+
+                        spawned = true;
+                        break;
+                    }
+                }
+
+                if (!spawned)
+                {
+                    continue;
+                }
+            }
+        }
     }
+
+    public void RegisterOccupiedArea(Room room, Vector3 position, float height, float radius)
+    {
+        Bounds b = new Bounds(
+            position + Vector3.up * (height / 2f),
+            new Vector3(radius * 2f, height, radius * 2f)
+        );
+
+        room.occupiedAreas.Add(b);
+    }
+
+
 
 
     

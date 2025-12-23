@@ -28,7 +28,6 @@ public class DungeonManager : MonoBehaviour
     public bool dungeonDecoratedSpecifically;
     public bool dungeonFinalized;
 
-
     private DungeonGenerator dungeonGen;
     private DungeonRoomBuilder roomBuilder;
     private DungeonRoomOptimizer roomOptimizer;
@@ -136,8 +135,6 @@ public class DungeonManager : MonoBehaviour
             roomDecorator.FinalizeDecor();
 
             roomOptimizer.CollectBounds();
-
-            entitySpawner.SpawnAll();
 
             dungeonFinalized = true;
             SetDungeonState(DungeonState.Completed);
