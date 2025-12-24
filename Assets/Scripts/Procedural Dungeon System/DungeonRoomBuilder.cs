@@ -218,6 +218,14 @@ public class DungeonRoomBuilder : MonoBehaviour
 
                     // }
                     Destroy(col.gameObject);
+
+                    Vector3 doorwayCenter = col.transform.position;
+
+                    GameObject doorway = new GameObject("Doorway");
+                    doorway.transform.position = doorwayCenter;
+                    doorway.transform.SetParent(room.transform);
+
+                    room.doorways.Add(doorway.transform);
                     continue;
                 }
             }

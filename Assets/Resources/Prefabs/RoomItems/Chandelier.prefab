@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3626516311266423161}
   m_Layer: 0
   m_Name: Chandelier
-  m_TagString: Untagged
+  m_TagString: Decor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

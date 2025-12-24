@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3919488355124396685}
   m_Layer: 0
   m_Name: ReadingTable
-  m_TagString: Untagged
+  m_TagString: Decor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

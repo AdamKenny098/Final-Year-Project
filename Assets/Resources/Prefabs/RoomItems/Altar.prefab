@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -6146494758369923080}
   m_Layer: 0
   m_Name: Altar
-  m_TagString: Untagged
+  m_TagString: Decor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

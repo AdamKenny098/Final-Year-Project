@@ -417,4 +417,30 @@ public class DungeonRoomDecorator : MonoBehaviour
             room.FinalizeDecorations();
         }
     }
+
+    public void ClearDoorways()
+    {
+        foreach (Room room in DungeonRoomBuilder.Instance.allRooms)
+        {
+            foreach (Transform door in room.doorways)
+            {   
+                Vector3 size = new Vector3(5f, 3f, 5f);
+                Bounds doorBounds = new Bounds(door.position + Vector3.up * 1.5f, size);
+
+                GameObject[] decorObjects = GameObject.FindGameObjectsWithTag("Decor");
+                foreach (GameObject decor in decorObjects)
+                {
+                    Collider col = decor.GetComponentInChildren<Collider>();
+                    if (col == null) continue;
+
+                    if (doorBounds.Intersects(col.bounds))
+                    {
+                        Destroy(decor);
+                    }
+                }
+            }
+        }
+    }
+
+ 
 }

@@ -27,6 +27,7 @@ public class DungeonManager : MonoBehaviour
     public bool dungeonDecoratedGenerically;
     public bool dungeonDecoratedSpecifically;
     public bool dungeonFinalized;
+    public bool doorwaysCleared;
 
     private DungeonGenerator dungeonGen;
     private DungeonRoomBuilder roomBuilder;
@@ -48,6 +49,8 @@ public class DungeonManager : MonoBehaviour
         dungeonTorchPillarsPlaced = false;
         dungeonTorchesPlaced = false;
         dungeonGenericDecorCleaned = false;
+        dungeonFinalized = false;
+        doorwaysCleared = false;
         
 
         // Cache component references
@@ -135,8 +138,14 @@ public class DungeonManager : MonoBehaviour
             roomDecorator.FinalizeDecor();
 
             roomOptimizer.CollectBounds();
-
             dungeonFinalized = true;
+        }
+
+        if (dungeonFinalized && !doorwaysCleared)
+        {
+            roomDecorator.ClearDoorways();
+
+            doorwaysCleared = true;
             SetDungeonState(DungeonState.Completed);
 
             Debug.Log("Dungeon generation pipeline completed!");
