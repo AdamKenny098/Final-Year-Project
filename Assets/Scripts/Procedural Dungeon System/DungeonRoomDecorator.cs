@@ -255,14 +255,21 @@ public class DungeonRoomDecorator : MonoBehaviour
 
         room.EnsureDecorationRoots();
         Transform pillarParent = room.pillarsRoot;
-        pillarParent.localPosition = new Vector3(0, 1, 0); // Offset to align with floor
+
+        pillarParent.localPosition = new Vector3(0, 0, 0);
         pillarParent.localRotation = Quaternion.identity;
 
+        Transform floor = room.transform.Find("Floor");
+        Renderer floorRenderer = floor.GetComponent<Renderer>();
+        float floorTopY = floorRenderer.bounds.max.y;
+
+        float pillarHeight = 3f;
+        float pillarY = floorTopY + (pillarHeight * 0.5f);
 
         for (float i = 0; i < roomWidth - pillarSpacing; i += pillarSpacing)
         {
-            Vector3 offsetA = new Vector3((-roomWidth / 2f) + i + 0.5f + pillarSpacing, 2, roomLength / 2f - 0.5f - pillarSpacing);
-            Vector3 offsetB = new Vector3((-roomWidth / 2f) + i + 0.5f + pillarSpacing, 2, -roomLength / 2f + 0.5f + pillarSpacing);
+            Vector3 offsetA = new Vector3((-roomWidth / 2f) + i + 0.5f + pillarSpacing, pillarY - roomCenter.y, roomLength / 2f - 0.5f - pillarSpacing);
+            Vector3 offsetB = new Vector3((-roomWidth / 2f) + i + 0.5f + pillarSpacing, pillarY - roomCenter.y, -roomLength / 2f + 0.5f + pillarSpacing);
 
             offsetA.x = Mathf.Floor(offsetA.x);
             offsetA.z = Mathf.Floor(offsetA.z);
@@ -278,8 +285,8 @@ public class DungeonRoomDecorator : MonoBehaviour
 
         for (float k = 0; k < roomLength - pillarSpacing; k += pillarSpacing)
         {
-            Vector3 offsetC = new Vector3(roomWidth / 2f - 0.5f - pillarSpacing, 2, (-roomLength / 2f) + k + 0.5f + pillarSpacing);
-            Vector3 offsetD = new Vector3(-roomWidth / 2f + 0.5f + pillarSpacing, 2, (-roomLength / 2f) + k + 0.5f + pillarSpacing);
+            Vector3 offsetC = new Vector3(roomWidth / 2f - 0.5f - pillarSpacing, pillarY - roomCenter.y, (-roomLength / 2f) + k + 0.5f + pillarSpacing);
+            Vector3 offsetD = new Vector3(-roomWidth / 2f + 0.5f + pillarSpacing, pillarY - roomCenter.y, (-roomLength / 2f) + k + 0.5f + pillarSpacing);
 
             offsetC.x = Mathf.Floor(offsetC.x);
             offsetC.z = Mathf.Floor(offsetC.z);

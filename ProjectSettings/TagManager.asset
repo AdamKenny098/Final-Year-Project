@@ -13,6 +13,8 @@ TagManager:
   - dungeonWall
   - dungeonCeiling
   - Node
+  - CinemachineTarget
+  - Decor
   layers:
   - Default
   - TransparentFX

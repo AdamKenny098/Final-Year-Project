@@ -6,6 +6,10 @@ using Unity.AI.Navigation;
 public class DungeonRoomOptimizer : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    public Material wallMaterial;
+    public Material floorCeilingMaterial;
+
     public void StartOptimization()
     {
         DeleteNodes();
@@ -119,7 +123,18 @@ public class DungeonRoomOptimizer : MonoBehaviour
                     }
 
                     childMF.sharedMesh = combinedMesh;
-                    childMR.sharedMaterial = meshesToCombine[0].GetComponent<MeshRenderer>().sharedMaterial;
+                    if (child.name == "Walls")
+                    {
+                        childMR.sharedMaterial = wallMaterial;
+                    }
+                    else if (child.name == "Floor")
+                    {
+                        childMR.sharedMaterial = floorCeilingMaterial;
+                    }
+                    else if (child.name == "Ceiling")
+                    {
+                        childMR.sharedMaterial = floorCeilingMaterial;
+                    }
 
                     if (child.name == "Walls")
                     {
