@@ -305,6 +305,10 @@ public class DungeonRoomDecorator : MonoBehaviour
     {
         if (room.isCorridor) return;
 
+        float inwardOffset = 0.2f;
+        float verticalOffset = -0.5f;
+
+
         room.EnsureDecorationRoots();
         Transform torchParent = room.torchesRoot;
         torchParent.localPosition = Vector3.zero;
@@ -317,8 +321,8 @@ public class DungeonRoomDecorator : MonoBehaviour
         // === North/South walls ===
         for (float i = spacing / 2; i < roomWidth - spacing / 2; i += spacing)
         {
-            Vector3 northOffset = new Vector3(-roomWidth / 2f + i, torchHeight, roomLength / 2f - wallInset);
-            Vector3 southOffset = new Vector3(-roomWidth / 2f + i, torchHeight, -roomLength / 2f + wallInset);
+            Vector3 northOffset = new Vector3(-roomWidth / 2f + i, torchHeight + verticalOffset, roomLength / 2f - wallInset - inwardOffset);
+            Vector3 southOffset = new Vector3(-roomWidth / 2f + i, torchHeight + verticalOffset, -roomLength / 2f + wallInset + inwardOffset);
 
             Vector3 northPos = roomCenter + rot * northOffset;
             Vector3 southPos = roomCenter + rot * southOffset;
@@ -333,8 +337,8 @@ public class DungeonRoomDecorator : MonoBehaviour
         // === East/West walls ===
         for (float k = spacing / 2; k < roomLength - spacing / 2; k += spacing)
         {
-            Vector3 eastOffset = new Vector3(roomWidth / 2f - wallInset, torchHeight, -roomLength / 2f + k);
-            Vector3 westOffset = new Vector3(-roomWidth / 2f + wallInset, torchHeight, -roomLength / 2f + k);
+            Vector3 eastOffset = new Vector3(roomWidth / 2f - wallInset - inwardOffset, torchHeight + verticalOffset, -roomLength / 2f + k);
+            Vector3 westOffset = new Vector3(-roomWidth / 2f + wallInset + inwardOffset, torchHeight + verticalOffset, -roomLength / 2f + k);
 
             Vector3 eastPos = roomCenter + rot * eastOffset;
             Vector3 westPos = roomCenter + rot * westOffset;
@@ -368,9 +372,29 @@ public class DungeonRoomDecorator : MonoBehaviour
         {
             Vector3 position = pillar.position;
             Quaternion rotation = pillar.rotation;
+
             Destroy(pillar.gameObject);
-            Instantiate(torchPillarPrefab, position, rotation, pillarParent);
+
+            GameObject torchPillar = Instantiate(torchPillarPrefab, position, rotation, pillarParent);
+
+            Collider torchCol = torchPillar.GetComponentInChildren<Collider>();
+            if (torchCol == null) continue;
+
+            foreach (Transform other in pillarParent)
+            {
+                if (other == torchPillar.transform) continue;
+
+                Collider otherCol = other.GetComponentInChildren<Collider>();
+                if (otherCol == null) continue;
+
+                if (torchCol.bounds.Intersects(otherCol.bounds))
+                {
+                    Destroy(torchPillar);
+                    break;
+                }
+            }
         }
+
     }
 
     void DeleteRandomGenericDecor(Room room)
@@ -380,7 +404,7 @@ public class DungeonRoomDecorator : MonoBehaviour
         Transform pillars = room.pillarsRoot;
         Transform torches = room.torchesRoot;
 
-        float deleteChance = Random.Range(0.3f, 0.6f);
+        float deleteChance = Random.Range(0.3f, 0.5f);
         for(int i = 0; i < pillars.transform.childCount; i++)
         {
             Transform child = pillars.transform.GetChild(i);
@@ -444,6 +468,30 @@ public class DungeonRoomDecorator : MonoBehaviour
                     {
                         Destroy(decor);
                     }
+                }
+            }
+        }
+    }
+
+    public void CullDecor()
+    {
+        foreach (Room room in DungeonRoomBuilder.Instance.allRooms)
+        {
+            GameObject roomDecorRoot = room.roomItemsRoot.gameObject;
+            foreach (Transform decor in roomDecorRoot.transform)
+            {
+                Collider col = decor.GetComponentInChildren<Collider>();
+                if (col == null) continue;
+
+                Vector3 roomCenter = room.node.center;
+                float roomWidth = room.node.width;
+                float roomLength = room.node.length;
+
+                Bounds roomBounds = new Bounds(roomCenter, new Vector3(roomWidth, 10f, roomLength));
+
+                if (!roomBounds.Intersects(col.bounds))
+                {
+                    Destroy(decor.gameObject);
                 }
             }
         }
