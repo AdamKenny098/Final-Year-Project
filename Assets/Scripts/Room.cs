@@ -36,6 +36,7 @@ public class Room : MonoBehaviour
     public Transform torchesRoot;
     public Transform roomItemsRoot;
     public Transform DecorRoot;
+    public bool preventSpawning = false;
 
     public void EnsureDecorationRoots()
     {

@@ -41,6 +41,9 @@ public class DungeonEntitySpawner : MonoBehaviour
             if (IsValidSpawn(playerRoom, finalPos, playerHeight, playerRadius))
             {
                 Instantiate(playerPrefab, finalPos, Quaternion.identity);
+                
+
+                playerRoom.preventSpawning = true;
                 return;
             }
         }
@@ -77,6 +80,14 @@ public class DungeonEntitySpawner : MonoBehaviour
 
         foreach (Room room in allRooms)
         {
+            if (room.roomType == Room.RoomType.ShopKeeper)
+            {   
+                room.preventSpawning = true;
+                continue;
+            }
+
+            if (room.preventSpawning) continue;
+            
             int enemiesToSpawn = Random.Range(minEnemiesPerRoom, maxEnemiesPerRoom + 1);
 
             for (int i = 0; i < enemiesToSpawn; i++)
