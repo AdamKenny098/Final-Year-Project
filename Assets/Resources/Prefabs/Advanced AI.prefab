@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: -8472225919904900943}
   - component: {fileID: -3158548616444657645}
   - component: {fileID: 5135056271900892320}
+  - component: {fileID: 4610318329970048581}
   m_Layer: 0
   m_Name: Advanced AI
   m_TagString: Untagged
@@ -192,6 +193,7 @@ MonoBehaviour:
   - rid: 1860935720063468494
   - rid: 1860935740849914771
   - rid: 1860935740849914772
+  - rid: 1860935763628917131
   m_OriginalGraph: {fileID: -4628602317883051547, guid: 088a28368d2bbe24b9210304521f6bc1, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -226,6 +228,14 @@ MonoBehaviour:
         - {fileID: 4339453614901495661}
         - {fileID: 1185892434196765263}
         - {fileID: 6080711735159013061}
+    - rid: 1860935763628917131
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 8919038983682095399
+          m_Value1: 13941314581224725647
+        Name: CurrentHealth
+        m_Value: 30
 --- !u!95 &-3158548616444657645
 Animator:
   serializedVersion: 7
@@ -268,6 +278,20 @@ MonoBehaviour:
   - {fileID: 4339453614901495661}
   - {fileID: 1185892434196765263}
   - {fileID: 6080711735159013061}
+--- !u!114 &4610318329970048581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2138013951370949974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57fb1626db52df14eba3040773c55c4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LootDropper
+  lootTable: []
+  dropPoint: {fileID: 4515137169669907220}
 --- !u!1 &4339453614901495661
 GameObject:
   m_ObjectHideFlags: 0

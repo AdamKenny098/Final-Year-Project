@@ -8,19 +8,14 @@ using Unity.Properties;
 [NodeDescription(name: "Drop Loot Bag", story: "Drops a loot bag", category: "Action", id: "62a91ee7060e73d96bd43e13de2122fa")]
 public partial class DropLootBagAction : Action
 {
-
+    [SerializeReference] public BlackboardVariable<GameObject> Agent;
+    bool isDead = false;
     protected override Status OnStart()
-    {
-        return Status.Running;
-    }
-
-    protected override Status OnUpdate()
-    {
+    {   
+        if (isDead) return Status.Success;
+        isDead = true;
+        Agent.Value.GetComponent<LootDropper>()?.DropLoot();
         return Status.Success;
-    }
-
-    protected override void OnEnd()
-    {
     }
 }
 
