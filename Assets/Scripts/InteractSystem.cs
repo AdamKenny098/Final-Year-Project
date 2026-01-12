@@ -24,14 +24,21 @@ public class InteractSystem : MonoBehaviour
     private void Awake()
     {
         if (!Instance)
-        {
             Instance = this;
-        }
         else
         {
             Destroy(gameObject);
+            return;
+        }
+
+        // Pull the HUD icon if HUD already exists
+        if (HUD.Instance != null)
+        {
+            interactIcon = HUD.Instance.interactIcon;
+            interactIcon.enabled = false;
         }
     }
+
 
     public IInteractable currentInteractable;
 
@@ -47,6 +54,7 @@ public class InteractSystem : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactRange))
         {
+            Debug.Log($"Raycast hit: {hit.collider.name}");
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
 
             if (interactable != null)
@@ -62,4 +70,12 @@ public class InteractSystem : MonoBehaviour
             }
         }
     }
+
+    public void SetInteractIcon(Image icon)
+    {
+        interactIcon = icon;
+        interactIcon.enabled = false;
+    }
+
+
 }

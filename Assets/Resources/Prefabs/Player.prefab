@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3768458777646346793}
   - component: {fileID: 4779498076543662493}
   - component: {fileID: 6313060308773818183}
+  - component: {fileID: 4698035191090269191}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -127,6 +128,21 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4698035191090269191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 222369900357713391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd055ca9ff41f8642942df6a04abc286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractSystem
+  rayOrigin: {fileID: 1793080932031830624}
+  interactRange: 5
+  interactIcon: {fileID: 0}
 --- !u!1 &3610626797941432572
 GameObject:
   m_ObjectHideFlags: 0

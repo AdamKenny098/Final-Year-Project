@@ -5,9 +5,12 @@ public class LootDropper : MonoBehaviour
 {
     public List<LootTableItem> lootTable = new List<LootTableItem>();
     public Transform dropPoint;
+    public GameObject lootBagPrefab;
 
     public void DropLoot()
     {
+        Debug.Log($"DropLoot CALLED on {gameObject.name}");
+
         int roll = Random.Range(1, 101);
 
         foreach (LootTableItem entry in lootTable)
@@ -21,11 +24,14 @@ public class LootDropper : MonoBehaviour
                     Vector2 offset2D = Random.insideUnitCircle * 0.5f;
                     Vector3 offset3D = new Vector3(offset2D.x, 0f, offset2D.y);
 
-                    Instantiate(
-                        entry.dropPrefab,
+                    GameObject bagObj = Instantiate(
+                        lootBagPrefab,
                         dropPoint.position + offset3D,
                         Quaternion.identity
                     );
+
+                    LootBag bag = bagObj.GetComponent<LootBag>();
+                    bag.SetItem(entry.item);
 
                 }
 

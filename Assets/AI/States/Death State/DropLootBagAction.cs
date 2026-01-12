@@ -9,11 +9,11 @@ using Unity.Properties;
 public partial class DropLootBagAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
-    bool isDead = false;
+    [SerializeReference] public BlackboardVariable<bool> DropLoot;
     protected override Status OnStart()
     {   
-        if (isDead) return Status.Success;
-        isDead = true;
+        if (DropLoot) return Status.Success;
+        DropLoot.Value = true;
         Agent.Value.GetComponent<LootDropper>()?.DropLoot();
         return Status.Success;
     }
