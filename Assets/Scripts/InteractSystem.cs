@@ -30,7 +30,10 @@ public class InteractSystem : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+    }
 
+    public void Start()
+    {
         // Pull the HUD icon if HUD already exists
         if (HUD.Instance != null)
         {
@@ -45,6 +48,13 @@ public class InteractSystem : MonoBehaviour
     // Checks for interactable objects every frame.
     void Update()
     {
+        if (GameStates.Instance.currentState != GameState.Exploration)
+        {
+            interactIcon.enabled = false;
+            currentInteractable = null;
+            return;
+        }
+
         Ray ray = new Ray(rayOrigin.position, rayOrigin.forward);
         RaycastHit hit;
 
@@ -54,7 +64,6 @@ public class InteractSystem : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactRange))
         {
-            Debug.Log($"Raycast hit: {hit.collider.name}");
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
 
             if (interactable != null)

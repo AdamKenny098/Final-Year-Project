@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using StarterAssets;
 
 public class NPC : Entity, IInteractable
 {
@@ -125,7 +126,9 @@ public class NPC : Entity, IInteractable
         }
         
         DialogueSystem.Instance.StartDialogue(this);
-
+        GameStates.Instance.SetState(GameState.Talking);
+        FirstPersonController player = FindObjectOfType<FirstPersonController>();
         
+        player.FaceTarget(transform);
     }
 }

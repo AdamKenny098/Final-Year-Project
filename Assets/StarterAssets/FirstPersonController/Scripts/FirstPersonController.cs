@@ -114,13 +114,27 @@ namespace StarterAssets
 		{
 			JumpAndGravity();
 			GroundedCheck();
+
+			if (GameStates.Instance.currentState != GameState.Exploration)
+			{
+				_input.move = Vector2.zero;
+				_input.look = Vector2.zero;
+				_input.jump = false;
+				return;
+			}
+
 			Move();
 		}
 
+
 		private void LateUpdate()
 		{
+			if (GameStates.Instance.currentState != GameState.Exploration)
+				return;
+
 			CameraRotation();
 		}
+
 
 		private void GroundedCheck()
 		{
@@ -264,5 +278,18 @@ namespace StarterAssets
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
 		}
+
+		public void FaceTarget(Transform target)
+		{
+			Vector3 direction = target.position - transform.position;
+			direction.y = 0f;
+
+			if (direction.sqrMagnitude < 0.001f)
+				return;
+
+			Quaternion lookRotation = Quaternion.LookRotation(direction);
+			transform.rotation = lookRotation;
+		}
+
 	}
 }

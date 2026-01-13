@@ -40,6 +40,9 @@ public class DialogueSystem : MonoBehaviour
     private const string OPENSHOP_TAG = "OPENSHOP";
     private const string CLOSESHOP_TAG = "CLOSESHOP";
 
+    [SerializeField] private CanvasGroup dialogueGroup;
+
+
     private void Awake()
     {
         if (!Instance)
@@ -100,7 +103,8 @@ public class DialogueSystem : MonoBehaviour
 
         if (!story.canContinue)
         {
-            dialogueUI.SetActive(false);
+            HideDialogue();
+            GameStates.Instance.SetState(GameState.Exploration);
             return;
         }
 
@@ -242,11 +246,13 @@ public class DialogueSystem : MonoBehaviour
             {
                 case OPENSHOP_TAG:
                     ShopSystem.Instance.ToggleTrade(true);
-                    dialogueUI.SetActive(false);
+                    HideDialogue();
+                    GameStates.Instance.SetState(GameState.Trading);
                     break;
                 case CLOSESHOP_TAG:
                     ShopSystem.Instance.ToggleTrade(false);
-                    dialogueUI.SetActive(true);
+                    ShowDialogue();
+                    GameStates.Instance.SetState(GameState.Talking);
                     break;
             }
         }
@@ -255,7 +261,7 @@ public class DialogueSystem : MonoBehaviour
     public void StartDialogue(NPC npc)
     {
         HideChoices();
-        dialogueUI.SetActive(true);
+        ShowDialogue();
         dialogueText = dialoguePanel.dialogueText;
         story = new Story(npc.dialogueInkJSON.text);
         ContinueStory();
@@ -280,5 +286,19 @@ public class DialogueSystem : MonoBehaviour
         {
             choice.SetActive(false);
         }
+    }
+
+    public void ShowDialogue()
+    {
+        dialogueGroup.alpha = 1f;
+        dialogueGroup.interactable = true;
+        dialogueGroup.blocksRaycasts = true;
+    }
+
+    public void HideDialogue()
+    {
+        dialogueGroup.alpha = 0f;
+        dialogueGroup.interactable = false;
+        dialogueGroup.blocksRaycasts = false;
     }
 }

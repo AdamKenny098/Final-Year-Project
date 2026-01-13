@@ -8,7 +8,7 @@ public enum GameState
     Talking,
     Trading,
     Paused,
-    Cutscene
+    Menu,
 }
 
 
@@ -17,12 +17,6 @@ public class GameStates : MonoBehaviour
     public static GameStates Instance;
 
     public GameState currentState = GameState.Exploration;
-
-    public void SetState(GameState newState)
-    {
-        currentState = newState;
-    }
-
     public void Awake()
     {
         if (!Instance)
@@ -32,6 +26,40 @@ public class GameStates : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    public void SetState(GameState newState)
+    {
+        if (currentState == newState)
+            return;
+
+        currentState = newState;
+        ApplyState(newState);
+    }
+
+    void ApplyState(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.Exploration:
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                Time.timeScale = 1f;
+                break;
+
+            case GameState.Talking:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                Time.timeScale = 1f;
+                break;
+
+            case GameState.Menu:
+            case GameState.Paused:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                Time.timeScale = 0f;
+                break;
         }
     }
 
