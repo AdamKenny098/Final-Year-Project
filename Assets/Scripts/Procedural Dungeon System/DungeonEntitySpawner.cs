@@ -16,11 +16,15 @@ public class DungeonEntitySpawner : MonoBehaviour
     public float enemyHeight = 2f;
     public float enemyRadius = 0.5f;
 
+    [Header("NPC Spawning")]
+    public GameObject merchantPrefab;
+
     public void SpawnAll()
     {
         allRooms = DungeonRoomDecorator.Instance.allWorkableRooms;
         SpawnPlayer();
         SpawnEntitiesInRooms();
+        SpawnMerchantInRoom();
     }
 
     public void SpawnPlayer()
@@ -82,11 +86,11 @@ public class DungeonEntitySpawner : MonoBehaviour
         {
             if (room.roomType == Room.RoomType.ShopKeeper)
             {   
-                room.preventSpawning = true;
+                room.preventEnemySpawning = true;
                 continue;
             }
 
-            if (room.preventSpawning) continue;
+            if (room.preventEnemySpawning) continue;
             
             int enemiesToSpawn = Random.Range(minEnemiesPerRoom, maxEnemiesPerRoom + 1);
 
@@ -128,6 +132,42 @@ public class DungeonEntitySpawner : MonoBehaviour
 
         room.occupiedAreas.Add(b);
     }
+
+    void SpawnMerchantInRoom()
+    {
+        int maxAttempts = 10;
+
+        foreach (Room room in allRooms)
+        {
+            if (room.roomType != Room.RoomType.ShopKeeper)
+                continue;
+
+            if (room.preventNPCSpawning)
+                continue;
+
+            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            {
+                Vector3 spawnPos = DungeonRoomDecorator.Instance.RandomRoomPosition(room);
+                spawnPos.y = 2.5f;
+
+                if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
+                {
+                    Instantiate(
+                        merchantPrefab,
+                        spawnPos,
+                        Quaternion.identity,
+                        room.transform
+                    );
+
+                    RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
+                    room.preventNPCSpawning = true;
+
+                    break;
+                }
+            }
+        }
+    }
+
 
 
 
