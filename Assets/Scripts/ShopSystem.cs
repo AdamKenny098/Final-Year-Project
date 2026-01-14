@@ -10,6 +10,7 @@ public class ShopSystem : MonoBehaviour
     [Header("References")]
     public Inventory playerInventory;
     public Inventory merchantInventory;
+    public Item goldItem;
 
     private void Awake()
     {
@@ -35,11 +36,12 @@ public class ShopSystem : MonoBehaviour
         int gold = 0;
         foreach (var slot in playerInventory.invSlots)
         {
-            if (slot.item != null && slot.item.name == "Gold")
+            if (slot.item == goldItem)
                 gold += slot.amount;
         }
         return gold;
     }
+
 
 
     // === SHOP OPEN/CLOSE ===
@@ -63,40 +65,63 @@ public class ShopSystem : MonoBehaviour
         DialogueSystem.Instance.ResumeDialogue();
     }
 
-    // // === BUYING/SELLING ===
-    // public bool BuyItem(Item item)
-    // {
-    //     if (merchantInventory == null || item == null)
-    //         return false;
+    // === BUYING/SELLING ===
+    public bool BuyItem(Item item)
+    {
+        if (merchantInventory == null || item == null)
+            return false;
 
-    //     if (GetPlayerGold() < item.value)
-    //         return false;
+        int price = item.value;
 
-    //     if (merchantInventory.RemoveItem(item, 1))
-    //     {
-    //         playerInventory.AddItem(item, 1);
-    //         playerGold -= item.value;
-    //         InventoryUI.Instance.BuildTradeLists();
-    //         return true;
-    //     }
+        // Check player can afford
+        if (!playerInventory.HasItem(goldItem, price))
+            return false;
 
-    //     return false;
-    // }
+        // Pay gold
+        playerInventory.RemoveItem(goldItem, price);
+        merchantInventory.AddItem(goldItem, price);
 
-    // public bool SellItem(Item item, int amount = 1)
-    // {
-    //     if (merchantInventory == null || item == null)
-    //         return false;
+        // Transfer item
+        merchantInventory.RemoveItem(item, 1);
+        playerInventory.AddItem(item, 1);
+
+        NotifyTradeChanged();
+        return true;
+    }
+
+
+    public bool SellItem(Item item, int amount = 1)
+    {
+        if (merchantInventory == null || item == null)
+            return false;
+
+        if (!item.isSellable)
+            return false;
+
+        int payout = item.value * amount;
+
+        // Check player has item
+        if (!playerInventory.HasItem(item, amount))
+            return false;
+
+        // Check merchant can pay
+        if (!merchantInventory.HasItem(goldItem, payout))
+            return false;
         
-    //     // Transfer item from player → merchant
-    //     if (playerInventory.RemoveItem(item, amount))
-    //     {
-    //         merchantInventory.AddItem(item, amount);
-    //         playerGold += item.value;
-    //         InventoryUI.Instance.BuildTradeLists();
-    //         return true;
-    //     }
+        playerInventory.RemoveItem(item, amount);
+        merchantInventory.AddItem(item, amount);
 
-    //     return false;
-    // }
+        merchantInventory.RemoveItem(goldItem, payout);
+        playerInventory.AddItem(goldItem, payout);
+
+        NotifyTradeChanged();
+        return true;
+    }
+
+    public void NotifyTradeChanged()
+    {
+        InventoryUI.Instance.OnTradeChanged();
+    }
+
+
 }

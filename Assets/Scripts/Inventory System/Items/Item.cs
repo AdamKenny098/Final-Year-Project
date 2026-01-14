@@ -10,4 +10,5 @@ public abstract class Item : ScriptableObject
     public Sprite icon;
     public int rarity = 1; // 1 Common to 5 Legendary
     public int value = 10;
+    public bool isSellable = true;
 }

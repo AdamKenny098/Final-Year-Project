@@ -176,6 +176,13 @@ public class InventoryUI : MonoBehaviour
             if (btn)
             {
                 btn.onClick.RemoveAllListeners();
+
+                if (!slot.item.isSellable)
+                {
+                    btn.interactable = false;
+                    continue;
+                }
+
                 btn.onClick.AddListener(() => HandleSlotClick(playerInventory, index));
             }
         }
@@ -218,6 +225,14 @@ public class InventoryUI : MonoBehaviour
     {
         if (item == null) return;
 
+        if (!item.isSellable && containerInventory != null)
+        {
+            primaryButton.gameObject.SetActive(false);
+            secondaryButton.gameObject.SetActive(false);
+            tertiaryButton.gameObject.SetActive(false);
+            return;
+        }
+
         itemIcon.enabled = true;
         itemIcon.sprite = item.icon;
         itemNameText.text = item.name;
@@ -245,7 +260,8 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleprimaryButton()
     {
-        if (selectedInventory == null || selectedSlot == null) return;
+        if (selectedInventory == null || selectedSlot == null)
+            return;
 
         if (containerInventory == null)
         {
@@ -255,24 +271,14 @@ public class InventoryUI : MonoBehaviour
 
         if (selectedInventory == playerInventory)
         {
-            if (playerInventory.RemoveItem(selectedSlot.item, 1))
-            {
-                containerInventory.AddItem(selectedSlot.item, 1);
-                BuildTradeLists();
-            }
+            ShopSystem.Instance.SellItem(selectedSlot.item, 1);
         }
-
         else if (selectedInventory == containerInventory)
         {
-            if (containerInventory.RemoveItem(selectedSlot.item, 1))
-            {
-                playerInventory.AddItem(selectedSlot.item, 1);
-                BuildTradeLists();
-            }
+            ShopSystem.Instance.BuyItem(selectedSlot.item);
         }
-
-        ClearSelection();
     }
+
 
     private void ClearChildren(Transform parent)
     {
@@ -299,5 +305,12 @@ public class InventoryUI : MonoBehaviour
         group.interactable = show;
         group.blocksRaycasts = show;
     }
+
+    public void OnTradeChanged()
+    {
+        BuildTradeLists();
+        ClearSelection();
+    }
+
 
 }

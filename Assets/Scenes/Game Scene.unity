@@ -183,8 +183,11 @@ MonoBehaviour:
   maxPitch: 0.75
   stopAudioSource: 0
   makePredictable: 1
+  continueButton: {fileID: 549732608}
   canContinueToNextLine: 1
+  currentNPC: {fileID: 0}
   dialogueGroup: {fileID: 1905127642}
+  dialoguePaused: 0
 --- !u!1 &549732606
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,7 +342,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &642468280
 Transform:
   m_ObjectHideFlags: 0
@@ -787,6 +790,8 @@ MonoBehaviour:
     amount: 300
   - item: {fileID: 11400000, guid: 8a012ad36626f744c9f5ed43b9d8f880, type: 2}
     amount: 1
+  - item: {fileID: 11400000, guid: 8a012ad36626f744c9f5ed43b9d8f880, type: 2}
+    amount: 1
 --- !u!114 &918940867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -958,7 +963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8386774589471192282, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1412,7 +1417,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6947e997f5cff86439cf4fbea987018a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
-  playerInventory: {fileID: 1446922280446048635}
   merchantInventory: {fileID: 5654037574667470813}
   middlePanel: {fileID: 1714394142}
 --- !u!114 &1299593953
@@ -1427,9 +1431,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c19aad7ea24de4696d41df456d825b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shopUI: {fileID: 5654037574667470811}
+  shopUI: {fileID: 1299593952}
   playerInventory: {fileID: 1349725339}
   merchantInventory: {fileID: 0}
+  goldItem: {fileID: 11400000, guid: ebfb25d88399aa2478ab0bed7f4a0e85, type: 2}
 --- !u!1 &1349725334
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,7 +1556,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMerchant: 0
-  invSlots: []
+  invSlots:
+  - item: {fileID: 11400000, guid: ebfb25d88399aa2478ab0bed7f4a0e85, type: 2}
+    amount: 50
 --- !u!114 &1349725340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1581,6 +1588,9 @@ MonoBehaviour:
   secondaryButton: {fileID: 2571483600285342633}
   tertiaryButton: {fileID: 4357866116215545076}
   containerInventory: {fileID: 0}
+  inventoryGroup: {fileID: 1446922280446048635}
+  tradeGroup: {fileID: 5654037574667470813}
+  middleGroup: {fileID: 1714394142}
 --- !u!82 &1349725341
 AudioSource:
   m_ObjectHideFlags: 0

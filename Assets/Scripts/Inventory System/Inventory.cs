@@ -56,21 +56,28 @@ public class Inventory : MonoBehaviour
 
     public bool RemoveItem(Item item, int amountToRemove)
     {
-        for (int i = 0; i < invSlots.Count; i++)
+        int remaining = amountToRemove;
+
+        for (int i = invSlots.Count - 1; i >= 0; i--)
         {
             InventorySlot slot = invSlots[i];
-            if (slot.item == item)
-            {
-                slot.amount -= amountToRemove;
-                if (slot.amount <= 0)
-                {
-                    invSlots.RemoveAt(i);
-                }
+            if (slot.item != item)
+                continue;
+
+            int take = Mathf.Min(slot.amount, remaining);
+            slot.amount -= take;
+            remaining -= take;
+
+            if (slot.amount <= 0)
+                invSlots.RemoveAt(i);
+
+            if (remaining <= 0)
                 return true;
-            }
         }
+
         return false; // item not found
     }
+
 
     // Transfers an item from this inventory to another.
     public bool TransferTo(Inventory targetInventory, int index)
@@ -92,4 +99,22 @@ public class Inventory : MonoBehaviour
 
         return false;
     }
+
+    public bool HasItem(Item item, int amount)
+    {
+        int total = 0;
+
+        foreach (var slot in invSlots)
+        {
+            if (slot.item == item)
+            {
+                total += slot.amount;
+                if (total >= amount)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
 }
