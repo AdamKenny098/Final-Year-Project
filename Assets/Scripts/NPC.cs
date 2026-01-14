@@ -107,24 +107,14 @@ public class NPC : Entity, IInteractable
         UnityEngine.Debug.Log("Ability used");
     }
 
-    public bool HasInventory()
+    public Inventory GetInventory()
     {
-        if (GetComponent<Inventory>() != null)
-        {
-            return true;
-        }
-        return false;
+        return GetComponent<Inventory>();
     }
+
     
     public void Interact()
-    {
-        if (HasInventory())
-        {
-            Inventory npcInventory = GetComponent<Inventory>();
-            ShopSystem.Instance.merchantInventory = npcInventory;
-            InventoryUI.Instance.containerInventory = npcInventory;
-        }
-        
+    {   
         DialogueSystem.Instance.StartDialogue(this);
         GameStates.Instance.SetState(GameState.Talking);
         FirstPersonController player = FindObjectOfType<FirstPersonController>();

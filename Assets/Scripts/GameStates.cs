@@ -29,6 +29,32 @@ public class GameStates : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            HandleEscape();
+        }
+    }
+
+    void HandleEscape()
+    {
+        switch (currentState)
+        {
+            case GameState.Trading:
+                ShopSystem.Instance.CloseShop();
+                break;
+
+            case GameState.Talking:
+                DialogueSystem.Instance.HideDialogue();
+                SetState(GameState.Exploration);
+                break;
+
+            case GameState.Menu:
+                break;
+        }
+    }
+
     public void SetState(GameState newState)
     {
         if (currentState == newState)

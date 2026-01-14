@@ -5,13 +5,11 @@ using UnityEngine;
 public class ShopSystem : MonoBehaviour
 {
     public static ShopSystem Instance;
+    public ShopUI shopUI;
 
     [Header("References")]
     public Inventory playerInventory;
     public Inventory merchantInventory;
-    public int playerGold;
-    public GameObject shopUI;
-    public GameObject middlePanel;
 
     private void Awake()
     {
@@ -29,96 +27,76 @@ public class ShopSystem : MonoBehaviour
     public void Start()
     {
         GetPlayerGold();
-        ToggleTrade(false);
+        //ToggleTrade(false);
     }
     
     public int GetPlayerGold()
     {
-        playerGold = 0;
+        int gold = 0;
         foreach (var slot in playerInventory.invSlots)
         {
-            Item item = slot.item;
-            if (item != null && item.name == "Gold")
-            {
-                playerGold += slot.amount;
-            }
+            if (slot.item != null && slot.item.name == "Gold")
+                gold += slot.amount;
         }
-        return playerGold;
+        return gold;
     }
+
 
     // === SHOP OPEN/CLOSE ===
     public void OpenShop(Inventory merchant)
     {
         merchantInventory = merchant;
 
-        ToggleTrade(true);
+        InventoryUI.Instance.OpenTrade(merchantInventory);
+        InventoryUI.Instance.BuildTradeLists();
+
+        GameStates.Instance.SetState(GameState.Trading);
+        shopUI.ShowShop();
     }
 
     public void CloseShop()
     {
-        ToggleTrade(false);
+        shopUI.HideShop();
         merchantInventory = null;
+
+        GameStates.Instance.SetState(GameState.Talking);
+        DialogueSystem.Instance.ResumeDialogue();
     }
 
-    // === BUYING/SELLING ===
-    public bool BuyItem(Item item)
-    {
-        if (merchantInventory == null || item == null)
-            return false;
+    // // === BUYING/SELLING ===
+    // public bool BuyItem(Item item)
+    // {
+    //     if (merchantInventory == null || item == null)
+    //         return false;
 
-        if (playerGold < item.value)
-        {
-            return false;
-        }
+    //     if (GetPlayerGold() < item.value)
+    //         return false;
 
-        if (merchantInventory.RemoveItem(item, 1))
-        {
-            playerInventory.AddItem(item, 1);
-            playerGold -= item.value;
-            InventoryUI.Instance.BuildTradeLists();
-            return true;
-        }
+    //     if (merchantInventory.RemoveItem(item, 1))
+    //     {
+    //         playerInventory.AddItem(item, 1);
+    //         playerGold -= item.value;
+    //         InventoryUI.Instance.BuildTradeLists();
+    //         return true;
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    public bool SellItem(Item item, int amount = 1)
-    {
-        if (merchantInventory == null || item == null)
-            return false;
+    // public bool SellItem(Item item, int amount = 1)
+    // {
+    //     if (merchantInventory == null || item == null)
+    //         return false;
         
-        // Transfer item from player → merchant
-        if (playerInventory.RemoveItem(item, amount))
-        {
-            merchantInventory.AddItem(item, amount);
-            playerGold += item.value;
-            InventoryUI.Instance.BuildTradeLists();
-            return true;
-        }
+    //     // Transfer item from player → merchant
+    //     if (playerInventory.RemoveItem(item, amount))
+    //     {
+    //         merchantInventory.AddItem(item, amount);
+    //         playerGold += item.value;
+    //         InventoryUI.Instance.BuildTradeLists();
+    //         return true;
+    //     }
 
-        return false;
-    }
-
-    public void ToggleTrade(bool isTrading)
-    {
-        if (isTrading)
-        {
-            if (DialogueSystem.Instance.canContinueToNextLine)
-            {
-                InventoryUI.Instance.BuildTradeLists();
-                InventoryUI.Instance.OpenTrade(merchantInventory);
-                shopUI.SetActive(isTrading);
-            }
-        }
-
-        else
-        {
-            shopUI.SetActive(isTrading);
-            middlePanel.SetActive(isTrading);
-        }
-        
-        
-
-        //Add the ability to disable player movement here
-    }
+    //     return false;
+    // }
 }

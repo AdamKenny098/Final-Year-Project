@@ -30,6 +30,7 @@ public class DialogueSystem : MonoBehaviour
     [Range(-3, 3)]public float maxPitch = .5f;
     public bool stopAudioSource;
     public bool makePredictable;
+    public Button continueButton;
 
     public static DialogueSystem Instance;
 
@@ -39,8 +40,11 @@ public class DialogueSystem : MonoBehaviour
     
     private const string OPENSHOP_TAG = "OPENSHOP";
     private const string CLOSESHOP_TAG = "CLOSESHOP";
-
+    public NPC currentNPC;
     [SerializeField] private CanvasGroup dialogueGroup;
+
+    public bool dialoguePaused = false;
+
 
 
     private void Awake()
@@ -67,32 +71,6 @@ public class DialogueSystem : MonoBehaviour
         HideChoices();
     }
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (ShopSystem.Instance.shopUI.activeSelf)
-            {
-                // Close the shop directly
-                ShopSystem.Instance.ToggleTrade(false);
-
-                // Also notify Ink logic (optional)
-                HandleTags(new List<string> { "CLOSESHOP" });
-            }
-        }
-    }
-
-    // public void SkipDialogue()
-    // {
-    //     if (!canContinueToNextLine)
-    //     {
-    //         isSkipping = true;
-    //         return;
-    //     }
-
-    //     ContinueStory();
-    // }
-
     public void ContinueStory()
     {
 
@@ -100,6 +78,12 @@ public class DialogueSystem : MonoBehaviour
         {
             return;
         }
+
+        if (story.currentChoices.Count > 0)
+            return;
+
+        if (dialoguePaused)
+            return;
 
         if (!story.canContinue)
         {
@@ -118,6 +102,8 @@ public class DialogueSystem : MonoBehaviour
             string nextLine = story.Continue();
             HandleTags(story.currentTags);
             displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
+
+            UpdateContinueButtonState();
         }
     }
 
@@ -157,6 +143,8 @@ public class DialogueSystem : MonoBehaviour
 
         // Optionally auto-select first choice for keyboard navigation
         StartCoroutine(SelectFirstChoice());
+        UpdateContinueButtonState();
+
     }
 
     private IEnumerator SelectFirstChoice()
@@ -245,14 +233,15 @@ public class DialogueSystem : MonoBehaviour
             switch (tag)
             {
                 case OPENSHOP_TAG:
-                    ShopSystem.Instance.ToggleTrade(true);
-                    HideDialogue();
+                    Inventory merchantInventory = currentNPC.GetComponent<Inventory>();
+                    PauseDialogue();
                     GameStates.Instance.SetState(GameState.Trading);
+                    ShopSystem.Instance.OpenShop(merchantInventory);
                     break;
+
                 case CLOSESHOP_TAG:
-                    ShopSystem.Instance.ToggleTrade(false);
-                    ShowDialogue();
                     GameStates.Instance.SetState(GameState.Talking);
+                    ShowDialogue();
                     break;
             }
         }
@@ -260,12 +249,13 @@ public class DialogueSystem : MonoBehaviour
 
     public void StartDialogue(NPC npc)
     {
+        currentNPC = npc;
+
         HideChoices();
         ShowDialogue();
         dialogueText = dialoguePanel.dialogueText;
         story = new Story(npc.dialogueInkJSON.text);
         ContinueStory();
-
     }
 
     public void MakeChoice(int choiceIndex)
@@ -301,4 +291,32 @@ public class DialogueSystem : MonoBehaviour
         dialogueGroup.interactable = false;
         dialogueGroup.blocksRaycasts = false;
     }
+
+    void UpdateContinueButtonState()
+    {
+        bool hasChoices = story != null && story.currentChoices.Count > 0;
+
+        continueButton.interactable = !hasChoices;
+        continueButton.gameObject.SetActive(!hasChoices);
+    }
+
+    public void PauseDialogue()
+    {
+        dialoguePaused = true;
+
+        if (displayLineCoroutine != null)
+        {
+            StopCoroutine(displayLineCoroutine);
+            displayLineCoroutine = null;
+        }
+
+        HideDialogue();
+    }
+    public void ResumeDialogue()
+    {
+        dialoguePaused = false;
+        ShowDialogue();
+        ContinueStory();
+    }
+
 }

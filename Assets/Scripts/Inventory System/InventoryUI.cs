@@ -44,6 +44,10 @@ public class InventoryUI : MonoBehaviour
 
     public static InventoryUI Instance;
 
+    public CanvasGroup inventoryGroup;
+    public CanvasGroup tradeGroup;
+    public CanvasGroup middleGroup;
+
     public void Awake()
     {
         if (!Instance)
@@ -57,41 +61,18 @@ public class InventoryUI : MonoBehaviour
     }
 
     void Start()
-    {
-        if (playerPanel)
-        {
-            playerPanel.SetActive(false);
-        }
-
-        if (tradePanel)
-        {
-            tradePanel.SetActive(false);
-        }
-
-        if (itemPanel)
-        {
-            itemPanel.SetActive(false);
-        }
-        
+    {   
         primaryButton.onClick.AddListener(HandleprimaryButton);
     }
 
     void Update()
     {
         // Toggle only if not trading
-        if (Input.GetKeyDown(toggleInventoryKey) && (!tradePanel.activeSelf))
+        if (Input.GetKeyDown(toggleInventoryKey) && GameStates.Instance.currentState == GameState.Exploration)
         {
-            if (playerPanel.activeSelf)
-            {
-                ClosePlayerInventory();
-            }
-                
-            else
-            {
-                OpenPlayerInventory();
-            }
-                
+            OpenPlayerInventory();
         }
+
 
         // Escape key closes both
         if (Input.GetKeyDown(closeKey))
@@ -110,8 +91,7 @@ public class InventoryUI : MonoBehaviour
 
     public void OpenPlayerInventory()
     {
-        playerPanel.SetActive(true);
-        itemPanel.SetActive(true);
+        SetPanel(inventoryGroup, true);
         BuildPlayerList();
         ClearSelection();
     }
@@ -119,35 +99,37 @@ public class InventoryUI : MonoBehaviour
     public void ClosePlayerInventory()
     {
         ClearChildren(playerContent);
-        itemPanel.SetActive(false);
-        playerPanel.SetActive(false);
+
+        SetPanel(inventoryGroup, false);
+
         ClearSelection();
     }
+
 
     public void OpenTrade(Inventory container)
     {
         containerInventory = container;
 
-        if (playerPanel.activeSelf)
-        {
-            ClosePlayerInventory();
-        }
+        SetPanel(tradeGroup, true);
+        SetPanel(middleGroup, true);
 
-        itemPanel.SetActive(true);
-        tradePanel.SetActive(true);
         BuildTradeLists();
         ClearSelection();
     }
+
 
     public void CloseTrade()
     {
         ClearChildren(tradePlayerContent);
         ClearChildren(tradeContainerContent);
-        itemPanel.SetActive(false);
-        tradePanel.SetActive(false);
+
+        SetPanel(tradeGroup, false);
+        SetPanel(middleGroup, false);
+
         containerInventory = null;
         ClearSelection();
     }
+
 
     private void BuildPlayerList()
     {
@@ -309,9 +291,13 @@ public class InventoryUI : MonoBehaviour
         itemIcon.enabled = false;
         itemNameText.text = "";
         rarityValueText.text = "";
-
-        primaryButton.gameObject.SetActive(false);
-        secondaryButton.gameObject.SetActive(false);
-        tertiaryButton.gameObject.SetActive(false);
     }
+
+    public void SetPanel(CanvasGroup group, bool show)
+    {
+        group.alpha = show ? 1f : 0f;
+        group.interactable = show;
+        group.blocksRaycasts = show;
+    }
+
 }
