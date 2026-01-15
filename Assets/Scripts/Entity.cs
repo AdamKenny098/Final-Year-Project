@@ -4,39 +4,39 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public int currentHealth, maxHealth;
-    // Start is called before the first frame update
-    void Start()
+    public Stats stats;
+
+    public bool isDead => stats != null && stats.health <= 0;
+
+    public virtual void Awake()
     {
-        currentHealth = maxHealth;
+        if (stats != null)
+            stats.FillToMax();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void TakeDamage(int amount)
     {
+        if (isDead) return;
+        stats.health -= amount;
 
-    }
-
-    void TakeDamage(int amount)
-    {
-        currentHealth = currentHealth - amount;
-        if (currentHealth <= 0)
+        if (stats.health <= 0)
         {
             Die();
-        }
+        }  
     }
 
-    void Heal(int amount)
+    public void Heal(int amount)
     {
-        currentHealth = currentHealth + amount;
-        if (currentHealth >= maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
+        if (stats == null) return;
+
+        stats.health += amount;
+        if (stats.health > stats.maxHealth)
+            stats.health = stats.maxHealth;
     }
 
-    void Die()
+
+    public virtual void Die()
     {
-        GameObject.Destroy(this);
+        
     }
 }

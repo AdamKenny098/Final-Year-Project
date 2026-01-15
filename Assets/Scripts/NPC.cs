@@ -1,124 +1,74 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 using StarterAssets;
 
-public class NPC : Entity, IInteractable
+public class NPC : Character, IInteractable
 {
-    public ClassSystem classSystem;
-    public ClassSystem.Classes entityClass;
-    public ClassStats stats;
-    public List<Unlock> unlocks;
-    public List<Unlock> unlockedAbilities = new List<Unlock>();
-    public  Dictionary<string, float> abilityCooldownTimers = new Dictionary<string, float>();
+    [Header("NPC Identity")]
+    public string firstName;
+    public string lastName;
+    public string species;
+
+    [Header("Behaviour")]
+    public bool isHostile;
+    public bool isShopKeeper;
+
+    [Header("Dialogue")]
     public TextAsset dialogueInkJSON;
 
+    [Header("Abilities")]
+    public List<Unlock> unlockedAbilities = new List<Unlock>();
+    public Dictionary<string, float> abilityCooldownTimers = new Dictionary<string, float>();
 
-    public int attack, defense, speed, stamina, mana, level, height,
-               currentMana, currentStamina, strength, dexterity, intelligence, charisma,
-               currentXP;
-
-    public float XPToNextLevel = 100f;
-
-    public string species;
-    public bool isHostile;
-
-    // Start is called before the first frame update
-    void Start()
+    public override void Awake()
     {
-        //Apply the correct class and stats at runtime
-        classSystem = FindObjectOfType<ClassSystem>();
-        entityClass = ClassSystem.Classes.Mage;
-        stats = classSystem.GetStats(entityClass);
-        unlocks = classSystem.GetUnlocks(entityClass);
-        unlockedAbilities = classSystem.GetUnlocks(entityClass);
-        ApplyLevelUpToStats();
-
-        abilityCooldownTimers = new Dictionary<string, float>();
-        foreach (var ability in unlockedAbilities)
-        {
-            abilityCooldownTimers[ability.unlockName] = 0f;
-        }
+        base.Awake();
+        InitialiseAbilities();
     }
 
-    // Update is called once per frame
-    void Update()
+    void InitialiseAbilities()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            UseAbility("Firebolt");
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            LevelUp();
-        }
+        unlockedAbilities.Clear();
+        abilityCooldownTimers.Clear();
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        List<Unlock> classUnlocks =
+            ClassSystem.Instance.GetUnlocks(characterClass);
+
+        foreach (var unlock in classUnlocks)
         {
-            UseAbility("Teleport");
-        }
-    }
-
-    public void LevelUp()
-    {
-        currentXP = 0;
-        level++;
-        XPToNextLevel *= 1.25f;
-        ApplyLevelUpToStats();
-        UnityEngine.Debug.Log(level);
-    }
-
-    void ApplyLevelUpToStats()
-    {
-        //level - 1 so upon level 2 the player doesn't get a double level up
-        currentHealth = stats.baseHealth + stats.healthPerLevel * (level - 1);
-        currentMana = stats.baseMana + stats.manaPerLevel * (level - 1);
-        currentStamina = stats.baseStamina + stats.staminaPerLevel * (level - 1);
-    }
-
-    void ApplyUnlockedAbilities()
-    {
-        foreach (Unlock unlockable in unlocks)
-        {
-            if (unlockable.unlockLevel == level && !unlockedAbilities.Contains(unlockable))
+            if (unlock.unlockLevel <= stats.level)
             {
-                unlockedAbilities.Add(unlockable);
-                abilityCooldownTimers[unlockable.unlockName] = 0f;
+                unlockedAbilities.Add(unlock);
+                abilityCooldownTimers[unlock.unlockName] = 0f;
             }
         }
     }
 
+    public bool CanUseAbility(string abilityName)
+    {
+        return abilityCooldownTimers.ContainsKey(abilityName) && abilityCooldownTimers[abilityName] <= 0f;
+    }
+
     public void UseAbility(string abilityName)
     {
-        //https://discussions.unity.com/t/search-for-objects-in-a-list/662122/3
-        Unlock ability = unlockedAbilities.Find(a => a.unlockName == abilityName);
-        if (ability == null)
-        {
-            return;
-        }
+        if (!CanUseAbility(abilityName)) return;
 
-        if (abilityCooldownTimers[abilityName] > 0)
-        {
-            return;
-        }
+        Unlock ability = unlockedAbilities.Find(a => a.unlockName == abilityName);
+        if (ability == null) return;
 
         abilityCooldownTimers[abilityName] = ability.unlockCoolDown;
-        UnityEngine.Debug.Log("Ability used");
     }
 
-    public Inventory GetInventory()
+    public virtual void Interact()
     {
-        return GetComponent<Inventory>();
-    }
+        if (dialogueInkJSON == null) return;
 
-    
-    public void Interact()
-    {   
         DialogueSystem.Instance.StartDialogue(this);
         GameStates.Instance.SetState(GameState.Talking);
-        FirstPersonController player = FindObjectOfType<FirstPersonController>();
-        
-        player.FaceTarget(transform);
+
+        var player = FindObjectOfType<FirstPersonController>();
+        if (player != null)
+            player.FaceTarget(transform);
     }
 }

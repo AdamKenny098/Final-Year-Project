@@ -2,17 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Monster : NPC
+public class Monster : Character
 {
-    // Start is called before the first frame update
-    void Start()
+    [Header("Monster Settings")]
+    public int xpReward = 25;
+    public LootDropper lootDropper;
+
+    public void Awake()
     {
-        
+        base.Awake();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void Die()
     {
-        
+        if (lootDropper != null)
+            lootDropper.DropLoot();
+
+        GrantXP();
+    }
+
+    void GrantXP()
+    {
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player == null) return;
+
+        Character playerCharacter = player.GetComponentInParent<Character>();
+        if (playerCharacter == null) return;
+
+        playerCharacter.AddXP(xpReward);
     }
 }
+
