@@ -5,20 +5,30 @@ using UnityEngine;
 public class Character : Entity//, IInteractable
 {
     [Header("Progression")]
-    public int level = 1;
+    private int level = 1;
     public int currentXP = 0;
     public ClassSystem.Classes characterClass;
 
-    void Awake()
+    public override void Awake()
     {
         stats = new Stats();
         stats.level = Mathf.Max(1, level);
-        ApplyClassToStats();
         base.Awake();
+    }
+
+    public void Start()
+    {
+        ApplyClassToStats();
     }
 
     public void ApplyClassToStats()
     {
+        if (ClassSystem.Instance == null)
+        {
+            Debug.LogError("ClassSystem.Instance is null. Ensure ClassSystem exists in the scene.");
+            return;
+        }
+
         ClassStats cs = ClassSystem.Instance.GetStats(characterClass);
 
         int lvl = Mathf.Max(1, stats.level); // Ensure level is at least 1

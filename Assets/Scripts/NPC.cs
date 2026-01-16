@@ -24,11 +24,18 @@ public class NPC : Character, IInteractable
     public override void Awake()
     {
         base.Awake();
+    }
+
+    public void Start()
+    {
         InitialiseAbilities();
     }
 
     void InitialiseAbilities()
     {
+        if (stats == null || ClassSystem.Instance == null)
+            return;
+
         unlockedAbilities.Clear();
         abilityCooldownTimers.Clear();
 
