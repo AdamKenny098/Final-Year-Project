@@ -39,11 +39,13 @@ public class DialogueSystem : MonoBehaviour
     private bool isSkipping = false;
     
     private const string OPENSHOP_TAG = "OPENSHOP";
-    private const string CLOSESHOP_TAG = "CLOSESHOP";
     public NPC currentNPC;
     [SerializeField] private CanvasGroup dialogueGroup;
 
     public bool dialoguePaused = false;
+
+    private bool pendingOpenShop = false;
+    private Inventory pendingMerchantInventory = null;
 
 
 
@@ -74,16 +76,17 @@ public class DialogueSystem : MonoBehaviour
     public void ContinueStory()
     {
 
-        if (story == null)
+        if (story == null) return;
+
+        if (story.currentChoices.Count > 0)
         {
             return;
         }
 
-        if (story.currentChoices.Count > 0)
-            return;
-
         if (dialoguePaused)
+        {
             return;
+        }
 
         if (!story.canContinue)
         {
@@ -95,15 +98,19 @@ public class DialogueSystem : MonoBehaviour
         if (canContinueToNextLine && story.canContinue)
         {
             if (displayLineCoroutine != null)
-            {
                 StopCoroutine(displayLineCoroutine);
-            }
 
             string nextLine = story.Continue();
+
+            if (string.IsNullOrWhiteSpace(nextLine))
+            {
+                ContinueStory();
+                return;
+            }
+
             HandleTags(story.currentTags);
             displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
 
-            UpdateContinueButtonState();
         }
     }
 
@@ -157,6 +164,7 @@ public class DialogueSystem : MonoBehaviour
     private IEnumerator DisplayLine(string line)
     {
         dialogueText.text = line;
+
         dialogueText.maxVisibleCharacters = 0;
         canContinueToNextLine = false;
         isSkipping = false;
@@ -181,10 +189,30 @@ public class DialogueSystem : MonoBehaviour
 
         canContinueToNextLine = true;
 
-        if(dialogueText.maxVisibleCharacters == line.Length)
+        if (dialogueText.maxVisibleCharacters == line.Length)
         {
+            if (pendingOpenShop)
+            {
+                pendingOpenShop = false;
+
+                PauseDialogue();
+                GameStates.Instance.SetState(GameState.Trading);
+
+                if (pendingMerchantInventory == null)
+                {
+                    yield break;
+
+                }
+
+                ShopSystem.Instance.OpenShop(pendingMerchantInventory);
+                pendingMerchantInventory = null;
+                yield break;
+
+            }
+
             DisplayChoices();
         }
+
     }
 
     private void PlayDialogueSound(int currentDisplayedCharacterCount, char currentCharacter)
@@ -233,15 +261,9 @@ public class DialogueSystem : MonoBehaviour
             switch (tag)
             {
                 case OPENSHOP_TAG:
-                    Inventory merchantInventory = currentNPC.GetComponent<Inventory>();
                     PauseDialogue();
                     GameStates.Instance.SetState(GameState.Trading);
-                    ShopSystem.Instance.OpenShop(merchantInventory);
-                    break;
-
-                case CLOSESHOP_TAG:
-                    GameStates.Instance.SetState(GameState.Talking);
-                    ShowDialogue();
+                    ShopSystem.Instance.OpenShop(currentNPC.GetComponent<Inventory>());
                     break;
             }
         }
@@ -249,12 +271,20 @@ public class DialogueSystem : MonoBehaviour
 
     public void StartDialogue(NPC npc)
     {
+
+        if (npc.dialogueInkJSON == null)
+        {
+            return;
+        }
+
         currentNPC = npc;
+
+        story = new Story(npc.dialogueInkJSON.text);
 
         HideChoices();
         ShowDialogue();
+
         dialogueText = dialoguePanel.dialogueText;
-        story = new Story(npc.dialogueInkJSON.text);
         ContinueStory();
     }
 
@@ -312,11 +342,30 @@ public class DialogueSystem : MonoBehaviour
 
         HideDialogue();
     }
+
+    public void SetTradeOutcome(string outcome)
+    {
+        if (story == null) return;
+        story.variablesState["tradeOutcome"] = outcome;
+    }
+
     public void ResumeDialogue()
     {
         dialoguePaused = false;
         ShowDialogue();
+
+        if (story == null)
+            return;
+
+        // If Ink is waiting at the shop_wait choice, auto-advance it
+        if (story.currentChoices.Count == 1)
+        {
+            story.ChooseChoiceIndex(0);
+            ContinueStory();
+            return;
+        }
+
+        // Otherwise, normal flow
         ContinueStory();
     }
-
 }

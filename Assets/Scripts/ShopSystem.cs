@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class ShopSystem : MonoBehaviour
@@ -11,6 +12,11 @@ public class ShopSystem : MonoBehaviour
     public Inventory playerInventory;
     public Inventory merchantInventory;
     public Item goldItem;
+
+    public NPC currentMerchant;
+
+    private Item barteredItem = null;
+    private int barteredPrice = 0;
 
     private void Awake()
     {
@@ -48,6 +54,7 @@ public class ShopSystem : MonoBehaviour
     public void OpenShop(Inventory merchant)
     {
         merchantInventory = merchant;
+        currentMerchant = merchant.GetComponentInParent<NPC>();
 
         InventoryUI.Instance.OpenTrade(merchantInventory);
         InventoryUI.Instance.BuildTradeLists();
@@ -58,13 +65,13 @@ public class ShopSystem : MonoBehaviour
 
     public void CloseShop()
     {
+        InventoryUI.Instance.CloseTrade();
         shopUI.HideShop();
-        merchantInventory = null;
 
         GameStates.Instance.SetState(GameState.Talking);
         DialogueSystem.Instance.ResumeDialogue();
     }
-
+    
     // === BUYING/SELLING ===
     public bool BuyItem(Item item)
     {
@@ -72,6 +79,11 @@ public class ShopSystem : MonoBehaviour
             return false;
 
         int price = item.value;
+
+        if (item == barteredItem)
+        {
+            price = barteredPrice;
+        }
 
         // Check player can afford
         if (!playerInventory.HasItem(goldItem, price))
@@ -84,6 +96,9 @@ public class ShopSystem : MonoBehaviour
         // Transfer item
         merchantInventory.RemoveItem(item, 1);
         playerInventory.AddItem(item, 1);
+
+        barteredItem = null;
+        barteredPrice = 0;
 
         NotifyTradeChanged();
         return true;
@@ -122,6 +137,141 @@ public class ShopSystem : MonoBehaviour
     {
         InventoryUI.Instance.OnTradeChanged();
     }
+
+    bool RollCheck(int statValue, int targetNumber)
+    {
+        int roll = Random.Range(1, 21); // d20
+        int modifier = (statValue - 10) / 2;
+
+        return roll + modifier >= targetNumber;
+    }
+
+    int CalculateTargetNumber(int itemValue)
+    {
+        int baseTarget = 8;
+        int valueDivisor = 10;
+
+        return baseTarget + (itemValue / valueDivisor);
+    }
+
+    public bool AttemptBarter(Item item, Character player)
+    {
+        if (item == null || player == null) return false;
+
+        int target = CalculateTargetNumber(item.value);
+
+        bool success = RollCheck(player.stats.charisma, target);
+
+        if (success)
+        {
+            BarterSuccess(item);
+        }
+        else
+        {
+            BarterFailure();
+        }
+
+        return success;
+    }
+
+    void BarterSuccess(Item item)
+    {
+        barteredItem = item;
+        barteredPrice = CalculateBarteredPrice(item);
+        DialogueSystem.Instance.SetTradeOutcome("barter_success");
+
+
+        InventoryUI.Instance.OnTradeChanged(item);
+        TradeFeedbackUI.Instance.Show($"Barter successful — new price: {barteredPrice}g");
+    }
+
+    void BarterFailure()
+    {
+        DialogueSystem.Instance.SetTradeOutcome("barter_refused");
+        TradeFeedbackUI.Instance.Show("The merchant refuses to negotiate.");
+
+        CloseShop();
+    }
+
+
+    int CalculateBarteredPrice(Item item)
+    {
+        int baseValue = item.value;
+
+        int minPrice = Mathf.Max(1, Mathf.RoundToInt(baseValue * 0.5f));
+        int maxPrice = baseValue;
+
+        return Random.Range(minPrice, maxPrice + 1);
+    }
+
+
+    public bool AttemptSteal(Item item, Character player)
+    {
+
+        if (item == null || player == null) return false;
+
+        int stealRiskBonus = 2; // easy tuning knob
+        int target = CalculateTargetNumber(item.value) + stealRiskBonus;
+
+        bool success = RollCheck(
+            player.stats.dexterity,
+            target
+        );
+
+        if (success)
+        {
+            StealSuccess(item);
+        }
+        else
+        {
+            StealFailure();
+        }
+
+        return success;
+    }
+
+    void StealSuccess(Item item)
+    {
+        if (playerInventory == null || merchantInventory == null)
+            return;
+
+        if (!merchantInventory.HasItem(item, 1))
+        return;
+
+        bool added = playerInventory.AddItem(item, 1);
+        if (!added) return;
+
+        merchantInventory.RemoveItem(item, 1);
+        
+        barteredItem = null;
+        barteredPrice = 0;
+
+        DialogueSystem.Instance.SetTradeOutcome("steal_success");
+
+        InventoryUI.Instance.OnTradeChanged();
+        TradeFeedbackUI.Instance.Show($"You stole the {item.name} unnoticed.");
+    }
+
+    void StealFailure()
+    {
+        if (currentMerchant == null)
+            return;
+
+        currentMerchant.isAlerted = true;
+        currentMerchant.requiresForgivenessQuest = true;
+        DialogueSystem.Instance.SetTradeOutcome("steal_caught");
+        CloseShop();
+    }
+
+    public int GetEffectivePrice(Item item)
+    {
+        if (item == barteredItem)
+            return barteredPrice;
+
+        return item.value;
+    }
+
+
 
 
 }

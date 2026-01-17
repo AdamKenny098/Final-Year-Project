@@ -10,10 +10,6 @@ public class NPC : Character, IInteractable
     public string lastName;
     public string species;
 
-    [Header("Behaviour")]
-    public bool isHostile;
-    public bool isShopKeeper;
-
     [Header("Dialogue")]
     public TextAsset dialogueInkJSON;
 
@@ -21,6 +17,10 @@ public class NPC : Character, IInteractable
     public List<Unlock> unlockedAbilities = new List<Unlock>();
     public Dictionary<string, float> abilityCooldownTimers = new Dictionary<string, float>();
 
+    [Header("Merchant Specific")]
+    public bool isAlerted;
+    public bool requiresForgivenessQuest;
+    
     public override void Awake()
     {
         base.Awake();

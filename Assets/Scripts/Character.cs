@@ -25,7 +25,6 @@ public class Character : Entity//, IInteractable
     {
         if (ClassSystem.Instance == null)
         {
-            Debug.LogError("ClassSystem.Instance is null. Ensure ClassSystem exists in the scene.");
             return;
         }
 

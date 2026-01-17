@@ -42,6 +42,8 @@ public class InventoryUI : MonoBehaviour
     private InventorySlot selectedSlot = null;
     private int selectedIndex = -1;
 
+    private Character playerCharacter;
+
     public static InventoryUI Instance;
 
     public CanvasGroup inventoryGroup;
@@ -61,9 +63,13 @@ public class InventoryUI : MonoBehaviour
     }
 
     void Start()
-    {   
-        primaryButton.onClick.AddListener(HandleprimaryButton);
+    {
+        primaryButton.onClick.AddListener(HandlePrimaryButton);
+        secondaryButton.onClick.AddListener(HandleSecondaryButton);
+        tertiaryButton.onClick.AddListener(HandleTertiaryButton);
+        playerCharacter = FindPlayerCharacter();
     }
+
 
     void Update()
     {
@@ -71,21 +77,6 @@ public class InventoryUI : MonoBehaviour
         if (Input.GetKeyDown(toggleInventoryKey) && GameStates.Instance.currentState == GameState.Exploration)
         {
             OpenPlayerInventory();
-        }
-
-
-        // Escape key closes both
-        if (Input.GetKeyDown(closeKey))
-        {
-            if (tradePanel.activeSelf)
-            {
-                CloseTrade();
-            }
-                
-            else if (playerPanel.activeSelf)
-            {
-                ClosePlayerInventory();
-            }  
         }
     }
 
@@ -236,7 +227,15 @@ public class InventoryUI : MonoBehaviour
         itemIcon.enabled = true;
         itemIcon.sprite = item.icon;
         itemNameText.text = item.name;
-        rarityValueText.text = $"Rarity: {item.rarity}   Value: {item.value}";
+        int displayPrice = item.value;
+
+        if (containerInventory != null && containerInventory.isMerchant)
+        {
+            displayPrice = ShopSystem.Instance.GetEffectivePrice(item);
+        }
+
+        rarityValueText.text = $"Rarity: {item.rarity}   Value: {displayPrice}";
+
 
         primaryButton.gameObject.SetActive(true);
         secondaryButton.gameObject.SetActive(true);
@@ -249,23 +248,32 @@ public class InventoryUI : MonoBehaviour
         else if (isPlayerItem)
         {
             primaryButton.GetComponentInChildren<TMP_Text>().text = "Sell";
+            secondaryButton.gameObject.SetActive(false);
+            tertiaryButton.gameObject.SetActive(false);
+
         }
         else
         {
-            // context for if buying or taking
-            string context = containerInventory.isMerchant ? "Buy" : "Take";
-            primaryButton.GetComponentInChildren<TMP_Text>().text = context;
+            bool isMerchant = containerInventory.isMerchant;
+
+            primaryButton.GetComponentInChildren<TMP_Text>().text =
+                isMerchant ? "Buy" : "Take";
+
+            secondaryButton.GetComponentInChildren<TMP_Text>().text = "Barter";
+            tertiaryButton.GetComponentInChildren<TMP_Text>().text = "Steal";
+
+            secondaryButton.gameObject.SetActive(isMerchant);
+            tertiaryButton.gameObject.SetActive(isMerchant);
         }
     }
 
-    private void HandleprimaryButton()
+    private void HandlePrimaryButton()
     {
         if (selectedInventory == null || selectedSlot == null)
             return;
 
         if (containerInventory == null)
         {
-            Debug.Log($"Used {selectedSlot.item.name}");
             return;
         }
 
@@ -277,6 +285,41 @@ public class InventoryUI : MonoBehaviour
         {
             ShopSystem.Instance.BuyItem(selectedSlot.item);
         }
+    }
+
+    private void HandleSecondaryButton()
+    {
+        if (selectedSlot == null || containerInventory == null)
+            return;
+
+        if (!containerInventory.isMerchant)
+            return;
+
+        if (selectedInventory != containerInventory)
+            return;
+
+        ShopSystem.Instance.AttemptBarter(selectedSlot.item, playerCharacter);
+    }
+
+    private void HandleTertiaryButton()
+    {
+
+        if (selectedSlot == null || containerInventory == null)
+        {
+            return;
+        }
+
+        if (!containerInventory.isMerchant)
+        {
+            return;
+        }
+
+        if (selectedInventory != containerInventory)
+        {
+            return;
+        }
+
+        ShopSystem.Instance.AttemptSteal(selectedSlot.item, playerCharacter);
     }
 
 
@@ -306,11 +349,39 @@ public class InventoryUI : MonoBehaviour
         group.blocksRaycasts = show;
     }
 
-    public void OnTradeChanged()
+    public void OnTradeChanged(Item reselectItem = null)
     {
         BuildTradeLists();
         ClearSelection();
+
+        if (reselectItem != null)
+            ReSelectItem(reselectItem);
     }
 
+    private Character FindPlayerCharacter()
+    {
+        GameObject taggedPlayer = GameObject.FindWithTag("Player");
+        if (taggedPlayer == null) return null;
 
+        return taggedPlayer.GetComponentInParent<Character>();
+    }
+
+    public void ReSelectItem(Item item)
+    {
+        if (item == null) return;
+        if (containerInventory == null) return;
+
+        for (int i = 0; i < containerInventory.invSlots.Count; i++)
+        {
+            InventorySlot slot = containerInventory.invSlots[i];
+            if (slot == null || slot.item == null)
+                continue;
+
+            if (slot.item == item)
+            {
+                HandleSlotClick(containerInventory, i);
+                return;
+            }
+        }
+    }
 }
