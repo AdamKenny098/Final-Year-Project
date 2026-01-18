@@ -117,4 +117,8 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public void Clear()
+    {
+        invSlots.Clear();
+    }
 }

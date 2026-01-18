@@ -56,6 +56,13 @@ public class ShopSystem : MonoBehaviour
         merchantInventory = merchant;
         currentMerchant = merchant.GetComponentInParent<NPC>();
 
+        MerchantStockGenerator generator = merchant.GetComponentInParent<MerchantStockGenerator>();
+
+        if (generator != null)
+        {
+            generator.GenerateStock();
+        }
+        
         InventoryUI.Instance.OpenTrade(merchantInventory);
         InventoryUI.Instance.BuildTradeLists();
 
@@ -71,7 +78,7 @@ public class ShopSystem : MonoBehaviour
         GameStates.Instance.SetState(GameState.Talking);
         DialogueSystem.Instance.ResumeDialogue();
     }
-    
+
     // === BUYING/SELLING ===
     public bool BuyItem(Item item)
     {
