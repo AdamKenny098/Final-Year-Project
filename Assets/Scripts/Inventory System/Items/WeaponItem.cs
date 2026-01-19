@@ -15,4 +15,26 @@ public class WeaponItem : Item
         Magic
     }
     public DamageType damageType;
+    public enum ClassType
+    {
+        Warrior,
+        Archer,
+        Mage,
+        Thief
+    }
+
+    public ClassType classType;
+
+    public enum WeaponType
+    {
+        Sword,
+        Axe,
+        Bow,
+        Dagger,
+        Staff,
+        Mace,
+        Wand
+    }
+
+    public WeaponType weaponType;
 }

@@ -10,10 +10,9 @@ public class LootTable : ScriptableObject
     {
         List<LootTableItem> results = new List<LootTableItem>();
 
-        int roll = Random.Range(1, 101);
-
         foreach (LootTableItem entry in loot)
         {
+            int roll = Random.Range(1, 101);
             if (roll >= entry.minRoll && roll <= entry.maxRoll)
             {
                 results.Add(entry);
@@ -21,5 +20,20 @@ public class LootTable : ScriptableObject
         }
 
         return results;
+    }
+
+    public List<Item> GetAllItems()
+    {
+        List<Item> items = new List<Item>();
+
+        foreach (LootTableItem entry in loot)
+        {
+            if (entry.item != null)
+            {
+                items.Add(entry.item);
+            }
+        }
+
+        return items;
     }
 }

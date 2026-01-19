@@ -12,4 +12,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbe1d8c7ab928984f8d049310eb0a268, type: 3}
   m_Name: Merchant Test
   m_EditorClassIdentifier: Assembly-CSharp::LootTable
-  loot: []
+  loot:
+  - item: {fileID: 11400000, guid: ebfb25d88399aa2478ab0bed7f4a0e85, type: 2}
+    minRoll: 0
+    maxRoll: 100
+    minAmount: 50
+    maxAmount: 500
+  - item: {fileID: 11400000, guid: 8a012ad36626f744c9f5ed43b9d8f880, type: 2}
+    minRoll: 1
+    maxRoll: 100
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: 0579edde0667ba24bb07209fd6bc8e7e, type: 2}
+    minRoll: 1
+    maxRoll: 100
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: d3efd879c4b6ffe4c819ff7d38d50be7, type: 2}
+    minRoll: 1
+    maxRoll: 100
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: 71917aeef3f3fd14ca6486465f2dcf87, type: 2}
+    minRoll: 1
+    maxRoll: 100
+    minAmount: 1
+    maxAmount: 1
+  - item: {fileID: 11400000, guid: 8a012ad36626f744c9f5ed43b9d8f880, type: 2}
+    minRoll: 1
+    maxRoll: 50
+    minAmount: 1
+    maxAmount: 4
