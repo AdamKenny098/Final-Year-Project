@@ -68,7 +68,7 @@ public class DungeonEntitySpawner : MonoBehaviour
             Vector3 spawnPosition = decorator.RandomRoomPosition(playerRoom);
 
             Vector3 finalPos = spawnPosition;
-            finalPos.y = 1f;
+            finalPos.y = 2f;
 
             if (IsValidSpawn(playerRoom, finalPos, playerHeight, playerRadius))
             {
