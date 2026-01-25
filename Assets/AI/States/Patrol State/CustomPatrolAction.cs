@@ -12,16 +12,25 @@ public class PatrolStateAction : Action
 {
     [SerializeReference] public BlackboardVariable<State> AIState;
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
-    [SerializeReference] public BlackboardVariable<List<GameObject>> Waypoints;
     NavMeshAgent nav;
+    PatrolPoints patrol;
     int index;
 
     protected override Status OnStart()
     {
+        if (Agent.Value == null)
+            return Status.Failure;
+
         nav = Agent.Value.GetComponent<NavMeshAgent>();
+        patrol = Agent.Value.GetComponent<PatrolPoints>();
+
+        if (nav == null || patrol == null || patrol.points.Count == 0)
+            return Status.Failure;
+
         nav.isStopped = false;
         index = 0;
-        nav.SetDestination(Waypoints.Value[index].transform.position);
+        nav.SetDestination(patrol.points[index]);
+
         return Status.Running;
     }
 
@@ -35,11 +44,9 @@ public class PatrolStateAction : Action
 
         if (!nav.pathPending && nav.remainingDistance <= nav.stoppingDistance)
         {
-            index = (index + 1) % Waypoints.Value.Count;
-            nav.SetDestination(Waypoints.Value[index].transform.position);
+            index = (index + 1) % patrol.points.Count;
+            nav.SetDestination(patrol.points[index]);
         }
         return Status.Running;
     }
 }
-
-

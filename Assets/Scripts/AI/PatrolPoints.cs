@@ -7,59 +7,29 @@ public class PatrolPoints : MonoBehaviour
 {
     [SerializeField] private float patrolRadius = 12f;
     [SerializeField] private float minDistanceBetweenPoints = 3f;
+    [SerializeField] private int pointCount = 4;
     [SerializeField] private int maxAttemptsPerPoint = 20;
 
-    [Header("Waypoint GameObjects (children in prefab)")]
-    [SerializeField] private List<GameObject> waypointObjects = new();
-
+    public List<Vector3> points = new();
     IEnumerator Start()
     {
-        // Validate references early
-        if (waypointObjects == null || waypointObjects.Count == 0)
-        {
-            Debug.LogError($"{name}: No waypointObjects assigned.");
-            yield break;
-        }
-
-        for (int i = 0; i < waypointObjects.Count; i++)
-        {
-            if (waypointObjects[i] == null)
-            {
-                Debug.LogError($"{name}: waypointObjects[{i}] is NULL.");
-                yield break;
-            }
-        }
-
-        // Let NavMesh + BehaviorGraph initialize
-        yield return null;
-
-        DetachWaypoints();
-        PlaceWaypoints();
+        yield return null; // allow NavMesh + AI to initialize
+        Generate();
     }
 
-    void DetachWaypoints()
+    void Generate()
     {
-        foreach (var wp in waypointObjects)
-        {
-            wp.transform.SetParent(transform.root, true); // detach, keep world position
-        }
-    }
-
-    void PlaceWaypoints()
-    {
+        points.Clear();
         Vector3 origin = transform.position;
-        List<Vector3> placed = new();
-
-        for (int i = 0; i < waypointObjects.Count; i++)
+        for (int i = 0; i < pointCount; i++)
         {
-            if (TryFindValidPoint(origin, placed, out var p))
+            if (TryFindValidPoint(origin, points, out Vector3 p))
             {
-                waypointObjects[i].transform.position = p;
-                placed.Add(p);
+                points.Add(p);
             }
             else
             {
-                waypointObjects[i].transform.position = origin;
+                points.Add(origin);
             }
         }
     }
@@ -69,7 +39,7 @@ public class PatrolPoints : MonoBehaviour
         for (int attempt = 0; attempt < maxAttemptsPerPoint; attempt++)
         {
             Vector3 random = origin + Random.insideUnitSphere * patrolRadius;
-            random.y = 0f;
+            random.y = origin.y;
 
             if (!NavMesh.SamplePosition(random, out NavMeshHit hit, 2f, NavMesh.AllAreas))
                 continue;
@@ -99,4 +69,16 @@ public class PatrolPoints : MonoBehaviour
         }
         return false;
     }
+
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        foreach (var p in points)
+            Gizmos.DrawSphere(p, 0.25f);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, patrolRadius);
+    }
+#endif
 }
