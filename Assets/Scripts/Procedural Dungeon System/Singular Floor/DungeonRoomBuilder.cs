@@ -7,36 +7,12 @@ public class DungeonRoomBuilder : MonoBehaviour
 {
     public GameObject blockPrefab;
     public DungeonRoomDecorator decorator;
-
     public List<Room> allRooms = new List<Room>();
     public List<GameObject> floors = new List<GameObject>();
-    public static DungeonRoomBuilder Instance;
-
     public GameObject corridors;
     public GameObject rooms;
     public GameObject dungeonParent;
-
-    public void Awake()
-    {
-        if (!Instance)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    public void Start()
-    {
-        dungeonParent = GameObject.Find("DungeonGenerator");
-        corridors = new GameObject("Corridors");
-        rooms = new GameObject("Rooms");
-
-        corridors.transform.SetParent(dungeonParent.transform);
-        rooms.transform.SetParent(dungeonParent.transform);
-    }
+    Transform floorRoot;
 
     public void StartBuildProcess()
     {
@@ -240,5 +216,15 @@ public class DungeonRoomBuilder : MonoBehaviour
         }
     }
 
+    public void ParentObjects(Transform floorRoot)
+    {
+        this.floorRoot = floorRoot;
+
+        corridors = new GameObject("Corridors");
+        rooms = new GameObject("Rooms");
+
+        corridors.transform.SetParent(floorRoot, false);
+        rooms.transform.SetParent(floorRoot, false);
+    }
     
 }

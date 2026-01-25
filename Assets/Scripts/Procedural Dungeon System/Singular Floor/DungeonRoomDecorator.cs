@@ -23,20 +23,18 @@ public class DungeonRoomDecorator : MonoBehaviour
 
     public List<Room> allWorkableRooms = new List<Room>();
 
-    public static DungeonRoomDecorator Instance;
+    private DungeonRoomBuilder builder;
+    private Transform floorRoot;
+
+    public void FillReferences(DungeonRoomBuilder builder, Transform floorRoot)
+    {
+        this.builder = builder;
+        this.floorRoot = floorRoot;
+    }
 
 
     void Awake()
     {
-        if (!Instance)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         genericRoomItems.Add(new GenericRoomItem()
         {
             name = "Torch",
@@ -70,7 +68,7 @@ public class DungeonRoomDecorator : MonoBehaviour
     {
         allWorkableRooms.Clear();
 
-        Transform rooms = GameObject.Find("DungeonGenerator").transform.Find("Rooms");
+        Transform rooms = DungeonManager.Instance.activeFloorRoot.Find("Rooms");
 
         foreach (Transform child in rooms)
         {
@@ -451,7 +449,7 @@ public class DungeonRoomDecorator : MonoBehaviour
 
     public void ClearDoorways()
     {
-        foreach (Room room in DungeonRoomBuilder.Instance.allRooms)
+        foreach (Room room in builder.allRooms)
         {
             foreach (Transform door in room.doorways)
             {   
@@ -475,7 +473,7 @@ public class DungeonRoomDecorator : MonoBehaviour
 
     public void CullDecor()
     {
-        foreach (Room room in DungeonRoomBuilder.Instance.allRooms)
+        foreach (Room room in builder.allRooms)
         {
             GameObject roomDecorRoot = room.roomItemsRoot.gameObject;
             foreach (Transform decor in roomDecorRoot.transform)

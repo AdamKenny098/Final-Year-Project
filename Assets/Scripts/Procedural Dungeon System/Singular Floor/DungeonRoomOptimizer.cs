@@ -5,10 +5,13 @@ using Unity.AI.Navigation;
 
 public class DungeonRoomOptimizer : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private DungeonRoomBuilder builder;
+    private DungeonRoomDecorator decorator;
+    private Transform floorRoot;
 
     public Material wallMaterial;
     public Material floorCeilingMaterial;
+    public GameObject floorExitPrefab;
 
     public void StartOptimization()
     {
@@ -19,7 +22,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
         ReduceColliders("dungeonWall");
 
         CombineBlockMeshes();
-        DungeonRoomBuilder.Instance.AddNavMeshSurface();
+        builder.AddNavMeshSurface();
         StartCoroutine(DelayedNavMeshAddition());
     }
 
@@ -68,7 +71,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
 
     public void CombineBlockMeshes()
     {
-        foreach (Room room in DungeonRoomBuilder.Instance.allRooms)
+        foreach (Room room in builder.allRooms)
         {
             foreach (Transform child in room.transform)
             {
@@ -166,7 +169,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         
-        GameObject floor = DungeonRoomBuilder.Instance.allRooms[0].transform.Find("Floor").gameObject;
+        GameObject floor = builder.allRooms[0].transform.Find("Floor").gameObject;
         NavMeshSurface navMeshSurface = floor.GetComponent<NavMeshSurface>();
         navMeshSurface.BuildNavMesh();
 
@@ -183,7 +186,7 @@ public class DungeonRoomOptimizer : MonoBehaviour
 
     public void CollectBounds()
     {
-        foreach (Room room in DungeonRoomDecorator.Instance.allWorkableRooms)
+        foreach (Room room in decorator.allWorkableRooms)
         {
             room.occupiedAreas.Clear();
 
@@ -197,4 +200,12 @@ public class DungeonRoomOptimizer : MonoBehaviour
             }
         }
     }
+
+    public void FillReferences(DungeonRoomBuilder builder, DungeonRoomDecorator decorator, Transform floorRoot)
+    {
+        this.builder = builder;
+        this.decorator = decorator;
+        this.floorRoot = floorRoot;
+    }
+
 }

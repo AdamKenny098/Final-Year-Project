@@ -41,7 +41,7 @@ public class PatrolPoints : MonoBehaviour
     {
         foreach (var wp in waypointObjects)
         {
-            wp.transform.SetParent(null, true); // detach, keep world position
+            wp.transform.SetParent(transform.root, true); // detach, keep world position
         }
     }
 

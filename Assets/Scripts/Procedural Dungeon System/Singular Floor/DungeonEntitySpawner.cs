@@ -19,9 +19,37 @@ public class DungeonEntitySpawner : MonoBehaviour
     [Header("NPC Spawning")]
     public GameObject merchantPrefab;
 
+    private Transform dungeonRoot;
+    private Transform enemyRoot;
+    private Transform npcRoot;
+
+    private DungeonRoomBuilder builder;
+    private DungeonRoomDecorator decorator;
+    private Transform floorRoot;
+
+    public void FillReferences(DungeonRoomBuilder builder,DungeonRoomDecorator decorator,Transform floorRoot)
+    {
+        this.builder = builder;
+        this.decorator = decorator;
+        this.floorRoot = floorRoot;
+
+        SetupRoots();
+    }
+
+    void SetupRoots()
+    {
+        dungeonRoot = floorRoot;
+
+        enemyRoot = new GameObject("Enemies").transform;
+        enemyRoot.SetParent(dungeonRoot, false);
+
+        npcRoot = new GameObject("NPCs").transform;
+        npcRoot.SetParent(dungeonRoot, false);
+    }
+
     public void SpawnAll()
     {
-        allRooms = DungeonRoomDecorator.Instance.allWorkableRooms;
+        allRooms = decorator.allWorkableRooms;
         SpawnPlayer();
         SpawnEntitiesInRooms();
         SpawnMerchantInRoom();
@@ -37,15 +65,23 @@ public class DungeonEntitySpawner : MonoBehaviour
         for(int attempt = 0; attempt < maxSpawnAttempts; attempt++)
         {
             Room playerRoom = allRooms[Random.Range(0, allRooms.Count)];
-            Vector3 spawnPosition = DungeonRoomDecorator.Instance.RandomRoomPosition(playerRoom);
+            Vector3 spawnPosition = decorator.RandomRoomPosition(playerRoom);
 
             Vector3 finalPos = spawnPosition;
             finalPos.y = 1f;
 
             if (IsValidSpawn(playerRoom, finalPos, playerHeight, playerRadius))
             {
-                Instantiate(playerPrefab, finalPos, Quaternion.identity);
-                
+                GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+                if (player == null)
+                {
+                    Debug.LogError("Player not found in scene.");
+                    return;
+                }
+
+                player.transform.position = finalPos;
+                player.transform.rotation = Quaternion.identity;
 
                 playerRoom.preventSpawning = true;
                 return;
@@ -100,12 +136,12 @@ public class DungeonEntitySpawner : MonoBehaviour
 
                 for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
                 {
-                    Vector3 spawnPos = DungeonRoomDecorator.Instance.RandomRoomPosition(room);
+                    Vector3 spawnPos = decorator.RandomRoomPosition(room);
                     spawnPos.y = 2.5f;
 
                     if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
                     {
-                        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+                        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity, enemyRoot);
 
                         // Register occupied space so future spawns respect it
                         RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
@@ -147,7 +183,7 @@ public class DungeonEntitySpawner : MonoBehaviour
 
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                Vector3 spawnPos = DungeonRoomDecorator.Instance.RandomRoomPosition(room);
+                Vector3 spawnPos = decorator.RandomRoomPosition(room);
                 spawnPos.y = 2.5f;
 
                 if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
@@ -156,7 +192,7 @@ public class DungeonEntitySpawner : MonoBehaviour
                         merchantPrefab,
                         spawnPos,
                         Quaternion.identity,
-                        room.transform
+                        npcRoot
                     );
 
                     RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
