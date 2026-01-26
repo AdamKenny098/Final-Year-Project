@@ -30,6 +30,7 @@ public class DungeonManager : MonoBehaviour
     public bool doorwaysCleared;
 
     public GameObject nextFloorPrefab;
+    public GameObject lastFloorPrefab;
     public DungeonGenerator generator;
     public DungeonRoomBuilder builder;
     public DungeonRoomOptimizer optimizer;
@@ -209,6 +210,21 @@ public class DungeonManager : MonoBehaviour
 
         Vector3 spawnPos = GetValidPointInRoom(targetRoom);
         Instantiate(nextFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
+    }
+
+    public void SpawnLastFloorExit(Room playerRoom)
+    {
+        Room targetRoom = playerRoom;
+        float maxArea = 0f;
+
+        if (targetRoom == null)
+        {
+            Debug.LogError("No valid room found for next floor exit.");
+            return;
+        }
+
+        Vector3 spawnPos = GetValidPointInRoom(targetRoom);
+        Instantiate(lastFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
     }
 
     public void ResetPipeline()

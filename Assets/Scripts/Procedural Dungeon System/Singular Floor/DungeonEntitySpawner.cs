@@ -84,6 +84,8 @@ public class DungeonEntitySpawner : MonoBehaviour
                 player.transform.rotation = Quaternion.identity;
 
                 playerRoom.preventSpawning = true;
+
+                DungeonManager.Instance.SpawnLastFloorExit(playerRoom);
                 return;
             }
         }

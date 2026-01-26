@@ -79,6 +79,11 @@ public class LabyrinthManager : MonoBehaviour
         LoadFloor(currentFloorIndex + 1);
     }
 
+    public void GoToLastFloor()
+    {
+        LoadFloor(currentFloorIndex - 1);
+    }
+
     FloorInstance CreateFloor(int index)
     {
         FloorDefinition def = floorPlan[index];

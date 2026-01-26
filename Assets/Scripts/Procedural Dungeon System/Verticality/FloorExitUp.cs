@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FloorExit : MonoBehaviour
+public class FloorExitUp : MonoBehaviour
 {
     private bool triggered = false;
 
@@ -9,6 +9,6 @@ public class FloorExit : MonoBehaviour
         if (triggered) return;
         if (!other.CompareTag("Player")) return;
 
-        LabyrinthManager.Instance.GoToNextFloor();
+        LabyrinthManager.Instance.GoToLastFloor();
     }
 }
