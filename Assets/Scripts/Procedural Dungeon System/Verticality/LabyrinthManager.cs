@@ -35,7 +35,7 @@ public class LabyrinthManager : MonoBehaviour
 
     void Start()
     {
-        StartRun(3);
+        StartRun(20);
     }
 
     public void StartRun(int floorCount)
@@ -125,6 +125,28 @@ public class LabyrinthManager : MonoBehaviour
         GameObject safe = Instantiate(safeFloorPrefab, floor.root.transform);
         safe.name = "SafeFloor";
     }
+
+    public void TravelDown()
+    {
+        int targetIndex = currentFloorIndex + 1;
+
+        if (targetIndex >= floorPlan.Count)
+            return;
+
+        LoadFloor(targetIndex);
+    }
+
+    public void TravelUp()
+    {
+        int targetIndex = currentFloorIndex - 1;
+
+        if (targetIndex < 0)
+            return;
+
+        LoadFloor(targetIndex);
+    }
+
+
 
 }
 
