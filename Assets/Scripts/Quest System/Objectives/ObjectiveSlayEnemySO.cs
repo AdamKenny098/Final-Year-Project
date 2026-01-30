@@ -1,0 +1,16 @@
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "Quests/Objectives/Slay Enemy")]
+public class ObjectiveSlayEnemySO : QuestObjectiveSO
+{
+    public EnemyType targetEnemy;
+    public int requiredKills = 1;
+
+    public override void OnEnemyKilled(QuestInstance quest, EnemyType enemyType)
+    {
+        if (enemyType != targetEnemy)
+            return;
+
+        quest.AddProgress(this, 1, requiredKills);
+    }
+}

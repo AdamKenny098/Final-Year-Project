@@ -1,16 +1,22 @@
 using UnityEngine;
 
-public class QuestReward : MonoBehaviour
+[System.Serializable]
+public class QuestReward
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public int experience;
+    public int gold;
 
-    // Update is called once per frame
-    void Update()
+    // Placeholder – hook into inventory later
+    public void Grant()
     {
-        
+        if (experience > 0)
+        {
+            // PlayerStats.AddXP(experience);
+        }
+
+        if (gold > 0)
+        {
+            // PlayerInventory.AddGold(gold);
+        }
     }
 }

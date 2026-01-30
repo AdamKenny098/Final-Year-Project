@@ -72,6 +72,7 @@ public class LabyrinthManager : MonoBehaviour
         }
 
         floor.root.SetActive(true);
+        OnFloorChanged();
     }
 
     public void GoToNextFloor()
@@ -145,6 +146,15 @@ public class LabyrinthManager : MonoBehaviour
 
         LoadFloor(targetIndex);
     }
+
+    void OnFloorChanged()
+    {
+        if (QuestSystem.Instance == null)
+        return;
+
+        QuestSystem.Instance.NotifyFloorReached(currentFloorIndex);
+    }
+
 
 
 
