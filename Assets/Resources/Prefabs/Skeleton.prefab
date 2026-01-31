@@ -230,6 +230,7 @@ MonoBehaviour:
   minDistanceBetweenPoints: 3
   pointCount: 4
   maxAttemptsPerPoint: 20
+  points: []
 --- !u!114 &4610318329970048581
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,6 +301,7 @@ MonoBehaviour:
     charisma: 0
   currentXP: 0
   characterClass: 0
+  enemyType: 1
   xpReward: 25
   lootDropper: {fileID: 4610318329970048581}
 --- !u!114 &-5396970141119493179

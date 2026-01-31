@@ -2,8 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyType
+{
+    Goblin,
+    Skeleton,
+    Slime
+}
+
 public class Monster : Character
 {
+    [SerializeField] private EnemyType enemyType;
     [Header("Monster Settings")]
     public int xpReward = 25;
     public LootDropper lootDropper;
@@ -18,6 +26,10 @@ public class Monster : Character
         if (lootDropper != null)
             lootDropper.DropLoot();
 
+        if (QuestSystem.Instance != null)
+            QuestSystem.Instance.NotifyEnemyKilled(enemyType);
+
+            
         GrantXP();
     }
 
