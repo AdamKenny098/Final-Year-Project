@@ -16,6 +16,9 @@ public class LootBag : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        if (QuestSystem.Instance != null)
+            QuestSystem.Instance.NotifyItemCollected(item.itemId, 1);
+
         if (item == null) return;
 
         inventory.AddItem(item, 1);
