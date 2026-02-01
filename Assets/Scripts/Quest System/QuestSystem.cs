@@ -13,6 +13,8 @@ public class QuestSystem : MonoBehaviour
 {
     public static QuestSystem Instance { get; private set; }
 
+    public QuestUIManager questUI;
+
     public List<QuestData> startingQuests;
 
     List<QuestInstance> activeQuests = new();
@@ -29,6 +31,12 @@ public class QuestSystem : MonoBehaviour
         Instance = this;
     }
 
+    void RefreshUI()
+    {
+        if (questUI != null)
+            questUI.Refresh();
+    }
+
     void Start()
     {
         foreach (var questData in startingQuests)
@@ -43,6 +51,7 @@ public class QuestSystem : MonoBehaviour
         var instance = new QuestInstance(data);
         instance.StartQuest();
         activeQuests.Add(instance);
+        RefreshUI();
     }
 
     public void CompleteQuest(QuestInstance quest)
@@ -55,6 +64,7 @@ public class QuestSystem : MonoBehaviour
         completedQuests.Add(quest);
 
         quest.data.reward?.Grant();
+        RefreshUI();
     }
 
     //These snapshots exist bc iterating over the lsits and erasing an element lead to an error
@@ -63,6 +73,7 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyEnemyKilled(enemyType);
+            RefreshUI();
     }
 
     public void NotifyItemCollected(string itemId, int amount)
@@ -70,6 +81,7 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyItemCollected(itemId, amount);
+            RefreshUI();
     }
 
     public void NotifyFloorReached(int floorIndex)
@@ -77,6 +89,7 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyFloorReached(floorIndex);
+            RefreshUI();
     }
 
     public void NotifyAreaDiscovered(int floorIndex, string areaId)
@@ -84,6 +97,13 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyAreaDiscovered(floorIndex, areaId);
+            RefreshUI();
     }
+
+    public QuestInstance[] GetActiveQuestsSnapshot()
+    {
+        return activeQuests.ToArray();
+    }
+
 
 }

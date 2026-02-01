@@ -142,4 +142,13 @@ public class QuestInstance
             obj.OnAreaDiscovered(this, floorIndex, areaId);
         }
     }
+
+    public int GetProgress(QuestObjectiveSO obj)
+    {
+        if (obj == null) return 0;
+        if (!progress.TryGetValue(obj, out var value)) return 0;
+        return value;
+    }
+
+
 }

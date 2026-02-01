@@ -10,4 +10,9 @@ public class ObjectiveReachFloorSO : QuestObjectiveSO
         if (floorIndex >= targetFloor)
             quest.CompleteObjective(this);
     }
+
+    public override string GetUIText(QuestInstance quest)
+    {
+        return $"Reach Floor {targetFloor}";
+    }
 }
