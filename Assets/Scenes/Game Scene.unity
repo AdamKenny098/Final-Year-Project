@@ -11667,6 +11667,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &38198893
 GameObject:
   m_ObjectHideFlags: 0
@@ -24021,6 +24024,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &76557832
 GameObject:
   m_ObjectHideFlags: 0
@@ -25655,6 +25661,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &95298946
 GameObject:
   m_ObjectHideFlags: 0
@@ -53314,7 +53323,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.22595215}
+  m_AnchoredPosition: {x: 0, y: 0.00039672852}
   m_SizeDelta: {x: 1200, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &160383478
@@ -70496,6 +70505,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &202323664
 GameObject:
   m_ObjectHideFlags: 0
@@ -123792,6 +123804,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &301507930
 GameObject:
   m_ObjectHideFlags: 0
@@ -141719,7 +141734,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 170508122}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9979801
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -148467,6 +148482,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &368161558
 GameObject:
   m_ObjectHideFlags: 0
@@ -148991,6 +149009,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &373698349
 GameObject:
   m_ObjectHideFlags: 0
@@ -248595,6 +248616,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &610980319
 GameObject:
   m_ObjectHideFlags: 0
@@ -254241,6 +254265,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &624445709
 GameObject:
   m_ObjectHideFlags: 0
@@ -271833,6 +271860,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &677509387
 GameObject:
   m_ObjectHideFlags: 0
@@ -272147,6 +272177,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &682647522
 GameObject:
   m_ObjectHideFlags: 0
@@ -272298,6 +272331,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &682981273
 GameObject:
   m_ObjectHideFlags: 0
@@ -283533,6 +283569,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &709449007
 GameObject:
   m_ObjectHideFlags: 0
@@ -299937,6 +299976,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &741665166
 GameObject:
   m_ObjectHideFlags: 0
@@ -314577,6 +314619,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &813817456
 GameObject:
   m_ObjectHideFlags: 0
@@ -341695,6 +341740,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &874286899
 GameObject:
   m_ObjectHideFlags: 0
@@ -348547,6 +348595,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &904376414
 GameObject:
   m_ObjectHideFlags: 0
@@ -419542,6 +419593,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1093103105
 GameObject:
   m_ObjectHideFlags: 0
@@ -480148,6 +480202,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1218800607
 GameObject:
   m_ObjectHideFlags: 0
@@ -481774,6 +481831,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1243666836
 GameObject:
   m_ObjectHideFlags: 0
@@ -482015,6 +482075,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1244998827
 GameObject:
   m_ObjectHideFlags: 0
@@ -482499,6 +482562,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1251781824
 GameObject:
   m_ObjectHideFlags: 0
@@ -521651,7 +521717,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1415308946}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -522982,6 +523048,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1450624759
 GameObject:
   m_ObjectHideFlags: 0
@@ -523248,6 +523317,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1453585793
 GameObject:
   m_ObjectHideFlags: 0
@@ -585111,6 +585183,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1522357503
 GameObject:
   m_ObjectHideFlags: 0
@@ -618922,6 +618997,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1595635458
 GameObject:
   m_ObjectHideFlags: 0
@@ -624121,6 +624199,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1601764341
 GameObject:
   m_ObjectHideFlags: 0
@@ -652011,6 +652092,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1682681625
 GameObject:
   m_ObjectHideFlags: 0
@@ -710868,6 +710952,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1771224793
 GameObject:
   m_ObjectHideFlags: 0
@@ -711007,6 +711094,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1771632366
 GameObject:
   m_ObjectHideFlags: 0
@@ -712424,6 +712514,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1798541236
 GameObject:
   m_ObjectHideFlags: 0
@@ -775760,6 +775853,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &1953756490
 GameObject:
   m_ObjectHideFlags: 0
@@ -789522,6 +789618,8 @@ MonoBehaviour:
   startingQuests:
   - {fileID: 11400000, guid: 516235e86770a8d4aa5b6fd35f6457a7, type: 2}
   - {fileID: 11400000, guid: 342df40837c4bbd4caf7e57170faf5bf, type: 2}
+  - {fileID: 11400000, guid: cb7f58a508034b64a91c03bf5b75e073, type: 2}
+  - {fileID: 11400000, guid: df3e3b02c5949044391160c8611ff75a, type: 2}
 --- !u!1 &2005923132
 GameObject:
   m_ObjectHideFlags: 0
@@ -818227,6 +818325,9 @@ MonoBehaviour:
   preventEnemySpawning: 0
   preventNPCSpawning: 0
   preventSpawning: 0
+  floorIndex: 0
+  areaId: 
+  visited: 0
 --- !u!1 &2080552240
 GameObject:
   m_ObjectHideFlags: 0

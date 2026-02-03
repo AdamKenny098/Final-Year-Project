@@ -15,7 +15,8 @@ MonoBehaviour:
   questId: 
   title: 
   description: 
-  objectives: []
+  objectives:
+  - {fileID: 11400000, guid: 6890cc8f91d3f6b4c8befd119d6ad58e, type: 2}
   reward:
     experience: 0
     gold: 0

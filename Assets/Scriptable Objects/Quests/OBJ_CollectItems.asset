@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3612b2df7ed7a549a6488de56fc3aa6, type: 3}
   m_Name: OBJ_CollectItems
   m_EditorClassIdentifier: Assembly-CSharp::ObjectiveCollectItemsSO
-  itemId: 
-  requiredAmount: 1
+  itemId: Bone
+  requiredAmount: 3

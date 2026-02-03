@@ -17,3 +17,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: bdb78f2cb28316b46ad332b6857d8756, type: 3}
   rarity: 1
   value: 10
+  isSellable: 1
+  itemId: Bone
