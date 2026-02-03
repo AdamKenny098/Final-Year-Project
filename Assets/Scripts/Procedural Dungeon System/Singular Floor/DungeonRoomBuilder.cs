@@ -14,6 +14,10 @@ public class DungeonRoomBuilder : MonoBehaviour
     public GameObject dungeonParent;
     Transform floorRoot;
 
+    [Header("Floor Mapping")]
+    int roomCounter;
+    int corridorCounter;
+
     public void StartBuildProcess()
     {
         DeleteExcessBlocks();
@@ -44,7 +48,18 @@ public class DungeonRoomBuilder : MonoBehaviour
         roomComponent.node = node;
         roomComponent.isCorridor = isCorridor;
         roomComponent.roomType = type;
+
+        roomComponent.floorIndex = LabyrinthManager.Instance != null ? LabyrinthManager.Instance.currentFloorIndex : 0;
+
+        if (isCorridor)
+            roomComponent.areaId = "C" + corridorCounter++;
+        else
+            roomComponent.areaId = "R" + roomCounter++;
+
+        roomComponent.visited = false;
+
         allRooms.Add(roomComponent);
+
 
         // room sub components
         GameObject wallsParent1 = new GameObject("Walls");
@@ -218,6 +233,9 @@ public class DungeonRoomBuilder : MonoBehaviour
 
     public void ParentObjects(Transform floorRoot)
     {
+        roomCounter = 0;
+        corridorCounter = 0;
+
         this.floorRoot = floorRoot;
 
         corridors = new GameObject("Corridors");

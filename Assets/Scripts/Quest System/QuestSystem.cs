@@ -20,6 +20,8 @@ public class QuestSystem : MonoBehaviour
     List<QuestInstance> activeQuests = new();
     List<QuestInstance> completedQuests = new();
 
+    Dictionary<int, int> floorAreaCounts = new();
+
     void Awake()
     {
         if (Instance != null)
@@ -97,7 +99,7 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyAreaDiscovered(floorIndex, areaId);
-            RefreshUI();
+        RefreshUI();
     }
 
     public QuestInstance[] GetActiveQuestsSnapshot()
@@ -105,5 +107,15 @@ public class QuestSystem : MonoBehaviour
         return activeQuests.ToArray();
     }
 
+    public void RegisterFloorAreaCount(int floorIndex, int totalAreas)
+    {
+        floorAreaCounts[floorIndex] = totalAreas;
+        RefreshUI();
+    }
+
+    public int GetFloorAreaCount(int floorIndex)
+    {
+        return floorAreaCounts.TryGetValue(floorIndex, out var count) ? count : 0;
+    }
 
 }

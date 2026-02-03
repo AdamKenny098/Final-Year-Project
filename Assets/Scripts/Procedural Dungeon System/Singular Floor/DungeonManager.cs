@@ -253,18 +253,24 @@ public class DungeonManager : MonoBehaviour
         generator = currentGenerator;
         activeFloorRoot = floorRoot;
 
-        builder   = generator.GetComponent<DungeonRoomBuilder>();
+        builder = generator.GetComponent<DungeonRoomBuilder>();
         optimizer = generator.GetComponent<DungeonRoomOptimizer>();
         decorator = generator.GetComponent<DungeonRoomDecorator>();
-        spawner   = generator.GetComponent<DungeonEntitySpawner>();
+        spawner = generator.GetComponent<DungeonEntitySpawner>();
 
         builder.ParentObjects(floorRoot);
         optimizer.FillReferences(builder, decorator, floorRoot);
         decorator.FillReferences(builder, floorRoot);
         spawner.FillReferences(builder, decorator, floorRoot);
 
-
         generator.CreateDungeon();
+
+        if (QuestSystem.Instance != null && builder != null && LabyrinthManager.Instance != null)
+        {
+            int floorIndex = LabyrinthManager.Instance ? LabyrinthManager.Instance.currentFloorIndex : 0;
+            QuestSystem.Instance.RegisterFloorAreaCount(floorIndex, builder.allRooms.Count);
+        }
+
         dungeonGenerated = true;
     }
 

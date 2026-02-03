@@ -40,6 +40,12 @@ public class Room : MonoBehaviour
     public bool preventNPCSpawning; // optional but future-proof
     public bool preventSpawning;
 
+    [Header("Floor Mapping")]
+    public int floorIndex;
+    public string areaId;
+    public bool visited;
+
+
 
     public void EnsureDecorationRoots()
     {
@@ -74,4 +80,16 @@ public class Room : MonoBehaviour
         torchesRoot.SetParent(DecorRoot, true);
         roomItemsRoot.SetParent(DecorRoot, true);
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (visited) return;
+        if (!other.CompareTag("Player")) return;
+
+        visited = true;
+
+        if (QuestSystem.Instance != null)
+            QuestSystem.Instance.NotifyAreaDiscovered(floorIndex, areaId);
+    }
+
 }
