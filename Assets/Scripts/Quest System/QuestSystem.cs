@@ -118,4 +118,41 @@ public class QuestSystem : MonoBehaviour
         return floorAreaCounts.TryGetValue(floorIndex, out var count) ? count : 0;
     }
 
+    public bool IsQuestActive(string questId)
+    {
+        if (string.IsNullOrEmpty(questId)) return false;
+
+        for (int i = 0; i < activeQuests.Count; i++)
+        {
+            var q = activeQuests[i];
+            if (q != null && q.data != null && q.data.questId == questId)
+                return true;
+        }
+        return false;
+    }
+
+    public bool IsQuestCompleted(string questId)
+    {
+        if (string.IsNullOrEmpty(questId)) return false;
+
+        for (int i = 0; i < completedQuests.Count; i++)
+        {
+            var q = completedQuests[i];
+            if (q != null && q.data != null && q.data.questId == questId)
+                return true;
+        }
+        return false;
+    }
+
+    public bool TryStartQuest(QuestData data)
+    {
+        if (data == null) return false;
+        if (IsQuestActive(data.questId)) return false;
+        if (IsQuestCompleted(data.questId)) return false;
+
+        StartQuest(data);
+        return true;
+    }
+
+
 }
