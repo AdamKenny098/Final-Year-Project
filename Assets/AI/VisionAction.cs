@@ -61,22 +61,32 @@ public partial class VisionAction : Action
 
     bool ComputeVision()
     {
-        Vector3 toPlayer = player.position - eyeOrigin.position;
-        float distance = toPlayer.magnitude;
+        Vector3 origin = eyeOrigin.position + Vector3.up * 1.6f;
+        Vector3 target = player.position + Vector3.up * 1.2f;
+        Vector3 dir = (target - origin);
+        float dist = dir.magnitude;
 
-        if (distance > viewDistance)
-            return false;
+        if (dist > viewDistance) return false;
+        if (Vector3.Angle(eyeOrigin.forward, dir) > viewAngle * 0.5f) return false;
 
-        float angle = Vector3.Angle(eyeOrigin.forward, toPlayer);
-        if (angle > viewAngle * 0.5f)
-            return false;
+        var hits = Physics.RaycastAll(origin, dir.normalized, viewDistance, ~0, QueryTriggerInteraction.Ignore);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
-        if (Physics.Raycast(eyeOrigin.position, toPlayer.normalized, out RaycastHit hit, viewDistance))
+        foreach (var h in hits)
         {
-            Debug.DrawLine(eyeOrigin.position, hit.point, Color.red);
-            return hit.transform.CompareTag("Player") || hit.transform.root.CompareTag("Player");
+            if (!h.transform) continue;
+
+            // skip any collider belonging to this agent
+            if (h.transform.root == Agent.Value.transform.root)
+                continue;
+
+            Debug.Log($"[Vision] First non-self hit: {h.collider.name} | Root: {h.transform.root.name} | Tag: {h.collider.tag}", h.collider);
+
+            return h.transform.CompareTag("Player") || h.transform.root.CompareTag("Player");
         }
+
         return false;
     }
+
 }
 
