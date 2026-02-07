@@ -16,6 +16,7 @@ public partial class StartPanicAction : Action
     {
         IsFleeing.Value = true;
         PanicTimeRemaining.Value = PanicDuration.Value;
+        
         return Status.Success;
     }
 }

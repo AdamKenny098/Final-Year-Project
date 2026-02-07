@@ -17,6 +17,7 @@ public partial class NavigateWhileFleeingAction : Action
     [SerializeReference] public BlackboardVariable<float> FleeDistance = new(10f);
 
     NavMeshAgent nav;
+    Animator anim;
 
     protected override Status OnStart()
     {
@@ -29,6 +30,9 @@ public partial class NavigateWhileFleeingAction : Action
 
         nav.isStopped = false;
         nav.speed = FleeSpeed.Value;
+
+        anim = Agent.Value.GetComponent<Animator>();
+        anim.SetFloat("Speed", 1.0f);
 
         return Status.Running;
     }

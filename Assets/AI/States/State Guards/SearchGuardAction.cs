@@ -14,6 +14,7 @@ public partial class SearchGuardAction : Action
     [SerializeReference] public BlackboardVariable<Transform> SoundPosition;
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<bool> IsSearching;
+    [SerializeReference] public BlackboardVariable<float> WalkSpeed;
 
     NavMeshAgent nav;
 
@@ -23,6 +24,7 @@ public partial class SearchGuardAction : Action
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
+        nav.speed = WalkSpeed;
         return Status.Running;
     }
 

@@ -15,6 +15,7 @@ public partial class ChaseAction : Action
     [SerializeReference] public BlackboardVariable<float> AttackRange = new(2.0f);
 
     NavMeshAgent nav;
+    Animator anim;
 
     protected override Status OnStart()
     {
@@ -27,6 +28,8 @@ public partial class ChaseAction : Action
 
         nav.isStopped = false;
         nav.stoppingDistance = AttackRange.Value;
+        anim = Agent.Value.GetComponent<Animator>();
+        anim.SetFloat("Speed", 1.0f);
 
         return Status.Running;
     }

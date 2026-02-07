@@ -15,6 +15,7 @@ public class PatrolStateAction : Action
     NavMeshAgent nav;
     PatrolPoints patrol;
     int index;
+    Animator anim;
 
     protected override Status OnStart()
     {
@@ -23,6 +24,7 @@ public class PatrolStateAction : Action
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
         patrol = Agent.Value.GetComponent<PatrolPoints>();
+        anim = Agent.Value.GetComponent<Animator>();
 
         if (nav == null || patrol == null || patrol.points.Count == 0)
             return Status.Failure;
@@ -30,6 +32,7 @@ public class PatrolStateAction : Action
         nav.isStopped = false;
         index = 0;
         nav.SetDestination(patrol.points[index]);
+        anim.SetFloat("Speed", 0.5f);
 
         return Status.Running;
     }

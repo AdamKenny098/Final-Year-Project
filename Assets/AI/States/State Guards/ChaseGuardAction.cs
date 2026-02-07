@@ -22,33 +22,27 @@ public class ChaseGuardAction : Action
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
-        return Status.Running;
+
+        // Guard should evaluate immediately
+        return Status.Success;
     }
 
     protected override Status OnUpdate()
     {
-        if (IsFleeing.Value)
-        {
+        if (Agent?.Value == null)
             return Status.Failure;
-        }
+
+        if (IsFleeing.Value)
+            return Status.Failure;
 
         if (AIState.Value != State.Chase)
-        {
-            if (nav && nav.isOnNavMesh)
-                nav.ResetPath();
-
             return Status.Failure;
-        }
 
         if (Target?.Value == null)
-        {
-            if (nav && nav.isOnNavMesh)
-                nav.ResetPath();
-
             return Status.Failure;
-        }
 
         return Status.Success;
     }
+
 }
 

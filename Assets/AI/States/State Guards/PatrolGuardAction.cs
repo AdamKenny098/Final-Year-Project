@@ -11,6 +11,7 @@ public class PatrolGuardAction : Action
 {
     [SerializeReference] public BlackboardVariable<State> AIState;
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
+    [SerializeReference] public BlackboardVariable<float> WalkSpeed;
 
     NavMeshAgent nav;
 
@@ -20,6 +21,7 @@ public class PatrolGuardAction : Action
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
+        nav.speed = WalkSpeed;
         return Status.Running;
     }
 

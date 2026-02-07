@@ -139,7 +139,7 @@ MonoBehaviour:
   hitboxTesterPrefab: {fileID: 6714976083647716034, guid: 2d531b88a277bd34ebb4696b784b5168, type: 3}
   playerPrefab: {fileID: 8386774589471192282, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
   allRooms: []
-  enemyPrefab: {fileID: 2138013951370949974, guid: 7c735c9e87247744797a65ec72f05337, type: 3}
+  enemyPrefab: {fileID: 2978007110918247917, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
   minEnemiesPerRoom: 1
   maxEnemiesPerRoom: 1
   enemyHeight: 2

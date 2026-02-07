@@ -9,6 +9,8 @@ using Unity.Properties;
 public partial class FleeGuardAction : Action
 {
     [SerializeReference] public BlackboardVariable<bool> IsFleeing;
+    [SerializeReference] public BlackboardVariable<GameObject> Agent;
+    [SerializeReference] public BlackboardVariable<float> RunSpeed;
 
     protected override Status OnUpdate()
     {
