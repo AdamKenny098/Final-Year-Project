@@ -14,6 +14,12 @@ public class Entity : MonoBehaviour
             stats.FillToMax();
     }
 
+    public virtual void TakeDamage(DamageInfo info)
+    {
+        TakeDamage(info.amount);
+    }
+
+
     public void TakeDamage(int amount)
     {
         if (isDead) return;
@@ -39,4 +45,30 @@ public class Entity : MonoBehaviour
     {
         
     }
+
+    public bool TryUseAbilityOn(Entity target, AbilityData ability, Vector3 hitPoint)
+    {
+        if (target == null || ability == null)
+            return false;
+
+        if (!CombatSystem.CanPayCosts(this, ability))
+            return false;
+
+        CombatSystem.PayCosts(this, ability);
+
+        CombatResult res = CombatSystem.Resolve(this, target, ability);
+
+        DamageInfo dmg = new DamageInfo();
+        dmg.source = gameObject;
+        dmg.amount = res.damage;
+        dmg.type = ability.damageType;
+        dmg.outcome = res.outcome;
+        dmg.hitPoint = hitPoint;
+
+        if (res.damage > 0 || res.outcome == RollOutcome.Crit || res.outcome == RollOutcome.Hit)
+            target.TakeDamage(dmg);
+
+        return true;
+    }
+
 }

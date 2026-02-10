@@ -17,8 +17,20 @@ public partial class UpdateFleeTargetAction : Action
 
     protected override Status OnUpdate()
     {
-        Vector3 dir = (Agent.Value.transform.position - Player.Value.position).normalized;
-        Vector3 desiredPos = Agent.Value.transform.position + dir * fleeDistance;
+        if (Agent == null || Agent.Value == null)
+            return Status.Failure;
+
+        if (Player == null || Player.Value == null)
+            return Status.Failure;
+
+        Vector3 agentPos = Agent.Value.transform.position;
+        Vector3 dir = (agentPos - Player.Value.position).normalized;
+
+        // If player exactly overlaps, pick any direction
+        if (dir.sqrMagnitude < 0.0001f)
+            dir = Agent.Value.transform.forward;
+
+        Vector3 desiredPos = agentPos + dir * fleeDistance;
 
         if (NavMesh.SamplePosition(desiredPos, out NavMeshHit hit, 3f, NavMesh.AllAreas))
         {
@@ -29,9 +41,10 @@ public partial class UpdateFleeTargetAction : Action
             }
 
             FleeTarget.Value.position = hit.position;
+            return Status.Running;
         }
 
-        return Status.Running;
+        return Status.Failure;
     }
 }
 

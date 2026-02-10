@@ -11,28 +11,40 @@ public partial class LowHealthAction : Action
     [SerializeReference] public BlackboardVariable<float> MaxHealth;
     [SerializeReference] public BlackboardVariable<float> Health;
     [SerializeReference] public BlackboardVariable<float> LowHealthThreshold;
-    [SerializeReference] public BlackboardVariable<bool> IsFleeing;
     [SerializeReference] public BlackboardVariable<bool> IsLowHealth;
+    [SerializeReference] public BlackboardVariable<bool> IsFleeing; // optional safety
 
     protected override Status OnStart()
     {
-        if (Health == null || LowHealthThreshold == null || IsFleeing == null || MaxHealth == null)
+        if (Health == null || MaxHealth == null || LowHealthThreshold == null || IsLowHealth == null)
             return Status.Failure;
 
-        LowHealthThreshold.Value = MaxHealth.Value * 0.15f;
+        if (LowHealthThreshold.Value <= 0f)
+            LowHealthThreshold.Value = MaxHealth.Value * 0.15f;
 
         return Status.Running;
     }
 
     protected override Status OnUpdate()
-    {   
-        if (Health.Value <= LowHealthThreshold.Value)
+    {
+        float max = MaxHealth.Value;
+        float hp = Health.Value;
+
+        // Dead = not fleeing
+        if (hp <= 0f)
         {
-            IsFleeing.Value = true;
-            IsLowHealth.Value = true;
+            IsLowHealth.Value = false;
+            if (IsFleeing != null) IsFleeing.Value = false;
+            return Status.Running;
         }
 
-        return Status.Success; // Never blocks
+        float threshold = LowHealthThreshold.Value;
+        if (threshold <= 0f)
+            LowHealthThreshold.Value = max * 0.15f;
+
+        bool low = hp <= threshold;
+        IsLowHealth.Value = low;
+
+        return Status.Running;
     }
 }
-

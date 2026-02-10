@@ -11,21 +11,27 @@ public partial class PanicTimerAction : Action
     [SerializeReference] public BlackboardVariable<float> PanicTimeRemaining;
     [SerializeReference] public BlackboardVariable<bool> IsFleeing;
     [SerializeReference] public BlackboardVariable<bool> IsLowHealth;
-    [SerializeReference] public BlackboardVariable<float> CurrentHealth;
-    [SerializeReference] public BlackboardVariable<float> HealthThreshold;
-    [SerializeReference] public BlackboardVariable<State> AIState;
+
+    [SerializeReference] public BlackboardVariable<float> Health; // add this var in graph if you want death safety
 
     protected override Status OnUpdate()
     {
+        // If dead, stop fleeing immediately
+        if (Health != null && Health.Value <= 0f)
+        {
+            IsFleeing.Value = false;
+            IsLowHealth.Value = false;
+            PanicTimeRemaining.Value = 0f;
+            return Status.Failure;
+        }
+
         PanicTimeRemaining.Value -= Time.deltaTime;
 
         if (PanicTimeRemaining.Value <= 0f)
         {
             PanicTimeRemaining.Value = 0f;
-            CurrentHealth.Value = Math.Max(CurrentHealth.Value, HealthThreshold.Value + 1f); // Ensure above threshold
-            AIState.Value = State.Patrol;
             IsFleeing.Value = false;
-            IsLowHealth.Value = false;
+            // Keep IsLowHealth as-is (LowHealthAction will recompute it)
             return Status.Failure;
         }
 

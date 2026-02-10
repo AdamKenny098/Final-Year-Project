@@ -42,22 +42,19 @@ public partial class NavigateWhileFleeingAction : Action
         if (!IsFleeing.Value || PanicTimeRemaining.Value <= 0f)
             return Status.Failure;
 
-        if (FleeTarget.Value == null)
+        if (Agent == null || Agent.Value == null)
             return Status.Failure;
 
-        Vector3 agentPos = Agent.Value.transform.position;
-        Vector3 threatPos = FleeTarget.Value.position;
+        if (FleeTarget == null || FleeTarget.Value == null)
+            return Status.Failure;
 
-        Vector3 fleeDir = (agentPos - threatPos).normalized;
-        Vector3 desiredPos = agentPos + fleeDir * FleeDistance.Value;
+        if (nav == null || !nav.isOnNavMesh)
+            return Status.Failure;
 
-        if (NavMesh.SamplePosition(desiredPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
-        {
-            nav.SetDestination(hit.position);
-        }
-
+        nav.SetDestination(FleeTarget.Value.position);
         return Status.Running;
     }
+
 
     protected override void OnEnd()
     {
