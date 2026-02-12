@@ -16,7 +16,7 @@ public class Monster : Character
     public int xpReward = 25;
     public LootDropper lootDropper;
 
-    public void Awake()
+    public override void Awake()
     {
         base.Awake();
     }

@@ -16,7 +16,7 @@ public class Character : Entity//, IInteractable
         base.Awake();
     }
 
-    public void Start()
+    public virtual void Start()
     {
         ApplyClassToStats();
     }

@@ -51,12 +51,12 @@ public class Entity : MonoBehaviour
         if (target == null || ability == null)
             return false;
 
-        if (!CombatSystem.CanPayCosts(this, ability))
+        if (!CombatSystem.Instance.CanPayCosts(this, ability))
             return false;
 
-        CombatSystem.PayCosts(this, ability);
+        CombatSystem.Instance.PayCosts(this, ability);
 
-        CombatResult res = CombatSystem.Resolve(this, target, ability);
+        CombatResult res = CombatSystem.Instance.Resolve(this, target, ability);
 
         DamageInfo dmg = new DamageInfo();
         dmg.source = gameObject;

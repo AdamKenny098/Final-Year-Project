@@ -26,7 +26,7 @@ public class NPC : Character, IInteractable
         base.Awake();
     }
 
-    public void Start()
+    public override void Start()
     {
         InitialiseAbilities();
     }

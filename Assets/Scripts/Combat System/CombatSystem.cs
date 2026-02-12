@@ -1,8 +1,22 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
-public  class CombatSystem
+public class CombatSystem : MonoBehaviour
 {
-    public  CombatResult Resolve(Entity attacker, Entity target, AbilityData ability)
+
+    public static CombatSystem Instance;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+    public CombatResult Resolve(Entity attacker, Entity target, AbilityData ability)
     {
         CombatResult r = new CombatResult();
 
@@ -30,7 +44,7 @@ public  class CombatSystem
 
     public void ResolveAttackRoll(ref CombatResult r, Stats a, Stats t, AbilityData ability)
     {
-        int d20 = Dice.RollD20();
+        int d20 = Dice.Instance.RollD20();
         int bonus = GetAttackBonus(a, ability);
         int ac = t.ArmorClass;
         int total = d20 + bonus;
@@ -48,12 +62,12 @@ public  class CombatSystem
             return;
         }
 
-        int dmg = Dice.Roll(ability.damageDice, a);
+        int dmg = Dice.Instance.Roll(ability.damageDice, a);
         if (dmg < 0) dmg = 0;
 
         if (d20 == 20)
         {
-            int extra = Dice.Roll(ability.damageDice, a);
+            int extra = Dice.Instance.Roll(ability.damageDice, a);
             if (extra > 0) dmg += extra;
             r.outcome = RollOutcome.Crit;
         }
@@ -70,7 +84,7 @@ public  class CombatSystem
         int dc = a.SpellSaveDC;
         int bonus = GetSaveBonus(t, ability.saveType);
 
-        int d20 = Dice.RollD20();
+        int d20 = Dice.Instance.RollD20();
         int total = d20 + bonus;
 
         r.d20 = d20;
@@ -80,7 +94,7 @@ public  class CombatSystem
         bool saved = total >= dc;
         r.saved = saved;
 
-        int dmg = Dice.Roll(ability.damageDice, a);
+        int dmg = Dice.Instance.Roll(ability.damageDice, a);
         if (dmg < 0) dmg = 0;
 
         if (saved)

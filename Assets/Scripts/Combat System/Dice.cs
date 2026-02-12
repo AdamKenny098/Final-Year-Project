@@ -1,8 +1,20 @@
 using UnityEngine;
 
-public  class Dice
+public class Dice : MonoBehaviour
 {
-    public  int RollD20()
+    public static Dice Instance;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    public int RollD20()
     {
         return Random.Range(1, 21);
     }

@@ -702,7 +702,10 @@ PrefabInstance:
       objectReference: {fileID: 2043172492}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5652506209359047618, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1534216413}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
 --- !u!4 &487430934 stripped
@@ -1188,6 +1191,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1002497072 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1863499481103928470, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
+  m_PrefabInstance: {fileID: 8987619566959771677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603531982566bb841b8ebf92752b5dc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Monster
 --- !u!225 &1034456986 stripped
 CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 7929821175471511352, guid: f260ade562775e84f80a35e89aed687a, type: 3}
@@ -1863,6 +1877,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e66a4850b662c9479ec5bce8a976654, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuestUIManager
+--- !u!1 &1534216412
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1534216413}
+  - component: {fileID: 1534216415}
+  - component: {fileID: 1534216414}
+  m_Layer: 0
+  m_Name: CombatSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1534216413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534216412}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1976945543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1534216414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534216412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7f5ba652412b0641b4dd98e2c04b509, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Dice
+--- !u!114 &1534216415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1534216412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec329b645c20ed438a3e5ebe3f73eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatSystem
 --- !u!1 &1578448427
 GameObject:
   m_ObjectHideFlags: 0
@@ -2741,6 +2812,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0f3d421860b33843af75f66b6b2be0d, type: 3}
+--- !u!4 &1976945543 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5652506209359047618, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+  m_PrefabInstance: {fileID: 448898893}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1993406136
 GameObject:
   m_ObjectHideFlags: 0
@@ -2845,13 +2921,42 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8386774589471192282, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6489024045985552472}
   m_SourcePrefab: {fileID: 100100000, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
 --- !u!1 &6489024045985552460 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8386774589471192282, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
   m_PrefabInstance: {fileID: 5025254394164734449}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6489024045985552462 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1938017901452699377, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
+  m_PrefabInstance: {fileID: 5025254394164734449}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6489024045985552460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96bdddcfd12c27b49b73331475d0c9ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character
+--- !u!114 &6489024045985552472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6489024045985552460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de7b400ba5a93b4b91fddb937a692d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CombatTest
+  attacker: {fileID: 6489024045985552462}
+  target: {fileID: 1002497072}
+  ability: {fileID: 11400000, guid: 0e5ec5ccc20f79f4b82d2ece786bb47d, type: 2}
 --- !u!1001 &8987619566959771677
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2873,9 +2978,17 @@ PrefabInstance:
       value: Skeleton
       objectReference: {fileID: 0}
     - target: {fileID: 4508155682097813629, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
+      propertyPath: m_BlackboardVariableOverridesList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4508155682097813629, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: managedReferences[824340278334193928].m_Value
       value: 
       objectReference: {fileID: 6489024045985552460}
+    - target: {fileID: 4508155682097813629, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
+      propertyPath: 'm_BlackboardVariableOverridesList.Array.data[1]'
+      value: 824340278334193928
+      objectReference: {fileID: 0}
     - target: {fileID: 6386083032736874114, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.75
