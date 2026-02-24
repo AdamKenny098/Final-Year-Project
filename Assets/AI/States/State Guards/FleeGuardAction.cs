@@ -11,10 +11,12 @@ public partial class FleeGuardAction : Action
     [SerializeReference] public BlackboardVariable<bool> IsFleeing;
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<float> RunSpeed;
+    [SerializeReference] public BlackboardVariable<State> AIState;
 
     protected override Status OnUpdate()
     {
-        return IsFleeing.Value ? Status.Success : Status.Failure;
+        return AIState.Value == State.Flee ? Status.Success : Status.Failure;
     }
+
 }
 

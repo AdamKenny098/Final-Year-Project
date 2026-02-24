@@ -32,6 +32,7 @@ public enum RollOutcome
 public struct DamageInfo
 {
     public GameObject source;
+    public Entity attacker;
     public int amount;
     public DamageType type;
     public RollOutcome outcome;

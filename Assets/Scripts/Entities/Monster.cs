@@ -11,6 +11,7 @@ public enum EnemyType
 
 public class Monster : Character
 {
+    [SerializeField] private ClassSystem.Classes monsterClass = ClassSystem.Classes.Warrior;
     [SerializeField] private EnemyType enemyType;
     [Header("Monster Settings")]
     public int xpReward = 25;
@@ -19,6 +20,11 @@ public class Monster : Character
     public override void Awake()
     {
         base.Awake();
+    }
+
+    public override void Start()
+    {
+        base.Start();
     }
 
     public override void Die()

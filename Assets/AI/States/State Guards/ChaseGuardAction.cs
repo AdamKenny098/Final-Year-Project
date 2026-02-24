@@ -13,36 +13,36 @@ public class ChaseGuardAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<Transform> Target;
     [SerializeReference] public BlackboardVariable<bool> IsFleeing;
+    [SerializeReference] public BlackboardVariable<bool> ChaseLocked;
 
     NavMeshAgent nav;
 
     protected override Status OnStart()
     {
-        if (Agent?.Value == null)
+        if (Agent.Value == null)
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
+        if (nav == null || !nav.isOnNavMesh)
+            return Status.Failure;
 
-        // Guard should evaluate immediately
         return Status.Success;
     }
 
     protected override Status OnUpdate()
     {
-        if (Agent?.Value == null)
+        if (Agent.Value == null)
             return Status.Failure;
 
-        if (IsFleeing.Value)
+        if (IsFleeing != null && IsFleeing.Value)
             return Status.Failure;
-
-        if (AIState.Value != State.Chase)
+        if (ChaseLocked != null && ChaseLocked.Value)
             return Status.Failure;
-
-        if (Target?.Value == null)
+        if (AIState == null || AIState.Value != State.Chase)
+            return Status.Failure;
+        if (Target.Value == null)
             return Status.Failure;
 
         return Status.Success;
     }
-
 }
-

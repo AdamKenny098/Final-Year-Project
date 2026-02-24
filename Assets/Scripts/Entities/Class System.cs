@@ -16,6 +16,25 @@ public class ClassSystem : MonoBehaviour
 
     public Dictionary<Classes, ClassStats> classData;
     public Dictionary<Classes, List<Unlock>> classUnlocks;
+    public AbilityLoadout warriorLoadout;
+    public AbilityLoadout archerLoadout;
+    public AbilityLoadout mageLoadout;
+    public AbilityLoadout thiefLoadout;
+    public AbilityLoadout merchantLoadout;
+
+    public AbilityLoadout GetLoadout(Classes c)
+    {
+        switch (c)
+        {
+            case Classes.Warrior: return warriorLoadout;
+            case Classes.Archer: return archerLoadout;
+            case Classes.Mage: return mageLoadout;
+            case Classes.Thief: return thiefLoadout;
+            case Classes.Merchant: return merchantLoadout;
+        }
+        return null;
+    }
+
 
     public void Awake()
     {

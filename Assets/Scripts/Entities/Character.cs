@@ -1,18 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Character : Entity//, IInteractable
+public class Character : Entity
 {
     [Header("Progression")]
-    private int level = 1;
+    public int level = 1;
     public int currentXP = 0;
     public ClassSystem.Classes characterClass;
 
+    [Header("Abilities")]
+    public AbilityManager abilityManager;
+
     public override void Awake()
     {
-        stats = new Stats();
-        stats.level = Mathf.Max(1, level);
         base.Awake();
     }
 
@@ -29,7 +28,7 @@ public class Character : Entity//, IInteractable
         }
 
         ClassStats cs = ClassSystem.Instance.GetStats(characterClass);
-
+        
         int lvl = Mathf.Max(1, stats.level); // Ensure level is at least 1
 
         stats.maxHealth = cs.baseHealth + cs.healthPerLevel * (lvl - 1);
@@ -42,6 +41,7 @@ public class Character : Entity//, IInteractable
         stats.charisma = cs.baseCharisma;
 
         stats.FillToMax();
+        ApplyClassAbilities();
     }
 
     public void AddXP(int amount)
@@ -49,4 +49,14 @@ public class Character : Entity//, IInteractable
         currentXP += amount;
     }
 
+    public void ApplyClassAbilities()
+    {
+        AbilityLoadout chosen = null;
+
+        if (ClassSystem.Instance != null)
+            chosen = ClassSystem.Instance.GetLoadout(characterClass);
+
+        abilityManager.SetLoadout(chosen);
+
+    }
 }

@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19b630a055cac904988fb70beecf3fb1, type: 3}
-  m_Name: Heavy Slash
+  m_Name: Guard Break
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
-  abilityName: Basic Attack
+  abilityName: Cleave
   resolution: 0
-  damageType: 2
-  damageDice: 1d8+STR
+  damageType: 0
+  damageDice: 1d10+STR+PROF
   usesSpellAttackBonus: 0
-  saveType: 1
-  halfDamageOnSave: 1
-  staminaCost: 0
+  saveType: 0
+  halfDamageOnSave: 0
+  staminaCost: 8
   manaCost: 0
-  cooldown: 0.6
-  range: 2.2
-  radius: 0.75
+  cooldown: 4.5
+  range: 4
+  radius: 0.8
+  icon: {fileID: 21300000, guid: 55e8237e64243c04b969fb1bf9bb366b, type: 3}
+  requiredLevel: 1
