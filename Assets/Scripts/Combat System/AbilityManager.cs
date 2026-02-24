@@ -25,6 +25,19 @@ public class AbilityManager : MonoBehaviour
         return Time.time >= nextReady[slot];
     }
 
+    public void SetLoadout(AbilityLoadout newLoadout)
+    {
+        loadout = newLoadout;
+
+        if (nextReady == null || nextReady.Length != 5)
+        {
+            nextReady = new float[5];
+        }
+
+        for (int i = 0; i < nextReady.Length; i++)
+            nextReady[i] = 0f;
+    }
+
     public AbilityData GetAbility(int slot)
     {
         if (loadout == null) return null;

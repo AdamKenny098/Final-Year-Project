@@ -82,4 +82,13 @@ public class AIAbilityManager : MonoBehaviour
 
         return true;
     }
+
+    public bool TryAttackNow(Entity targetEntity, Vector3 hitPoint)
+    {
+        if (owner == null || owner.isDead) return false;
+        if (abilityManager == null || abilityManager.loadout == null) return false;
+        if (targetEntity == null || targetEntity.isDead) return false;
+        return TrySlot(0, targetEntity, hitPoint);
+    }
+
 }
