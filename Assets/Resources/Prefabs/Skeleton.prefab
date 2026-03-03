@@ -966,6 +966,7 @@ MonoBehaviour:
   m_Graph: {fileID: -6656301798112960638, guid: e731e7fe3d92281419559a6f59094c5b, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 824340278334193925
+  - rid: 824340606610047151
   m_OriginalGraph: {fileID: -6656301798112960638, guid: e731e7fe3d92281419559a6f59094c5b, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -980,6 +981,14 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 2978007110918247917}
+    - rid: 824340606610047151
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 5403469199998878016
+          m_Value1: 11361454388814014731
+        Name: Player
+        m_Value: {fileID: 0}
 --- !u!114 &527749064431507723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1043,6 +1052,10 @@ MonoBehaviour:
     charisma: 0
     armorBonus: 0
     shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
   level: 1
   currentXP: 0
   characterClass: 0
@@ -1105,6 +1118,10 @@ MonoBehaviour:
     charisma: 0
     armorBonus: 0
     shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
 --- !u!114 &4954545318780691773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1131,6 +1148,10 @@ MonoBehaviour:
     charisma: 0
     armorBonus: 0
     shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
   level: 1
   currentXP: 0
   characterClass: 0
@@ -1147,10 +1168,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83ff2c96116add642a78dd5b8d93eb51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIAbilityController
-  owner: {fileID: 789672146698301654}
+  owner: {fileID: 4954545318780691773}
   abilityManager: {fileID: 1839086803969153114}
   target: {fileID: 0}
   thinkRate: 0.2
+  anim: {fileID: 0}
+  speedFloat: Speed
+  attackTrigger: Attack
+  minTimeBetweenAnimTriggers: 0.2
 --- !u!114 &1839086803969153114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1163,7 +1188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8549481ebc3e9e41a4ca10ae86d18cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
-  owner: {fileID: 789672146698301654}
+  owner: {fileID: 4954545318780691773}
   loadout: {fileID: 0}
 --- !u!114 &7185815517289795672
 MonoBehaviour:
@@ -1178,7 +1203,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBarSpawner
   healthBarPrefab: {fileID: 8645933605066457111, guid: 5f5ff9aa0d68def4295e17358fb4b7cb, type: 3}
-  head: {fileID: 0}
   offset: {x: 0, y: 2.3, z: 0}
 --- !u!1 &3216804711626219428
 GameObject:

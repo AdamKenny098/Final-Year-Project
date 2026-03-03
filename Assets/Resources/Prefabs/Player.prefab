@@ -5287,10 +5287,10 @@ GameObject:
   - component: {fileID: 1738664642533245334}
   - component: {fileID: 2708247345286215811}
   - component: {fileID: 4405384316492339134}
-  - component: {fileID: 1939719822888288440}
   - component: {fileID: 1938017901452699377}
   - component: {fileID: 6031131260329743818}
   - component: {fileID: 2180727635198772090}
+  - component: {fileID: 2425055989753829728}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -5638,32 +5638,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeae585e9b0014848b4f17b2f9525a3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
---- !u!114 &1939719822888288440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8386774589471192282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee173eb64a31c4a418dcfc6f8a963fad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Entity
-  stats:
-    level: 1
-    maxHealth: 0
-    health: 0
-    maxMana: 0
-    mana: 0
-    maxStamina: 0
-    stamina: 0
-    strength: 0
-    dexterity: 0
-    intelligence: 0
-    charisma: 0
-    armorBonus: 0
-    shieldBonus: 0
 --- !u!114 &1938017901452699377
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5690,6 +5664,10 @@ MonoBehaviour:
     charisma: 0
     armorBonus: 0
     shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
   level: 1
   currentXP: 0
   characterClass: 1
@@ -5707,7 +5685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilityManager
   cam: {fileID: 3768458777646346793}
-  owner: {fileID: 1939719822888288440}
+  owner: {fileID: 0}
   abilityManager: {fileID: 2180727635198772090}
   aimDistance: 40
   hitMask:
@@ -5727,6 +5705,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
   owner: {fileID: 1938017901452699377}
   loadout: {fileID: 0}
+--- !u!114 &2425055989753829728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386774589471192282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 826fac296fa064e479fa117c5d603e64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilityInput
+  cam: {fileID: 3768458777646346793}
+  owner: {fileID: 1938017901452699377}
+  abilities: {fileID: 2180727635198772090}
+  aimDistance: 40
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &9016841903483801368
 GameObject:
   m_ObjectHideFlags: 0
