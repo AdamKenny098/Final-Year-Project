@@ -17,7 +17,12 @@ public class EnemyHealthBarSpawner : MonoBehaviour
     {
         if (healthBarPrefab == null || entity == null) return;
 
-        instance = Instantiate(healthBarPrefab);
+        instance = Instantiate(healthBarPrefab, transform, false);
+
+        instance.transform.localPosition = Vector3.zero;
+        instance.transform.localRotation = Quaternion.identity;
+        instance.transform.localScale = Vector3.one;
+
         instance.worldOffset = offset;
 
         Transform follow = transform;

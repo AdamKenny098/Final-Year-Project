@@ -49,6 +49,11 @@ public class InventoryUI : MonoBehaviour
     public CanvasGroup inventoryGroup;
     public CanvasGroup tradeGroup;
     public CanvasGroup middleGroup;
+    public GameObject questUI;
+    public GameObject statsUI;
+    public GameObject tabsUI;
+    public GameObject playerMenuRoot;
+    public GameObject combatUI;
 
     public void Awake()
     {
@@ -101,6 +106,12 @@ public class InventoryUI : MonoBehaviour
     {
         containerInventory = container;
 
+        playerMenuRoot.SetActive(true);
+        questUI.SetActive(false);
+        statsUI.SetActive(false);
+        tabsUI.SetActive(false);
+        combatUI.SetActive(false);
+
         SetPanel(tradeGroup, true);
         SetPanel(middleGroup, true);
 
@@ -116,6 +127,11 @@ public class InventoryUI : MonoBehaviour
 
         SetPanel(tradeGroup, false);
         SetPanel(middleGroup, false);
+        questUI.SetActive(true);
+        statsUI.SetActive(true);
+        tabsUI.SetActive(true);
+        playerMenuRoot.SetActive(false);
+        combatUI.SetActive(true);
 
         containerInventory = null;
         ClearSelection();

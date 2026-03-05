@@ -770,8 +770,20 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -22
+      value: -13
       objectReference: {fileID: 0}
     - target: {fileID: 8606573783560399167, guid: 914a74d2b07668443b3bbefd3245a00f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -879,17 +891,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 2978007110918247917, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4508155682097813629, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: managedReferences[824340606610047151].m_Value
       value: 
       objectReference: {fileID: 6489024045985552460}
     - target: {fileID: 5758838549878313390, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5758838549878313390, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6901998314387017002, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: m_LocalPosition.x
@@ -930,6 +946,10 @@ PrefabInstance:
     - target: {fileID: 6901998314387017002, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394778868202263510, guid: bc932e82f27192c47bf1dfdd5b9e4107, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

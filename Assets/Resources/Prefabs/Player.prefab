@@ -5308,7 +5308,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 20, y: 0.5, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.6, y: 2, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1793080932031830624}
@@ -5685,7 +5685,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilityManager
   cam: {fileID: 3768458777646346793}
-  owner: {fileID: 0}
+  owner: {fileID: 1938017901452699377}
   abilityManager: {fileID: 2180727635198772090}
   aimDistance: 40
   hitMask:

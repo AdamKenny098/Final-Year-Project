@@ -2,19 +2,11 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
-
-    [Header("Player Menu")]
     public GameObject playerMenuRoot;
     public UITabBar playerMenuTabs;
 
-    bool isOpen;
-
     void Awake()
     {
-        if (Instance != null) { Destroy(gameObject); return; }
-        Instance = this;
-
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(false);
     }
@@ -25,50 +17,26 @@ public class UIManager : MonoBehaviour
             TogglePlayerMenu();
     }
 
-    public void TogglePlayerMenu()
+    void TogglePlayerMenu()
     {
-        if (playerMenuRoot == null) return;
+        if (GameStates.Instance == null) return;
 
-        if (isOpen) ClosePlayerMenu();
-        else OpenPlayerMenu();
+        var currentState  = GameStates.Instance.currentState;
+
+        if (currentState == GameState.Paused || currentState == GameState.Talking || currentState == GameState.Trading)
+            return;
+
+        GameStates.Instance.SetState(currentState == GameState.Menu ? GameState.Exploration : GameState.Menu);
     }
 
-    public void OpenPlayerMenu()
+    public void OnStateChanged(GameState prev, GameState next)
     {
-        if (playerMenuRoot == null) return;
+        bool active = next == GameState.Menu;
 
-        isOpen = true;
-        playerMenuRoot.SetActive(true);
+        if (playerMenuRoot != null)
+            playerMenuRoot.SetActive(active);
 
-        SetCursorForMenu(true);
-
-        if (playerMenuTabs != null)
+        if (active  && playerMenuTabs != null)
             playerMenuTabs.OpenDefault();
-
-        if (GameStates.Instance != null)
-            GameStates.Instance.SetState(GameState.Paused);
     }
-
-    public void ClosePlayerMenu()
-    {
-        if (playerMenuRoot == null) return;
-
-        isOpen = false;
-        playerMenuRoot.SetActive(false);
-
-        SetCursorForMenu(false);
-
-        if (GameStates.Instance != null)
-            GameStates.Instance.SetState(GameState.Exploration);
-    }
-
-
-    public bool IsPlayerMenuOpen => isOpen;
-
-    void SetCursorForMenu(bool menuOpen)
-    {
-        Cursor.visible = menuOpen;
-        Cursor.lockState = menuOpen ? CursorLockMode.None : CursorLockMode.Locked;
-    }
-
 }

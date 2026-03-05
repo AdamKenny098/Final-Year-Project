@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 8973108638390052197}
   - component: {fileID: 8065662484845941679}
   - component: {fileID: 2068457880057343173}
+  - component: {fileID: 4914811705633350552}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -82,6 +83,12 @@ MonoBehaviour:
     dexterity: 0
     intelligence: 0
     charisma: 0
+    armorBonus: 0
+    shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
 --- !u!114 &4013626851530993120
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,9 +113,16 @@ MonoBehaviour:
     dexterity: 0
     intelligence: 0
     charisma: 0
+    armorBonus: 0
+    shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
   level: 1
   currentXP: 0
   characterClass: 0
+  abilityManager: {fileID: 4914811705633350552}
 --- !u!114 &6732385738657084068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,15 +147,22 @@ MonoBehaviour:
     dexterity: 0
     intelligence: 0
     charisma: 0
+    armorBonus: 0
+    shieldBonus: 0
+  lastDamageSource: {fileID: 0}
+  lastAttacker: {fileID: 0}
+  lastHitPoint: {x: 0, y: 0, z: 0}
+  lastDamageTime: 0
   level: 0
   currentXP: 0
   characterClass: 4
+  abilityManager: {fileID: 4914811705633350552}
   firstName: 
   lastName: 
   species: 
-  isHostile: 0
-  isShopKeeper: 0
   dialogueInkJSON: {fileID: 4900000, guid: a6016f65f151bab43906b11220c1acd6, type: 3}
+  isAlerted: 0
+  requiresForgivenessQuest: 0
 --- !u!65 &8973108638390052197
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -219,3 +240,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4914811705633350552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8911370496542670894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8549481ebc3e9e41a4ca10ae86d18cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityManager
+  owner: {fileID: 4013626851530993120}
+  loadout: {fileID: 11400000, guid: da62d0f9116951b448aac3d223495831, type: 2}
