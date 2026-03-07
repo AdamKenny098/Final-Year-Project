@@ -45,7 +45,7 @@ public class Room : MonoBehaviour
     public string areaId;
     public bool visited;
 
-
+    public List<Vector3> plannedDoorwayPositions = new List<Vector3>();
 
     public void EnsureDecorationRoots()
     {
