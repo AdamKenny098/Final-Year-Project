@@ -417,15 +417,15 @@ public class DungeonGenerator : MonoBehaviour
 
         foreach (StraightConnection connection in candidates)
         {
-            int aIndex = indexMap[connection.a];
-            int bIndex = indexMap[connection.b];
+            int aIndex = indexMap[connection.nodeA];
+            int bIndex = indexMap[connection.nodeB];
 
             if (Find(aIndex) == Find(bIndex))
                 continue;
 
             SpawnStraightCorridor(connection);
-            RegisterDoorway(connection.a, connection.start);
-            RegisterDoorway(connection.b, connection.end);
+            RegisterDoorway(connection.nodeA, connection.start);
+            RegisterDoorway(connection.nodeB, connection.end);
 
             Union(aIndex, bIndex);
             edgesUsed++;
