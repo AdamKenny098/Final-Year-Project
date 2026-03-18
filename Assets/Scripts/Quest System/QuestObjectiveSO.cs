@@ -10,4 +10,9 @@ public abstract class QuestObjectiveSO : ScriptableObject
     public virtual void OnAreaDiscovered(QuestInstance quest, int floorIndex, string areaId) { }
     public virtual string GetUIText(QuestInstance quest) => name;
 
+    public virtual string GetPreviewText()
+    {
+        return name;
+    }
+
 }

@@ -252,7 +252,7 @@ public class DungeonGenerator : MonoBehaviour
             dungeonRoomBuilder.BuildRoom(node, 0f, false, Room.RoomType.Default);
         }
     }
-
+    
     
     public class StraightConnection
     {
@@ -312,10 +312,10 @@ public class DungeonGenerator : MonoBehaviour
             bool bAbove = nodeB.roomCenter.z > nodeA.roomCenter.z;
 
             float startZ = bAbove ? MaxZ(nodeA) - 0.5f : MinZ(nodeA) + 0.5f;
-            float endZ   = bAbove ? MinZ(nodeB) + 0.5f : MaxZ(nodeB) - 0.5f;
+            float endZ = bAbove ? MinZ(nodeB) + 0.5f : MaxZ(nodeB) - 0.5f;
 
             Vector3 start = new Vector3(x, 0f, startZ);
-            Vector3 end   = new Vector3(x, 0f, endZ);
+            Vector3 end = new Vector3(x, 0f, endZ);
 
             float dist = Mathf.Abs(end.z - start.z);
             if (dist < 1f) return false;
@@ -343,7 +343,7 @@ public class DungeonGenerator : MonoBehaviour
             float endX   = bRight ? MinX(nodeB) + 0.5f : MaxX(nodeB) - 0.5f;
 
             Vector3 start = new Vector3(startX, 0f, z);
-            Vector3 end   = new Vector3(endX, 0f, z);
+            Vector3 end = new Vector3(endX, 0f, z);
 
             float dist = Mathf.Abs(end.x - start.x);
             if (dist < 1f) return false;

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-
     public enum RoomType
     {
         Default,
@@ -21,7 +20,6 @@ public class Room : MonoBehaviour
         Kitchen,
         Tavern,
         Prison,
-
     }
 
     public Node node;
@@ -83,13 +81,25 @@ public class Room : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (visited) return;
         if (!other.CompareTag("Player")) return;
 
-        visited = true;
+        if (!visited)
+        {
+            visited = true;
 
-        if (QuestSystem.Instance != null)
-            QuestSystem.Instance.NotifyAreaDiscovered(floorIndex, areaId);
+            if (QuestSystem.Instance != null)
+                QuestSystem.Instance.NotifyAreaDiscovered(floorIndex, areaId);
+        }
+
+        if (RoomMapTracker.Instance != null)
+            RoomMapTracker.Instance.SetCurrentRoom(this);
     }
 
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        if (RoomMapTracker.Instance != null)
+            RoomMapTracker.Instance.ClearCurrentRoom(this);
+    }
 }

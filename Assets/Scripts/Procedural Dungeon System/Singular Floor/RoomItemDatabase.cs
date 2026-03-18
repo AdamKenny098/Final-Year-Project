@@ -14,149 +14,717 @@ public class RoomItemDatabase : MonoBehaviour
                 Room.RoomType.Default,
                 new List<RoomItem>()
                 {
-                    MakeItem("GenericTable", "Prefabs/RoomItems/Chair", RoomItem.Priority.Primary)
+                    new RoomItem
+                    {
+                        name = "GenericTable",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferCenter = 2f,
+                        avoidDoors = 4f,
+                        itemTag = "Generic"
+                    }
                 }
             },
             {
                 Room.RoomType.Tomb,
                 new List<RoomItem>()
                 {
-                    MakeItem("Tomb", "Prefabs/RoomItems/Tomb", RoomItem.Priority.Primary),
-                    MakeItem("Bones", "Prefabs/RoomItems/Bones", RoomItem.Priority.Secondary),
-                    MakeItem("Cobwebs", "Prefabs/RoomItems/Cobwebs", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Tomb",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Tomb"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 4f,
+                        avoidDoors = 5f,
+                        avoidCenter = 1f,
+                        itemTag = "Tomb"
+                    },
+                    new RoomItem
+                    {
+                        name = "Bones",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bones"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        avoidDoors = 4f,
+                        preferNearAnchor = 4f,
+                        anchorTag = "Tomb",
+                        itemTag = "Bones",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2
+                    },
+                    new RoomItem
+                    {
+                        name = "Cobwebs",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Cobwebs"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 2f,
+                        avoidCenter = 2f,
+                        itemTag = "Cobwebs",
+                        preferNearSameTag = 1f
+                    }
                 }
             },
             {
                 Room.RoomType.Forge,
                 new List<RoomItem>()
                 {
-                    MakeItem("Anvil", "Prefabs/RoomItems/Anvil", RoomItem.Priority.Primary),
-                    MakeItem("Forge", "Prefabs/RoomItems/Forge", RoomItem.Priority.Primary),
-                    MakeItem("ToolRack", "Prefabs/RoomItems/ToolRack", RoomItem.Priority.Secondary)
+                    new RoomItem
+                    {
+                        name = "Forge",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Forge"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = false,
+                        preferWall = 5f,
+                        avoidDoors = 6f,
+                        avoidCenter = 3f,
+                        itemTag = "Furnace"
+                    },
+                    new RoomItem
+                    {
+                        name = "Anvil",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Anvil"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 1f,
+                        avoidDoors = 4f,
+                        preferNearAnchor = 10f,
+                        anchorTag = "Furnace",
+                        itemTag = "Anvil",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2
+                    },
+                    new RoomItem
+                    {
+                        name = "ToolRack",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ToolRack"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferWall = 1f,
+                        avoidDoors = 3f,
+                        preferNearAnchor = 5f,
+                        anchorTag = "Furnace",
+                        itemTag = "ToolRack",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 3
+                    }
                 }
             },
             {
                 Room.RoomType.Library,
                 new List<RoomItem>()
                 {
-                    MakeItem("Bookshelf", "Prefabs/RoomItems/Bookshelf", RoomItem.Priority.Primary),
-                    MakeItem("ReadingTable", "Prefabs/RoomItems/ReadingTable", RoomItem.Priority.Secondary),
-                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Bookshelf",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bookshelf"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 1,
+                        gridLength = 2,
+                        minCount = 2,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        avoidCenter = 3f,
+                        itemTag = "Bookshelf",
+                        preferNearSameTag = 2f
+                    },
+                    new RoomItem
+                    {
+                        name = "ReadingTable",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ReadingTable"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferCenter = 4f,
+                        avoidDoors = 4f,
+                        itemTag = "ReadingTable"
+                    },
+                    new RoomItem
+                    {
+                        name = "Chair",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferNearAnchor = 5f,
+                        anchorTag = "ReadingTable",
+                        itemTag = "Chair",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    }
                 }
             },
             {
                 Room.RoomType.Armory,
                 new List<RoomItem>()
                 {
-                    MakeItem("WeaponRack", "Prefabs/RoomItems/WeaponRack", RoomItem.Priority.Primary),
-                    MakeItem("ArmorStand", "Prefabs/RoomItems/ArmorStand", RoomItem.Priority.Secondary)
+                    new RoomItem
+                    {
+                        name = "WeaponRack",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/WeaponRack"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 1,
+                        gridLength = 2,
+                        minCount = 2,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        avoidCenter = 3f,
+                        itemTag = "WeaponRack",
+                        preferNearSameTag = 2f
+                    },
+                    new RoomItem
+                    {
+                        name = "ArmorStand",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ArmorStand"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 4f,
+                        preferNearAnchor = 4f,
+                        anchorTag = "WeaponRack",
+                        itemTag = "ArmorStand",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 3
+                    }
                 }
             },
             {
                 Room.RoomType.Barracks,
                 new List<RoomItem>()
                 {
-                    MakeItem("Bed", "Prefabs/RoomItems/Bed", RoomItem.Priority.Primary),
-                    MakeItem("Locker", "Prefabs/RoomItems/Locker", RoomItem.Priority.Secondary),
-                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Tertiary),
-                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Bed",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Bed"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 5,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 4f,
+                        avoidCenter = 3f,
+                        itemTag = "Bed",
+                        preferNearSameTag = 2f
+                    },
+                    new RoomItem
+                    {
+                        name = "Locker",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Locker"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferNearAnchor = 4f,
+                        anchorTag = "Bed",
+                        itemTag = "Locker",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    },
+                    new RoomItem
+                    {
+                        name = "Table",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 0,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferCenter = 3f,
+                        avoidDoors = 4f,
+                        itemTag = "BarracksTable"
+                    },
+                    new RoomItem
+                    {
+                        name = "Chair",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 0,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferNearAnchor = 4f,
+                        anchorTag = "BarracksTable",
+                        itemTag = "Chair",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    }
                 }
             },
             {
                 Room.RoomType.Altar,
                 new List<RoomItem>()
                 {
-                    MakeItem("Altar", "Prefabs/RoomItems/Altar", RoomItem.Priority.Primary),
-                    MakeItem("Candles", "Prefabs/RoomItems/Candles", RoomItem.Priority.Secondary),
-                    MakeItem("ReligiousStatue", "Prefabs/RoomItems/ReligiousStatue", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Altar",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Altar"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferCenter = 5f,
+                        avoidDoors = 5f,
+                        itemTag = "Altar"
+                    },
+                    new RoomItem
+                    {
+                        name = "Candles",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Candles"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferNearAnchor = 6f,
+                        anchorTag = "Altar",
+                        itemTag = "Candles",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    },
+                    new RoomItem
+                    {
+                        name = "ReligiousStatue",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/ReligiousStatue"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 0,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 4f,
+                        itemTag = "Statue"
+                    }
                 }
             },
             {
                 Room.RoomType.Treasury,
                 new List<RoomItem>()
                 {
-                    MakeItem("TreasureChest", "Prefabs/RoomItems/TreasureChest", RoomItem.Priority.Primary),
-                    MakeItem("GoldPile", "Prefabs/RoomItems/GoldPile", RoomItem.Priority.Secondary),
-                    MakeItem("GemDisplay", "Prefabs/RoomItems/GemDisplay", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "TreasureChest",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/TreasureChest"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferWall = 4f,
+                        avoidDoors = 5f,
+                        itemTag = "TreasureChest",
+                        preferNearSameTag = 2f
+                    },
+                    new RoomItem
+                    {
+                        name = "GoldPile",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GoldPile"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferNearAnchor = 5f,
+                        anchorTag = "TreasureChest",
+                        itemTag = "GoldPile",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 4f
+                    },
+                    new RoomItem
+                    {
+                        name = "GemDisplay",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GemDisplay"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 0,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 2f,
+                        avoidDoors = 4f,
+                        itemTag = "GemDisplay"
+                    }
                 }
             },
             {
                 Room.RoomType.DiningHall,
                 new List<RoomItem>()
                 {
-                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Primary),
-                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Secondary),
-                    MakeItem("Chandelier", "Prefabs/RoomItems/Chandelier", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Table",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 3,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferCenter = 5f,
+                        avoidDoors = 5f,
+                        itemTag = "DiningTable"
+                    },
+                    new RoomItem
+                    {
+                        name = "Chair",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 6,
+                        allowRotation = true,
+                        preferNearAnchor = 6f,
+                        anchorTag = "DiningTable",
+                        itemTag = "Chair",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    },
+                    new RoomItem
+                    {
+                        name = "Chandelier",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chandelier"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 0,
+                        maxCount = 1,
+                        allowRotation = false,
+                        preferCenter = 3f,
+                        avoidDoors = 3f,
+                        itemTag = "Chandelier"
+                    }
                 }
             },
             {
                 Room.RoomType.Warehouse,
                 new List<RoomItem>()
                 {
-                    MakeItem("Crate", "Prefabs/RoomItems/Crate", RoomItem.Priority.Primary),
-                    MakeItem("Barrel", "Prefabs/RoomItems/Barrel", RoomItem.Priority.Secondary),
-                    MakeItem("Shelf", "Prefabs/RoomItems/Shelf", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Crate",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Crate"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 3,
+                        maxCount = 7,
+                        allowRotation = true,
+                        preferWall = 4f,
+                        avoidDoors = 5f,
+                        avoidCenter = 2f,
+                        itemTag = "Crate",
+                        preferNearSameTag = 3f
+                    },
+                    new RoomItem
+                    {
+                        name = "Barrel",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Barrel"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 5,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 4f,
+                        preferNearAnchor = 4f,
+                        anchorTag = "Crate",
+                        itemTag = "Barrel",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 3
+                    },
+                    new RoomItem
+                    {
+                        name = "Shelf",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Shelf"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        itemTag = "Shelf"
+                    }
                 }
             },
             {
                 Room.RoomType.ShopKeeper,
                 new List<RoomItem>()
                 {
-                    MakeItem("Counter", "Prefabs/RoomItems/Counter", RoomItem.Priority.Primary),
-                    MakeItem("DisplayCase", "Prefabs/RoomItems/DisplayCase", RoomItem.Priority.Secondary)
+                    new RoomItem
+                    {
+                        name = "Counter",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Counter"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferWall = 4f,
+                        avoidDoors = 5f,
+                        itemTag = "Counter"
+                    },
+                    new RoomItem
+                    {
+                        name = "DisplayCase",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/DisplayCase"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferNearAnchor = 5f,
+                        anchorTag = "Counter",
+                        itemTag = "DisplayCase",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 4f
+                    }
                 }
             },
             {
                 Room.RoomType.Kitchen,
                 new List<RoomItem>()
                 {
-                    MakeItem("Stove", "Prefabs/RoomItems/Stove", RoomItem.Priority.Primary),
-                    MakeItem("Table", "Prefabs/RoomItems/Table", RoomItem.Priority.Secondary),
-                    MakeItem("Chair", "Prefabs/RoomItems/Chair", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Stove",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Stove"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        itemTag = "Stove"
+                    },
+                    new RoomItem
+                    {
+                        name = "Table",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Table"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferCenter = 4f,
+                        avoidDoors = 4f,
+                        itemTag = "KitchenTable"
+                    },
+                    new RoomItem
+                    {
+                        name = "Chair",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Chair"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 4,
+                        allowRotation = true,
+                        preferNearAnchor = 4f,
+                        anchorTag = "KitchenTable",
+                        itemTag = "Chair",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    }
                 }
             },
             {
                 Room.RoomType.Tavern,
                 new List<RoomItem>()
                 {
-                    MakeItem("BarCounter", "Prefabs/RoomItems/BarCounter", RoomItem.Priority.Primary),
-                    MakeItem("Stool", "Prefabs/RoomItems/Stool", RoomItem.Priority.Secondary),
-                    MakeItem("Keg", "Prefabs/RoomItems/Keg", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "BarCounter",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/BarCounter"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 3,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 1,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        itemTag = "BarCounter"
+                    },
+                    new RoomItem
+                    {
+                        name = "Stool",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Stool"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 2,
+                        maxCount = 5,
+                        allowRotation = true,
+                        preferNearAnchor = 6f,
+                        anchorTag = "BarCounter",
+                        itemTag = "Stool",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 2,
+                        avoidDoors = 3f
+                    },
+                    new RoomItem
+                    {
+                        name = "Keg",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Keg"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 4f,
+                        preferNearSameTag = 2f,
+                        itemTag = "Keg"
+                    }
                 }
             },
             {
                 Room.RoomType.Prison,
                 new List<RoomItem>()
                 {
-                    MakeItem("Cell", "Prefabs/RoomItems/Cell", RoomItem.Priority.Primary),
-                    MakeItem("GuardPost", "Prefabs/RoomItems/GuardPost", RoomItem.Priority.Secondary),
-                    MakeItem("Crates", "Prefabs/RoomItems/Crates", RoomItem.Priority.Tertiary)
+                    new RoomItem
+                    {
+                        name = "Cell",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Cell"),
+                        priority = RoomItem.Priority.Primary,
+                        gridWidth = 2,
+                        gridLength = 2,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferWall = 5f,
+                        avoidDoors = 5f,
+                        avoidCenter = 3f,
+                        itemTag = "Cell"
+                    },
+                    new RoomItem
+                    {
+                        name = "GuardPost",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/GuardPost"),
+                        priority = RoomItem.Priority.Secondary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 2,
+                        allowRotation = true,
+                        preferNearAnchor = 4f,
+                        anchorTag = "Cell",
+                        itemTag = "GuardPost",
+                        minAnchorDistance = 1,
+                        maxAnchorDistance = 3,
+                        avoidDoors = 4f
+                    },
+                    new RoomItem
+                    {
+                        name = "Crates",
+                        prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Crates"),
+                        priority = RoomItem.Priority.Tertiary,
+                        gridWidth = 1,
+                        gridLength = 1,
+                        minCount = 1,
+                        maxCount = 3,
+                        allowRotation = true,
+                        preferWall = 3f,
+                        avoidDoors = 4f,
+                        preferNearSameTag = 2f,
+                        itemTag = "PrisonCrates"
+                    }
                 }
             }
         };
+
+        ValidateDatabase();
     }
 
-    private RoomItem MakeItem(string name, string resourcePath, RoomItem.Priority priority)
+    void ValidateDatabase()
     {
-        GameObject prefab = Resources.Load<GameObject>(resourcePath);
-        float area = 1f;
-        if (prefab != null)
+        foreach (var pair in roomItems)
         {
-            BoxCollider col = prefab.GetComponent<BoxCollider>();
-            if (col != null)
-                area = col.size.x * col.size.z;
-        }
-        else
-        {
-            Debug.LogWarning($"[RoomItemDatabase] Missing prefab at path: {resourcePath}");
-        }
+            foreach (RoomItem item in pair.Value)
+            {
+                if (item.prefab == null)
+                {
+                    Debug.LogWarning($"[RoomItemDatabase] Missing prefab for {pair.Key} -> {item.name}");
+                }
 
-        return new RoomItem
-        {
-            name = name,
-            prefab = prefab,
-            priority = priority,
-            areaOccupied = area
-        };
+                if (item.gridWidth <= 0) item.gridWidth = 1;
+                if (item.gridLength <= 0) item.gridLength = 1;
+                if (item.maxCount < item.minCount) item.maxCount = item.minCount;
+            }
+        }
     }
 }

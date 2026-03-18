@@ -25,8 +25,17 @@ public class LoadingScreen : MonoBehaviour
 
     void Update()
     {
-        var operation = MenuController.Instance.currentLoadOperation;
-        float progress = Mathf.Clamp01(operation.progress / 0.9f); //Only values between 0 and 1
+        float progress = 0f;
+
+        if (MenuController.Instance != null && MenuController.Instance.currentLoadOperation != null)
+        {
+            progress = Mathf.Clamp01(MenuController.Instance.currentLoadOperation.progress / 0.9f);
+        }
+        else if (LabyrinthManager.Instance != null && LabyrinthManager.Instance.isLoadingFloor)
+        {
+            progress = LabyrinthManager.Instance.floorLoadProgress;
+        }
+
         SetProgress(progress);
 
         tipTimer += Time.unscaledDeltaTime;
@@ -34,11 +43,6 @@ public class LoadingScreen : MonoBehaviour
         {
             tipTimer = 0f;
             SetTip(GetRandomTip());
-        }
-
-        if (operation.progress >= 0.9f)
-        {
-            SetProgress(1f);
         }
     }
 

@@ -58,7 +58,7 @@ public class ClassSystem : MonoBehaviour
             new ClassStats
             {
                 className = "Warrior",
-                baseHealth = 150,
+                baseHealth = 50,
                 baseMana = 30,
                 baseStamina = 120,
                 baseStrength = 18,
@@ -75,7 +75,7 @@ public class ClassSystem : MonoBehaviour
             new ClassStats
             {
                 className = "Archer",
-                baseHealth = 110,
+                baseHealth = 35,
                 baseMana = 40,
                 baseStamina = 80,
                 baseStrength = 12,
@@ -92,7 +92,7 @@ public class ClassSystem : MonoBehaviour
             new ClassStats
             {
                 className = "Mage",
-                baseHealth = 80,
+                baseHealth = 20,
                 baseMana = 150,
                 baseStamina = 30,
                 baseStrength = 6,
@@ -109,7 +109,7 @@ public class ClassSystem : MonoBehaviour
             new ClassStats
             {
                 className = "Thief",
-                baseHealth = 95,
+                baseHealth = 35,
                 baseMana = 35,
                 baseStamina = 100,
                 baseStrength = 10,

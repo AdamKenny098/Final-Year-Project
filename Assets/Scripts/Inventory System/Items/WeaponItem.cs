@@ -28,4 +28,10 @@ public class WeaponItem : Item
         Wand
     }
     public WeaponType weaponType;
+
+    public int GetDamage()
+    {
+        float multiplier = Rarity.Instance.GetMultiplier(rarity);
+        return Mathf.RoundToInt(damage * multiplier);
+    }
 }

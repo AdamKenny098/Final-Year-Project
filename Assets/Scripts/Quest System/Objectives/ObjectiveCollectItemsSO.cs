@@ -17,7 +17,15 @@ public class ObjectiveCollectItemsSO : QuestObjectiveSO
     public override string GetUIText(QuestInstance quest)
     {
         int current = quest.GetProgress(this);
-        if (current == int.MaxValue) current = requiredAmount;
+
+        if (current == int.MaxValue)
+            current = requiredAmount;
+
         return $"Collect {requiredAmount} {itemId} ({current}/{requiredAmount})";
+    }
+
+    public override string GetPreviewText()
+    {
+        return $"Collect {requiredAmount} {itemId}";
     }
 }

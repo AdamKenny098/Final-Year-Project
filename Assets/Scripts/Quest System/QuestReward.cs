@@ -6,7 +6,7 @@ public class QuestReward
     public int experience;
     public int gold;
 
-    // Placeholder – hook into inventory later
+    // Placeholder - hook into inventory later
     public void Grant()
     {
         if (experience > 0)

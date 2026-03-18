@@ -967,6 +967,7 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 824340278334193925
   - rid: 824340606610047151
+  - rid: 6084699579803501143
   m_OriginalGraph: {fileID: -6656301798112960638, guid: e731e7fe3d92281419559a6f59094c5b, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -989,6 +990,14 @@ MonoBehaviour:
           m_Value1: 11361454388814014731
         Name: Player
         m_Value: {fileID: 0}
+    - rid: 6084699579803501143
+      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 14074546340163186410
+          m_Value1: 3724900779824680822
+        Name: MaxHealth
+        m_Value: 30
 --- !u!114 &527749064431507723
 MonoBehaviour:
   m_ObjectHideFlags: 0

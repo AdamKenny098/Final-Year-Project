@@ -85,7 +85,7 @@ public class ShopSystem : MonoBehaviour
         if (merchantInventory == null || item == null)
             return false;
 
-        int price = item.value;
+        int price = GetValue(item);
 
         if (item == barteredItem)
         {
@@ -278,7 +278,11 @@ public class ShopSystem : MonoBehaviour
         return item.value;
     }
 
-
+    public int GetValue(Item item)
+    {
+        float multiplier = Rarity.Instance.GetMultiplier(item.rarity);
+        return Mathf.RoundToInt(item.value * multiplier);
+    }
 
 
 }

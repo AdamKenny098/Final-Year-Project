@@ -4,6 +4,7 @@ public class UIManager : MonoBehaviour
 {
     public GameObject playerMenuRoot;
     public UITabBar playerMenuTabs;
+    public GameObject tabsRoot;
 
     void Awake()
     {
@@ -35,6 +36,9 @@ public class UIManager : MonoBehaviour
 
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(active);
+
+        if (tabsRoot != null)
+            tabsRoot.SetActive(active);
 
         if (active  && playerMenuTabs != null)
             playerMenuTabs.OpenDefault();

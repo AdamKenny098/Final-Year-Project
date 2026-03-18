@@ -39,6 +39,7 @@ public class DialogueSystem : MonoBehaviour
     private bool isSkipping = false;
     
     private const string OPENSHOP_TAG = "OPENSHOP";
+    private const string OPENQUESTS_TAG = "OPENQUESTS";
     public NPC currentNPC;
     [SerializeField] private CanvasGroup dialogueGroup;
 
@@ -264,6 +265,20 @@ public class DialogueSystem : MonoBehaviour
                     PauseDialogue();
                     GameStates.Instance.SetState(GameState.Trading);
                     ShopSystem.Instance.OpenShop(currentNPC.GetComponent<Inventory>());
+                    break;
+
+                case OPENQUESTS_TAG:
+                    QuestGiverNPC questNPC = currentNPC as QuestGiverNPC;
+                    if (questNPC == null)
+                        break;
+
+                    PauseDialogue();
+                    GameStates.Instance.SetState(GameState.Trading);
+
+                    if (QuestGiverUI.Instance != null)
+                        QuestGiverUI.Instance.root.SetActive(true);
+                        QuestGiverUI.Instance.Open(questNPC, questNPC.GetAvailableQuests());
+
                     break;
             }
         }

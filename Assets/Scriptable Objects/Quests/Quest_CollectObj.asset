@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9faa86d61f78e34794bfe8d03e7022f, type: 3}
   m_Name: Quest_CollectObj
   m_EditorClassIdentifier: Assembly-CSharp::QuestData
-  questId: 
+  questId: Collect_Obj_Bone
   title: 
   description: 
   objectives:

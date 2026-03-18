@@ -15,4 +15,9 @@ public class ObjectiveReachFloorSO : QuestObjectiveSO
     {
         return $"Reach Floor {targetFloor}";
     }
+
+    public override string GetPreviewText()
+    {
+        return $"Reach Floor {targetFloor}";
+    }
 }

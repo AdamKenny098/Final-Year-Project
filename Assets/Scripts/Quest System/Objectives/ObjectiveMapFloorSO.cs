@@ -42,4 +42,9 @@ public class ObjectiveMapFloorSO : QuestObjectiveSO
 
         return $"Map Floor {targetFloor} ({current}/{required})";
     }
+
+    public override string GetPreviewText()
+    {
+        return $"Map Floor {targetFloor}";
+    }
 }

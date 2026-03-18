@@ -17,7 +17,15 @@ public class ObjectiveSlayEnemySO : QuestObjectiveSO
     public override string GetUIText(QuestInstance quest)
     {
         int current = quest.GetProgress(this);
-        if (current == int.MaxValue) current = requiredKills;
+
+        if (current == int.MaxValue)
+            current = requiredKills;
+
         return $"Slay {requiredKills} {targetEnemy} ({current}/{requiredKills})";
+    }
+
+    public override string GetPreviewText()
+    {
+        return $"Slay {requiredKills} {targetEnemy}";
     }
 }

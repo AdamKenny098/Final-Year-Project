@@ -14,7 +14,6 @@ public class QuestSystem : MonoBehaviour
     public static QuestSystem Instance { get; private set; }
 
     public QuestUIManager questUI;
-
     public List<QuestData> startingQuests;
 
     List<QuestInstance> activeQuests = new();
@@ -33,21 +32,30 @@ public class QuestSystem : MonoBehaviour
         Instance = this;
     }
 
-    void RefreshUI()
-    {
-        if (questUI != null)
-            questUI.Refresh();
-    }
-
     void Start()
     {
         foreach (var questData in startingQuests)
             StartQuest(questData);
     }
 
+    void RefreshUI()
+    {
+        if (questUI != null)
+            questUI.Refresh();
+    }
+
     public void StartQuest(QuestData data)
     {
         if (data == null)
+            return;
+
+        if (string.IsNullOrEmpty(data.questId))
+        {
+            Debug.LogWarning("[QuestSystem] Starting quest failed because questId is empty: " + data.name);
+            return;
+        }
+
+        if (IsQuestActive(data.questId) || IsQuestCompleted(data.questId))
             return;
 
         var instance = new QuestInstance(data);
@@ -56,9 +64,46 @@ public class QuestSystem : MonoBehaviour
         RefreshUI();
     }
 
+    public bool TryStartQuest(QuestData questData)
+    {
+        if (questData == null)
+            return false;
+
+        if (string.IsNullOrEmpty(questData.questId))
+        {
+            Debug.LogWarning("[QuestSystem] Tried to start a quest with an empty questId: " + questData.name);
+            return false;
+        }
+
+        if (IsQuestActive(questData.questId))
+        {
+            Debug.Log("[QuestSystem] Quest already active: " + questData.questId);
+            return false;
+        }
+
+        if (IsQuestCompleted(questData.questId))
+        {
+            Debug.Log("[QuestSystem] Quest already completed: " + questData.questId);
+            return false;
+        }
+
+        QuestInstance newQuest = new QuestInstance(questData);
+        newQuest.StartQuest();
+        activeQuests.Add(newQuest);
+
+        Debug.Log("[QuestSystem] Started quest: " + questData.questId);
+
+        RefreshUI();
+        return true;
+    }
+
     public void CompleteQuest(QuestInstance quest)
     {
-        Debug.Log($"[QuestSystem] Quest completed: {quest.data.questId}");
+        if (quest == null || quest.data == null)
+            return;
+
+        Debug.Log("[QuestSystem] Quest completed: " + quest.data.questId);
+
         if (!activeQuests.Contains(quest))
             return;
 
@@ -69,13 +114,13 @@ public class QuestSystem : MonoBehaviour
         RefreshUI();
     }
 
-    //These snapshots exist bc iterating over the lsits and erasing an element lead to an error
     public void NotifyEnemyKilled(EnemyType enemyType)
     {
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyEnemyKilled(enemyType);
-            RefreshUI();
+
+        RefreshUI();
     }
 
     public void NotifyItemCollected(string itemId, int amount)
@@ -83,7 +128,8 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyItemCollected(itemId, amount);
-            RefreshUI();
+
+        RefreshUI();
     }
 
     public void NotifyFloorReached(int floorIndex)
@@ -91,7 +137,8 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyFloorReached(floorIndex);
-            RefreshUI();
+
+        RefreshUI();
     }
 
     public void NotifyAreaDiscovered(int floorIndex, string areaId)
@@ -99,6 +146,7 @@ public class QuestSystem : MonoBehaviour
         var snapshot = activeQuests.ToArray();
         foreach (var quest in snapshot)
             quest.NotifyAreaDiscovered(floorIndex, areaId);
+
         RefreshUI();
     }
 
@@ -120,7 +168,8 @@ public class QuestSystem : MonoBehaviour
 
     public bool IsQuestActive(string questId)
     {
-        if (string.IsNullOrEmpty(questId)) return false;
+        if (string.IsNullOrEmpty(questId))
+            return false;
 
         for (int i = 0; i < activeQuests.Count; i++)
         {
@@ -128,12 +177,14 @@ public class QuestSystem : MonoBehaviour
             if (q != null && q.data != null && q.data.questId == questId)
                 return true;
         }
+
         return false;
     }
 
     public bool IsQuestCompleted(string questId)
     {
-        if (string.IsNullOrEmpty(questId)) return false;
+        if (string.IsNullOrEmpty(questId))
+            return false;
 
         for (int i = 0; i < completedQuests.Count; i++)
         {
@@ -141,18 +192,7 @@ public class QuestSystem : MonoBehaviour
             if (q != null && q.data != null && q.data.questId == questId)
                 return true;
         }
+
         return false;
     }
-
-    public bool TryStartQuest(QuestData data)
-    {
-        if (data == null) return false;
-        if (IsQuestActive(data.questId)) return false;
-        if (IsQuestCompleted(data.questId)) return false;
-
-        StartQuest(data);
-        return true;
-    }
-
-
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public enum FloorType
 {
@@ -22,6 +23,9 @@ public class LabyrinthManager : MonoBehaviour
 
     private Dictionary<int, FloorInstance> floors = new();
     public int currentFloorIndex;
+    public string loadingSceneName = "Loading Screen";
+    public bool isLoadingFloor;
+    public float floorLoadProgress;
 
     void Awake()
     {
@@ -31,6 +35,7 @@ public class LabyrinthManager : MonoBehaviour
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
@@ -73,16 +78,21 @@ public class LabyrinthManager : MonoBehaviour
 
         floor.root.SetActive(true);
         OnFloorChanged();
+
+        if (MapInitiator.Instance != null)
+            MapInitiator.Instance.RestartSearch();
     }
 
     public void GoToNextFloor()
     {
-        LoadFloor(currentFloorIndex + 1);
+        if (isLoadingFloor) return;
+        StartCoroutine(FloorLoadFlow(currentFloorIndex + 1));
     }
 
     public void GoToLastFloor()
     {
-        LoadFloor(currentFloorIndex - 1);
+        if (isLoadingFloor) return;
+        StartCoroutine(FloorLoadFlow(currentFloorIndex - 1));
     }
 
     FloorInstance CreateFloor(int index)
@@ -129,22 +139,12 @@ public class LabyrinthManager : MonoBehaviour
 
     public void TravelDown()
     {
-        int targetIndex = currentFloorIndex + 1;
-
-        if (targetIndex >= floorPlan.Count)
-            return;
-
-        LoadFloor(targetIndex);
+        GoToNextFloor();
     }
 
     public void TravelUp()
     {
-        int targetIndex = currentFloorIndex - 1;
-
-        if (targetIndex < 0)
-            return;
-
-        LoadFloor(targetIndex);
+        GoToLastFloor();
     }
 
     void OnFloorChanged()
@@ -156,7 +156,60 @@ public class LabyrinthManager : MonoBehaviour
     }
 
 
+    IEnumerator FloorLoadFlow(int targetIndex)
+    {
+        if (targetIndex < 0 || targetIndex >= floorPlan.Count)
+            yield break;
 
+        isLoadingFloor = true;
+        floorLoadProgress = 0f;
 
+        AsyncOperation overlayLoad = null;
+
+        if (!string.IsNullOrEmpty(loadingSceneName))
+        {
+            overlayLoad = SceneManager.LoadSceneAsync(loadingSceneName, LoadSceneMode.Additive);
+
+            while (!overlayLoad.isDone)
+            {
+                floorLoadProgress = Mathf.Clamp01(overlayLoad.progress / 0.9f) * 0.3f;
+                yield return null;
+            }
+        }
+
+        yield return null;
+        floorLoadProgress = 0.4f;
+
+        if (floors.TryGetValue(currentFloorIndex, out var current))
+            current.root.SetActive(false);
+
+        floorLoadProgress = 0.55f;
+        yield return null;
+
+        currentFloorIndex = targetIndex;
+
+        if (!floors.TryGetValue(targetIndex, out var floor))
+        {
+            floor = CreateFloor(targetIndex);
+            floors.Add(targetIndex, floor);
+        }
+
+        floorLoadProgress = 0.85f;
+        yield return null;
+
+        floor.root.SetActive(true);
+        OnFloorChanged();
+
+        if (MapInitiator.Instance != null)
+            MapInitiator.Instance.RestartSearch();
+
+        floorLoadProgress = 1f;
+        yield return null;
+
+        if (!string.IsNullOrEmpty(loadingSceneName))
+            yield return SceneManager.UnloadSceneAsync(loadingSceneName);
+
+        isLoadingFloor = false;
+        floorLoadProgress = 0f;
+    }
 }
-

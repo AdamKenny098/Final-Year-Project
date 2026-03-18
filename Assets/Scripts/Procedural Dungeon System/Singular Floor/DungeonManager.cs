@@ -143,6 +143,7 @@ public class DungeonManager : MonoBehaviour
             decorator.FinalizeDecor();
 
             optimizer.CollectBounds();
+            optimizer.DestroyOldRoomShellObjects();
             dungeonFinalized = true;
         }
 
@@ -166,20 +167,20 @@ public class DungeonManager : MonoBehaviour
         currentState = newState;
     }
 
-    public Vector3 GetValidPointInRoom(Room room)
+    public UnityEngine.Vector3 GetValidPointInRoom(Room room)
     {
         BoxCollider box = room.GetComponent<BoxCollider>();
 
-        Vector3 localCenter = box.center;
-        Vector3 localSize = box.size;
+        UnityEngine.Vector3 localCenter = box.center;
+        UnityEngine.Vector3 localSize = box.size;
 
-        Vector3 localPoint = localCenter + new Vector3(
+        UnityEngine.Vector3 localPoint = localCenter + new UnityEngine.Vector3(
             Random.Range(-localSize.x * 0.4f, localSize.x * 0.4f),
             0f,
             Random.Range(-localSize.z * 0.4f, localSize.z * 0.4f)
         );
 
-        Vector3 worldPoint = room.transform.TransformPoint(localPoint);
+        UnityEngine.Vector3 worldPoint = room.transform.TransformPoint(localPoint);
 
         worldPoint.y = box.bounds.min.y + 0.05f;
 
@@ -208,8 +209,8 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        Vector3 spawnPos = GetValidPointInRoom(targetRoom);
-        Instantiate(nextFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
+        UnityEngine.Vector3 spawnPos = GetValidPointInRoom(targetRoom);
+        Instantiate(nextFloorPrefab, spawnPos, UnityEngine.Quaternion.identity, activeFloorRoot);
     }
 
     public void SpawnLastFloorExit(Room playerRoom)
@@ -223,8 +224,8 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        Vector3 spawnPos = GetValidPointInRoom(targetRoom);
-        Instantiate(lastFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
+        UnityEngine.Vector3 spawnPos = GetValidPointInRoom(targetRoom);
+        Instantiate(lastFloorPrefab, spawnPos, UnityEngine.Quaternion.identity, activeFloorRoot);
     }
 
     public void ResetPipeline()
