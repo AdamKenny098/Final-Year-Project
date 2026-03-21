@@ -85,8 +85,8 @@ public class Entity : MonoBehaviour
 
     public bool TryUseAbilityOn(Entity target, AbilityData ability, Vector3 hitPoint)
     {
-        if (target == null || ability == null)
-            return false;
+       if (target == null || ability == null) 
+       return false;
 
         if (stats == null)
         {

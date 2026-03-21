@@ -35,7 +35,7 @@ public partial class SearchesForPlayerAction : Action
     protected override Status OnUpdate()
     {
         if (AIState.Value != State.Search)
-            return Status.Failure;
+            return Status.Success;
 
         float currentY = agentTransform.eulerAngles.y;
         float newY = Mathf.MoveTowardsAngle(

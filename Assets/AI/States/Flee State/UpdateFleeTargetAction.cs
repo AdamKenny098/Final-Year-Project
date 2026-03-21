@@ -10,17 +10,20 @@ using Unity.Properties;
 public partial class UpdateFleeTargetAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
-    [SerializeReference] public BlackboardVariable<GameObject> Threat;
+    [SerializeReference] public BlackboardVariable<Transform> Threat;
     [SerializeReference] public BlackboardVariable<Transform> FleeTarget;
+
+    [SerializeReference] public BlackboardVariable<bool> IsFleeing;
+    [SerializeReference] public BlackboardVariable<float> PanicTimeRemaining;
 
     public float fleeDistance = 8f;
     public float sampleRadius = 3f;
 
     [Header("Panic")]
-    public float directionHoldTime = 0.6f;     // how long to keep one “panic direction”
-    public float sidewaysJitter = 0.9f;        // how much side-to-side randomness
-    public float backBias = 1.2f;              // >1 means “prefer away from threat”
-    public float randomAngleDegrees = 35f;     // adds cone randomness around away dir
+    public float directionHoldTime = 0.6f;
+    public float sidewaysJitter = 0.9f;
+    public float backBias = 1.2f;
+    public float randomAngleDegrees = 35f;
 
     float nextRepickTime;
     Vector3 chosenDir;
@@ -29,6 +32,12 @@ public partial class UpdateFleeTargetAction : Action
     {
         nextRepickTime = 0f;
         chosenDir = Vector3.zero;
+
+        if (FleeTarget != null && FleeTarget.Value == null)
+        {
+            GameObject temp = new GameObject("FleeTarget");
+            FleeTarget.Value = temp.transform;
+        }
         return Status.Running;
     }
 
@@ -37,12 +46,13 @@ public partial class UpdateFleeTargetAction : Action
         if (Agent?.Value == null) return Status.Failure;
         if (Threat?.Value == null) return Status.Failure;
         if (FleeTarget == null) return Status.Failure;
+        if (IsFleeing == null) return Status.Failure;
+        if (PanicTimeRemaining == null) return Status.Failure;
+        if (!IsFleeing.Value || PanicTimeRemaining.Value <= 0f) return Status.Failure;
 
         Vector3 agentPos = Agent.Value.transform.position;
-        Vector3 threatPos = Threat.Value.transform.position;
-
-        // Base “away” direction
-        Vector3 away = (agentPos - threatPos);
+        Vector3 threatPos = Threat.Value.position;
+        Vector3 away = agentPos - threatPos;
         away.y = 0f;
 
         if (away.sqrMagnitude < 0.0001f)
@@ -50,20 +60,16 @@ public partial class UpdateFleeTargetAction : Action
         else
             away.Normalize();
 
-        // Periodically repick a new panic direction (zig-zag)
         if (Time.time >= nextRepickTime || chosenDir.sqrMagnitude < 0.0001f)
         {
             nextRepickTime = Time.time + Mathf.Max(0.05f, directionHoldTime);
 
-            // 1) cone around away direction
             float angle = UnityEngine.Random.Range(-randomAngleDegrees, randomAngleDegrees);
             Vector3 coneDir = Quaternion.AngleAxis(angle, Vector3.up) * away;
 
-            // 2) add sideways jitter
             Vector3 right = new Vector3(-away.z, 0f, away.x); // perpendicular on XZ
             float side = UnityEngine.Random.Range(-sidewaysJitter, sidewaysJitter);
 
-            // 3) combine with bias to keep “mostly away”
             Vector3 raw = (coneDir * backBias) + (right * side);
             raw.y = 0f;
 
@@ -75,7 +81,6 @@ public partial class UpdateFleeTargetAction : Action
 
         if (!NavMesh.SamplePosition(desiredPos, out NavMeshHit hit, sampleRadius, NavMesh.AllAreas))
         {
-            // If sample fails, force a repick next tick instead of failing the whole flee
             nextRepickTime = 0f;
             return Status.Running;
         }

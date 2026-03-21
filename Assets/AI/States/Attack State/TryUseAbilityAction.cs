@@ -10,21 +10,51 @@ public partial class TryUseAbilityAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
     [SerializeReference] public BlackboardVariable<Transform> CombatTarget;
-
     protected override Status OnUpdate()
     {
-        if (Self.Value == null) return Status.Failure;
-        if (CombatTarget.Value == null) return Status.Failure;
 
-        var ai = Self.Value.GetComponentInChildren<AIAbilityManager>();
-        if (ai == null) return Status.Failure;
+        if (Self == null || Self.Value == null) return Status.Failure;
 
-        var targetEntity = CombatTarget.Value.GetComponentInParent<Entity>();
-        if (targetEntity == null || targetEntity.isDead) return Status.Failure;
+        GameObject selfObject = Self.Value;
+        Transform selfTransform = selfObject.transform;
 
-        Vector3 hitPoint = CombatTarget.Value.position;
+        if (CombatTarget == null || CombatTarget.Value == null) return Status.Failure;
+
+        Transform targetTransform = CombatTarget.Value;
+        float directDistance = Vector3.Distance(selfTransform.position, targetTransform.position);
+
+        var ai = selfObject.GetComponentInChildren<AIAbilityManager>();
+        if (ai == null || ai.abilityManager == null) return Status.Failure;
+
+        var targetEntity = targetTransform.GetComponentInParent<Entity>();
+        if (targetEntity == null || targetEntity.stats == null || targetEntity.isDead) return Status.Failure;
+
+        int slot = 0;
+        AbilityData ability = ai.abilityManager.GetAbility(slot);
+
+        if (ability == null)
+        {
+            return Status.Failure;
+        }
+
+        bool slotReady = ai.abilityManager.IsReady(slot);
+        float slotCooldownRemaining = ai.abilityManager.GetCooldownRemaining(slot);
+
+        Vector3 hitPoint = targetTransform.position;
+
+        bool inRange = ability.range <= 0f || directDistance <= ability.range;
+        bool canPayCosts = ai.owner != null && CombatSystem.Instance != null && CombatSystem.Instance.CanPayCosts(ai.owner, ability);
         bool cast = ai.TryAttackNow(targetEntity, hitPoint);
 
-        return cast ? Status.Success : Status.Running;
+        if (cast)
+        {
+            if (targetEntity.stats != null)
+            {
+                bool hpDropped = targetEntity.stats.health < targetEntity.stats.maxHealth;
+            }
+
+            return Status.Success;
+        }
+        return Status.Failure;
     }
 }

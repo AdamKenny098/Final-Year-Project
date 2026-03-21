@@ -1,22 +1,21 @@
 using UnityEngine;
+using System.Collections;
 
 public class AIAbilityManager : MonoBehaviour
 {
     public Entity owner;
     public AbilityManager abilityManager;
 
-    [Header("Target")]
-    public Transform target;
-    public float thinkRate = 0.2f;
-
     [Header("Animation")]
     public Animator anim;
-    public string speedFloat = "Speed";
-    public string attackTrigger = "Attack";
+    public string attackInt = "Attack";
     public float minTimeBetweenAnimTriggers = 0.2f;
+    public string attackStateTag = "Attack";
 
-    float nextThink;
     float nextAnimAllowed;
+
+    bool attackAnimating;
+    Coroutine attackResetRoutine;
 
     void Awake()
     {
@@ -24,71 +23,146 @@ public class AIAbilityManager : MonoBehaviour
         if (abilityManager == null) abilityManager = GetComponentInParent<AbilityManager>();
         if (abilityManager != null) abilityManager.owner = owner;
         if (anim == null) anim = GetComponentInParent<Animator>();
-        if (target == null)
+    }
+
+    public bool TrySlot(int slot, Entity targetEntity, Vector3 hitPoint)
+    {
+
+        if (owner == null || owner.isDead)
         {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player != null)
-            {
-                target = player.transform;
-            }
+            return false;
         }
-    }
 
-    void Update()
-    {
-        if (owner == null || owner.isDead) return;
-        if (abilityManager == null || abilityManager.loadout == null) return;
+        if (abilityManager == null)
+        {
+            return false;
+        }
 
-        if (Time.time < nextThink) return;
-        nextThink = Time.time + thinkRate;
+        if (targetEntity == null || targetEntity.isDead)
+        {
+            return false;
+        }
 
-        if (target == null) return;
+        if (attackAnimating)
+        {
+           return false;
+        }
 
-        Entity targetEntity = target.GetComponentInParent<Entity>();
-        if (targetEntity == null || targetEntity.isDead) return;
-
-        Vector3 hitPoint = targetEntity.transform.position;
-
-        TryOnlySlot(targetEntity, hitPoint);
-    }
-
-    void TryOnlySlot(Entity targetEntity, Vector3 hitPoint)
-    {
-        TrySlot(0, targetEntity, hitPoint);
-    }
-
-    bool TrySlot(int slot, Entity targetEntity, Vector3 hitPoint)
-    {
-        if (!abilityManager.IsReady(slot)) return false;
+        bool ready = abilityManager.IsReady(slot);
+        if (!ready)
+        {
+            return false;
+        }
 
         AbilityData abilityData = abilityManager.GetAbility(slot);
-        if (abilityData == null) return false;
+        if (abilityData == null)
+        {
+            return false;
+        }
 
         if (abilityData.range > 0f)
         {
             float distance = Vector3.Distance(owner.transform.position, targetEntity.transform.position);
-            if (distance > abilityData.range) return false;
+
+            if (distance > abilityData.range)
+            {
+                return false;
+            }
         }
 
         bool ok = abilityManager.TryCast(slot, abilityData, targetEntity, hitPoint);
-        if (!ok) return false;
 
-        if (anim != null && Time.time >= nextAnimAllowed)
+        if (!ok)
         {
-            if (!string.IsNullOrEmpty(speedFloat)) anim.SetFloat(speedFloat, 0f);
-            if (!string.IsNullOrEmpty(attackTrigger)) anim.SetTrigger(attackTrigger);
-            nextAnimAllowed = Time.time + minTimeBetweenAnimTriggers;
+            return false;
         }
+
+        if (anim == null)
+        {
+            return true;
+        }
+
+        if (Time.time < nextAnimAllowed)
+        {
+            return true;
+        }
+
+        int attackValue = Random.value < 0.5f ? 1 : 2;
+        anim.SetInteger(attackInt, attackValue);
+
+        attackAnimating = true;
+        nextAnimAllowed = Time.time + minTimeBetweenAnimTriggers;
+
+        if (attackResetRoutine != null)
+            StopCoroutine(attackResetRoutine);
+
+        attackResetRoutine = StartCoroutine(ResetAttackWhenStateFinishes());
 
         return true;
     }
 
-    public bool TryAttackNow(Entity targetEntity, Vector3 hitPoint)
+    public bool TryAttackNow(int slot, Entity targetEntity, Vector3 hitPoint)
     {
         if (owner == null || owner.isDead) return false;
         if (abilityManager == null || abilityManager.loadout == null) return false;
         if (targetEntity == null || targetEntity.isDead) return false;
-        return TrySlot(0, targetEntity, hitPoint);
+
+        return TrySlot(slot, targetEntity, hitPoint);
     }
 
+    public bool TryAttackNow(Entity targetEntity, Vector3 hitPoint)
+    {
+        return TryAttackNow(0, targetEntity, hitPoint);
+    }
+
+    IEnumerator ResetAttackWhenStateFinishes()
+    {
+        yield return null;
+
+        int enterSafety = 0;
+
+        while (anim != null)
+        {
+            AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
+            if (state.IsTag(attackStateTag))
+                break;
+
+            enterSafety++;
+            if (enterSafety > 300)
+            {
+                attackAnimating = false;
+                attackResetRoutine = null;
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        if (anim != null)
+        {
+            anim.SetInteger(attackInt, 0);
+        }
+
+        int exitSafety = 0;
+
+        while (anim != null)
+        {
+            AnimatorStateInfo state = anim.GetCurrentAnimatorStateInfo(0);
+            if (!state.IsTag(attackStateTag))
+                break;
+
+            exitSafety++;
+            if (exitSafety > 300)
+            {
+                attackAnimating = false;
+                attackResetRoutine = null;
+                yield break;
+            }
+
+            yield return null;
+        }
+
+        attackAnimating = false;
+        attackResetRoutine = null;
+    }
 }

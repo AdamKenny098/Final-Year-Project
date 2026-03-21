@@ -8,9 +8,6 @@ using Unity.Properties;
 [NodeDescription(name: "FleeGuardAction", story: "Fails if State is not Fleeing", category: "Action", id: "a20c53dd58af20452be8b6de189b537e")]
 public partial class FleeGuardAction : Action
 {
-    [SerializeReference] public BlackboardVariable<bool> IsFleeing;
-    [SerializeReference] public BlackboardVariable<GameObject> Agent;
-    [SerializeReference] public BlackboardVariable<float> RunSpeed;
     [SerializeReference] public BlackboardVariable<State> AIState;
 
     protected override Status OnUpdate()

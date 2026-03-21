@@ -12,6 +12,7 @@ public partial class AgentHealthMonitorAction : Action
     [SerializeReference] public BlackboardVariable<float> Health;
     [SerializeReference] public BlackboardVariable<float> MaxHealth;
     [SerializeReference] public BlackboardVariable<bool> IsDead;
+    [SerializeReference] public BlackboardVariable<Transform> LastThreat;
 
     Entity entity;
 
@@ -44,7 +45,15 @@ public partial class AgentHealthMonitorAction : Action
 
         if (IsDead != null) IsDead.Value = entity.isDead;
 
-
+        if (LastThreat != null)
+        {
+            if (entity.lastAttacker != null)
+                LastThreat.Value = entity.lastAttacker.transform;
+            else if (entity.lastDamageSource != null)
+                LastThreat.Value = entity.lastDamageSource.transform;
+            else
+                LastThreat.Value = null;
+        }
         return Status.Running;
     }
 

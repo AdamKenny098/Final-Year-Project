@@ -10,7 +10,9 @@ public partial class VisionAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<bool> CanSeePlayer;
+    [SerializeReference] public BlackboardVariable<GameObject> Player;
     [SerializeReference] public BlackboardVariable<Transform> PlayerTransform;
+    [SerializeReference] public BlackboardVariable<Transform> CurrentTarget;
     [SerializeReference] public BlackboardVariable<Transform> LastKnownPlayerTransform;
 
     [Header("Vision Settings")]
@@ -39,7 +41,14 @@ public partial class VisionAction : Action
     protected override Status OnUpdate()
     {
         if (!player)
+        {
+            CanSeePlayer.Value = false;
+
+            if (Player != null) Player.Value = null;
+            if (PlayerTransform != null) PlayerTransform.Value = null;
+            if (CurrentTarget != null) CurrentTarget.Value = null;
             return Status.Running;
+        }
 
         bool canSee = ComputeVision();
 
@@ -47,13 +56,28 @@ public partial class VisionAction : Action
 
         if (canSee)
         {
-            PlayerTransform.Value = player;
-            LastKnownPlayerTransform.Value = player;
-        }
+            if (Player != null)
+                Player.Value = player.gameObject;
 
-        if (!canSee)
+            if (PlayerTransform != null)
+                PlayerTransform.Value = player;
+
+            if (CurrentTarget != null)
+                CurrentTarget.Value = player;
+
+            if (LastKnownPlayerTransform != null)
+                LastKnownPlayerTransform.Value = player;
+        }
+        else
         {
-            PlayerTransform.Value = null;
+            if (Player != null)
+                Player.Value = null;
+
+            if (PlayerTransform != null)
+                PlayerTransform.Value = null;
+
+            if (CurrentTarget != null)
+                CurrentTarget.Value = null;
         }
 
         return Status.Running;
@@ -76,17 +100,11 @@ public partial class VisionAction : Action
         {
             if (!h.transform) continue;
 
-            // skip any collider belonging to this agent
             if (h.transform.root == Agent.Value.transform.root)
                 continue;
 
-            Debug.Log($"[Vision] First non-self hit: {h.collider.name} | Root: {h.transform.root.name} | Tag: {h.collider.tag}", h.collider);
-
             return h.transform.CompareTag("Player") || h.transform.root.CompareTag("Player");
         }
-
         return false;
     }
-
 }
-

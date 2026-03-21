@@ -37,7 +37,7 @@ public partial class InvestigateTargetAction : Action
     protected override Status OnUpdate()
     {
         if (AIState.Value != State.Search)
-            return Status.Failure;
+            return Status.Success;
 
         if (!nav.pathPending && nav.remainingDistance <= nav.stoppingDistance)
         {

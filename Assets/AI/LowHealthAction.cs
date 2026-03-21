@@ -11,8 +11,10 @@ public partial class LowHealthAction : Action
     [SerializeReference] public BlackboardVariable<float> MaxHealth;
     [SerializeReference] public BlackboardVariable<float> Health;
     [SerializeReference] public BlackboardVariable<float> LowHealthThreshold;
+
     [SerializeReference] public BlackboardVariable<bool> IsLowHealth;
-    [SerializeReference] public BlackboardVariable<bool> IsFleeing; // optional safety
+    [SerializeReference] public BlackboardVariable<Transform> LastThreat;
+    [SerializeReference] public BlackboardVariable<Transform> Threat;
 
     protected override Status OnStart()
     {
@@ -30,20 +32,32 @@ public partial class LowHealthAction : Action
         float max = MaxHealth.Value;
         float hp = Health.Value;
 
-        // Dead = not fleeing
+        if (LowHealthThreshold.Value <= 0f)
+            LowHealthThreshold.Value = max * 0.15f;
+
+        // Dead = not fleeing, no threat
         if (hp <= 0f)
         {
             IsLowHealth.Value = false;
-            if (IsFleeing != null) IsFleeing.Value = false;
+
+            if (Threat != null)
+                Threat.Value = null;
+
             return Status.Running;
         }
 
         float threshold = LowHealthThreshold.Value;
-        if (threshold <= 0f)
-            LowHealthThreshold.Value = max * 0.15f;
-
         bool low = hp <= threshold;
+
         IsLowHealth.Value = low;
+
+        if (Threat != null)
+        {
+            if (low && LastThreat != null && LastThreat.Value != null)
+                Threat.Value = LastThreat.Value;
+            else
+                Threat.Value = null;
+        }
 
         return Status.Running;
     }

@@ -18,49 +18,38 @@ public partial class NavigateWhileFleeingAction : Action
 
     NavMeshAgent nav;
     Animator anim;
-
     protected override Status OnStart()
     {
-        if (Agent?.Value == null)
-            return Status.Failure;
+        if (Agent?.Value == null) return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
-        if (!nav || !nav.isOnNavMesh)
-            return Status.Failure;
+        if (nav == null || !nav.isOnNavMesh) return Status.Failure;
 
         nav.isStopped = false;
         nav.speed = FleeSpeed.Value;
 
         anim = Agent.Value.GetComponent<Animator>();
         anim.SetFloat("Speed", 1.0f);
-
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (!IsFleeing.Value || PanicTimeRemaining.Value <= 0f)
-            return Status.Failure;
+        if (!IsFleeing.Value || PanicTimeRemaining.Value <= 0f) return Status.Failure;
+        if (Agent == null || Agent.Value == null) return Status.Failure;
+        if (FleeTarget == null) return Status.Failure;
+        if (FleeTarget.Value == null) return Status.Running;
 
-        if (Agent == null || Agent.Value == null)
-            return Status.Failure;
 
-        if (FleeTarget == null || FleeTarget.Value == null)
-            return Status.Failure;
+        if (nav == null || !nav.isOnNavMesh) return Status.Failure;
+        bool pathSet = nav.SetDestination(FleeTarget.Value.position);
 
-        if (nav == null || !nav.isOnNavMesh)
-            return Status.Failure;
-
-        nav.SetDestination(FleeTarget.Value.position);
         return Status.Running;
     }
-
 
     protected override void OnEnd()
     {
         if (nav && nav.isOnNavMesh && !IsFleeing.Value)
-        {
             nav.ResetPath();
-        }
     }
 }

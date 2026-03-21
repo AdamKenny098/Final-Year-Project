@@ -226,7 +226,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90c089d5907c7a4db326e1c92fd32e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadingScreen
-  loadingSceneName: Loading Screen
+  progressSlider: {fileID: 1202731101}
+  tipText: {fileID: 1101272767}
   tips:
   - This is a tip for new players
   - Tips sometimes pop up here

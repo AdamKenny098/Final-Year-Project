@@ -10,75 +10,72 @@ using Unity.Properties;
 public partial class ChaseAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
-    [SerializeReference] public BlackboardVariable<State> AIState;
-    [SerializeReference] public BlackboardVariable<Transform> PlayerTransform;
-
-    // This should be the *raw* ability range (or a shared range value). We apply the buffer below.
+    [SerializeReference] public BlackboardVariable<Transform> Target;
     [SerializeReference] public BlackboardVariable<float> AttackRange = new(2.0f);
-
-    // IMPORTANT: Chase should NOT set this true. Attack owns the lock.
     [SerializeReference] public BlackboardVariable<bool> ChaseLocked;
 
     public float stopBuffer = 0.25f;
+    public float repathThreshold = 0.2f;
 
     NavMeshAgent nav;
-    Animator anim;
+    Vector3 lastDestination = Vector3.positiveInfinity;
 
     protected override Status OnStart()
     {
-        if (Agent?.Value == null || PlayerTransform?.Value == null)
+        if (Agent?.Value == null)
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
         if (nav == null || !nav.isOnNavMesh)
             return Status.Failure;
 
-        anim = Agent.Value.GetComponent<Animator>();
-
+        ApplyStoppingDistance();
         nav.isStopped = false;
-
-        float r = (AttackRange != null && AttackRange.Value > 0f) ? AttackRange.Value : 2.0f;
-        nav.stoppingDistance = Mathf.Max(0.05f, r - stopBuffer);
-
-        if (anim) anim.SetFloat("Speed", 1.0f);
-
-        // Optional safety: if we ever re-enter chase, clear a stale lock.
-        // If you only want Attack to clear it, delete this line.
-        if (ChaseLocked != null) ChaseLocked.Value = false;
+        lastDestination = Vector3.positiveInfinity;
 
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (AIState == null || AIState.Value != State.Chase)
+        if (Agent?.Value == null)
             return Status.Failure;
 
-        if (PlayerTransform?.Value == null)
+        if (nav == null || !nav.isOnNavMesh)
             return Status.Failure;
 
-        // If something still has chase locked, just wait in chase state.
-        // (Prevents jitter if lock clears a frame later.)
         if (ChaseLocked != null && ChaseLocked.Value)
         {
-            if (anim) anim.SetFloat("Speed", 0.0f);
-            if (nav && nav.isOnNavMesh) nav.isStopped = true;
-            return Status.Running;
+            StopAgent();
+            return Status.Failure;
         }
 
-        if (nav && nav.isOnNavMesh)
+        if (Target?.Value == null)
         {
-            nav.isStopped = false;
-            nav.SetDestination(PlayerTransform.Value.position);
+            StopAgent();
+            return Status.Failure;
         }
 
-        if (!nav.pathPending && nav.remainingDistance <= nav.stoppingDistance)
-        {
-            AIState.Value = State.Attack;
-            if (anim) anim.SetFloat("Speed", 0.0f);
+        ApplyStoppingDistance();
 
-            // DO NOT set ChaseLocked here. Attack owns the lock.
+        Vector3 agentPos = Agent.Value.transform.position;
+        Vector3 targetPos = Target.Value.position;
+
+        float range = GetAttackRange();
+        float distance = Vector3.Distance(agentPos, targetPos);
+
+        if (distance <= range)
+        {
+            StopAgent();
             return Status.Success;
+        }
+
+        nav.isStopped = false;
+
+        if (Vector3.Distance(lastDestination, targetPos) > repathThreshold || !nav.hasPath)
+        {
+            nav.SetDestination(targetPos);
+            lastDestination = targetPos;
         }
 
         return Status.Running;
@@ -86,7 +83,32 @@ public partial class ChaseAction : Action
 
     protected override void OnEnd()
     {
-        if (nav && nav.isOnNavMesh)
-            nav.ResetPath();
+        StopAgent();
+    }
+
+    float GetAttackRange()
+    {
+        if (AttackRange != null && AttackRange.Value > 0f)
+            return AttackRange.Value;
+
+        return 2f;
+    }
+
+    void ApplyStoppingDistance()
+    {
+        if (nav == null)
+            return;
+
+        float range = GetAttackRange();
+        nav.stoppingDistance = Mathf.Max(0.05f, range - stopBuffer);
+    }
+
+    void StopAgent()
+    {
+        if (nav == null || !nav.isOnNavMesh)
+            return;
+
+        nav.isStopped = true;
+        nav.ResetPath();
     }
 }
