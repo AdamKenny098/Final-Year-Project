@@ -9,35 +9,35 @@ using Unity.Properties;
 public partial class SelectSearchTargetAction : Action
 {
     [SerializeReference] public BlackboardVariable<State> AIState;
-    [SerializeReference] public BlackboardVariable<Transform> LastKnownPlayerTransform;
-    [SerializeReference] public BlackboardVariable<Transform> SoundPosition;
-    [SerializeReference] public BlackboardVariable<Transform> SearchTarget;
+
+    [SerializeReference] public BlackboardVariable<Vector3> LastKnownPlayerPosition;
+    [SerializeReference] public BlackboardVariable<bool> HasLastKnownPlayerPosition;
+
+    [SerializeReference] public BlackboardVariable<Vector3> LastHeardNoisePosition;
+    [SerializeReference] public BlackboardVariable<bool> HasHeardNoise;
+
+    [SerializeReference] public BlackboardVariable<Vector3> SearchPosition;
     [SerializeReference] public BlackboardVariable<SearchSourceType> SearchSource;
 
     protected override Status OnUpdate()
     {
-        // Only valid during Search state
-        if (AIState.Value != State.Search)
+        if (AIState == null || AIState.Value != State.Search)
             return Status.Failure;
 
-        // 1: Player
-        if (LastKnownPlayerTransform.Value != null)
+        if (HasLastKnownPlayerPosition != null && HasLastKnownPlayerPosition.Value)
         {
-            SearchTarget.Value = LastKnownPlayerTransform.Value;
+            SearchPosition.Value = LastKnownPlayerPosition.Value;
             SearchSource.Value = SearchSourceType.Player;
             return Status.Success;
         }
 
-        // 2: Noise
-        if (SoundPosition.Value != null)
+        if (HasHeardNoise != null && HasHeardNoise.Value)
         {
-            SearchTarget.Value = SoundPosition.Value;
+            SearchPosition.Value = LastHeardNoisePosition.Value;
             SearchSource.Value = SearchSourceType.Noise;
             return Status.Success;
         }
 
-        // Nothing to search
-        SearchTarget.Value = null;
         SearchSource.Value = SearchSourceType.None;
         return Status.Failure;
     }

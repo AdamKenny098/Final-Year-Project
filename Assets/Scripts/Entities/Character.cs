@@ -17,6 +17,11 @@ public class Character : Entity
 
     public virtual void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            characterClass = GameManager.Instance.selectedClass;
+        }
+
         ApplyClassToStats();
     }
 

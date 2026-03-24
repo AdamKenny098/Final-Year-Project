@@ -27,9 +27,9 @@ public class LoadingScreen : MonoBehaviour
     {
         float progress = 0f;
 
-        if (MenuController.Instance != null && MenuController.Instance.currentLoadOperation != null)
+        if (GameManager.Instance != null && GameManager.Instance.currentLoadOperation != null)
         {
-            progress = Mathf.Clamp01(MenuController.Instance.currentLoadOperation.progress / 0.9f);
+            progress = Mathf.Clamp01(GameManager.Instance.currentLoadOperation.progress / 0.9f);
         }
         else if (LabyrinthManager.Instance != null && LabyrinthManager.Instance.isLoadingFloor)
         {

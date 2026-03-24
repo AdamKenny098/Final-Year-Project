@@ -11,6 +11,8 @@ public partial class SearchTimerAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<State> AIState;
+    [SerializeReference] public BlackboardVariable<float> SearchTimeRemaining;
+    [SerializeReference] public BlackboardVariable<bool> IsSearching;
 
     public float rotationSpeed = 120f;
     public float minTurnAngle = 60f;
@@ -22,7 +24,7 @@ public partial class SearchTimerAction : Action
 
     protected override Status OnStart()
     {
-        if (Agent?.Value == null)
+        if (Agent?.Value == null || SearchTimeRemaining == null)
             return Status.Failure;
 
         agentTransform = Agent.Value.transform;
@@ -34,32 +36,38 @@ public partial class SearchTimerAction : Action
             nav.updateRotation = false;
         }
 
+        if (IsSearching != null)
+            IsSearching.Value = true;
+
         PickNewYaw();
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (AIState.Value != State.Search)
+        if (AIState == null || AIState.Value != State.Search)
             return Status.Success;
 
-        float currentY = agentTransform.eulerAngles.y;
-        float newY = Mathf.MoveTowardsAngle(
-            currentY,
-            targetYaw,
-            rotationSpeed * Time.deltaTime
-        );
+        SearchTimeRemaining.Value -= Time.deltaTime;
 
+        float currentY = agentTransform.eulerAngles.y;
+        float newY = Mathf.MoveTowardsAngle(currentY, targetYaw, rotationSpeed * Time.deltaTime);
         agentTransform.rotation = Quaternion.Euler(0f, newY, 0f);
 
         if (Mathf.Abs(Mathf.DeltaAngle(newY, targetYaw)) < 1f)
             PickNewYaw();
+
+        if (SearchTimeRemaining.Value <= 0f)
+            return Status.Success;
 
         return Status.Running;
     }
 
     protected override void OnEnd()
     {
+        if (IsSearching != null)
+            IsSearching.Value = false;
+
         if (nav != null)
         {
             nav.updateRotation = true;
@@ -76,4 +84,3 @@ public partial class SearchTimerAction : Action
         targetYaw = agentTransform.eulerAngles.y + delta;
     }
 }
-

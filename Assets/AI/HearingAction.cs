@@ -10,12 +10,12 @@ public partial class HearingAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<bool> HearsNoise;
-    [SerializeReference] public BlackboardVariable<Transform> SoundPosition;
+    [SerializeReference] public BlackboardVariable<Vector3> LastHeardNoisePosition;
+
     public float hearingRadius = 30f;
     public float memoryTime = 3f;
 
     float lastHeardTime;
-    Transform cachedSoundTransform;
 
     protected override Status OnUpdate()
     {
@@ -26,17 +26,15 @@ public partial class HearingAction : Action
 
         if (heard)
         {
-            HearsNoise.Value = true;
+            if (HearsNoise != null)
+                HearsNoise.Value = true;
+
             lastHeardTime = Time.time;
             return Status.Running;
         }
 
-        // Memory decay
-        if (HearsNoise.Value && Time.time - lastHeardTime > memoryTime)
-        {
+        if (HearsNoise != null && HearsNoise.Value && Time.time - lastHeardTime > memoryTime)
             HearsNoise.Value = false;
-            SoundPosition.Value = null;
-        }
 
         return Status.Running;
     }
@@ -48,21 +46,14 @@ public partial class HearingAction : Action
             hearingRadius
         );
 
-        foreach (var hit in hits)
+        foreach (Collider hit in hits)
         {
             AudioSource audio = hit.GetComponentInChildren<AudioSource>();
             if (audio == null || !audio.isPlaying)
                 continue;
 
-            // We heard something
-            if (SoundPosition.Value == null)
-            {
-                GameObject temp = new GameObject("SoundPosition");
-                cachedSoundTransform = temp.transform;
-                SoundPosition.Value = cachedSoundTransform;
-            }
-
-            SoundPosition.Value.position = audio.transform.position;
+            if (LastHeardNoisePosition != null)
+                LastHeardNoisePosition.Value = audio.transform.position;
 
             Debug.DrawLine(
                 Agent.Value.transform.position,
@@ -71,7 +62,7 @@ public partial class HearingAction : Action
                 0.1f
             );
 
-            Debug.Log($"Heard sound from {audio.gameObject.name}");
+            Debug.Log($"[Hearing] Heard sound from {audio.gameObject.name} at {audio.transform.position}");
 
             return true;
         }
@@ -79,4 +70,3 @@ public partial class HearingAction : Action
         return false;
     }
 }
-

@@ -11,7 +11,7 @@ public partial class InvestigateTargetAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<State> AIState;
-    [SerializeReference] public BlackboardVariable<Transform> Target;
+    [SerializeReference] public BlackboardVariable<Vector3> SearchPosition;
     [SerializeReference] public BlackboardVariable<float> ArrivalDistance = new(1.5f);
 
     NavMeshAgent nav;
@@ -19,37 +19,40 @@ public partial class InvestigateTargetAction : Action
 
     protected override Status OnStart()
     {
-        if (Agent?.Value == null || Target?.Value == null)
+        if (Agent?.Value == null || SearchPosition == null)
             return Status.Failure;
 
         nav = Agent.Value.GetComponent<NavMeshAgent>();
-        if (!nav || !nav.isOnNavMesh)
+        if (nav == null || !nav.isOnNavMesh)
             return Status.Failure;
 
-        cachedTargetPosition = Target.Value.position;
+        cachedTargetPosition = SearchPosition.Value;
 
         nav.isStopped = false;
-        nav.stoppingDistance = ArrivalDistance.Value;
+        nav.updateRotation = true;
+        nav.stoppingDistance = Mathf.Max(0.1f, ArrivalDistance.Value);
         nav.SetDestination(cachedTargetPosition);
+
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (AIState.Value != State.Search)
+        if (AIState == null || AIState.Value != State.Search)
             return Status.Success;
 
+        if (nav == null || !nav.isOnNavMesh)
+            return Status.Failure;
+
         if (!nav.pathPending && nav.remainingDistance <= nav.stoppingDistance)
-        {
             return Status.Success;
-        }
 
         return Status.Running;
     }
 
     protected override void OnEnd()
     {
-        if (nav && nav.isOnNavMesh)
+        if (nav != null && nav.isOnNavMesh)
             nav.ResetPath();
     }
 }
