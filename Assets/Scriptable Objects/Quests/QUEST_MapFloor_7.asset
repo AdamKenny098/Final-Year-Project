@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9faa86d61f78e34794bfe8d03e7022f, type: 3}
+  m_Name: QUEST_MapFloor_7
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  questId: quest_map_floor_7
+  title: Map Floor 7
+  description: Discover all reachable areas on Floor 7.
+  objectives:
+  - {fileID: 11400000, guid: 24d38ff891aaf7c41b93c7c4cc7c40b0, type: 2}
+  reward:
+    experience: 180
+    gold: 57

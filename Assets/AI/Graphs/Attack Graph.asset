@@ -90,8 +90,8 @@ MonoBehaviour:
           rid: 6084699970293203498
         BlackboardGroupReferences: []
         Root:
-          rid: 6084700019374162743
-        m_VersionTimestamp: 639096371050793709
+          rid: 6084700112404349409
+        m_VersionTimestamp: 639099967090331876
     - rid: 6084699970293203498
       type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -138,7 +138,7 @@ MonoBehaviour:
           m_Value1: 18070474820059178902
         Name: Slot
         m_Value: 0
-    - rid: 6084700019374162743
+    - rid: 6084700112404349409
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -149,10 +149,10 @@ MonoBehaviour:
         m_Parent:
           rid: -2
         m_Child:
-          rid: 6084700019374162744
+          rid: 6084700112404349410
         Repeat: 0
         AllowMultipleRepeatsPerTick: 0
-    - rid: 6084700019374162744
+    - rid: 6084700112404349410
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -161,13 +161,13 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162743
+          rid: 6084700112404349409
         m_Children:
-        - rid: 6084700019374162745
-        - rid: 6084700019374162746
-        - rid: 6084700019374162747
+        - rid: 6084700112404349411
+        - rid: 6084700112404349412
+        - rid: 6084700112404349413
         m_RegisteredObservers: []
-    - rid: 6084700019374162745
+    - rid: 6084700112404349411
       type: {class: FaceTargetAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -176,14 +176,14 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162744
+          rid: 6084700112404349410
         Self:
           rid: 6084700015470051397
         CombatTarget:
           rid: 6084700015470051399
         TurnSpeedDegPerSec:
-          rid: 6084700019374162748
-    - rid: 6084700019374162746
+          rid: 6084700112404349414
+    - rid: 6084700112404349412
       type: {class: IsAbilityReadyAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -192,14 +192,14 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162744
+          rid: 6084700112404349410
         Self:
           rid: 6084700015470051397
         Slot:
           rid: 6084700015470051400
         IsReady:
           rid: 6084700015470051398
-    - rid: 6084700019374162747
+    - rid: 6084700112404349413
       type: {class: BranchingConditionComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -208,22 +208,22 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162744
+          rid: 6084700112404349410
         m_Children:
-        - rid: 6084700019374162749
-        - rid: 6084700019374162750
+        - rid: 6084700112404349415
+        - rid: 6084700112404349416
         m_RegisteredObservers: []
         m_Conditions:
-        - rid: 6084700019374162751
+        - rid: 6084700112404349417
         m_RequiresAllConditions: 0
         True:
-          rid: 6084700019374162749
+          rid: 6084700112404349415
         False:
-          rid: 6084700019374162750
+          rid: 6084700112404349416
         m_CurrentChild:
           rid: -2
         m_ObserverType: 0
-    - rid: 6084700019374162748
+    - rid: 6084700112404349414
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -231,7 +231,7 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 6
-    - rid: 6084700019374162749
+    - rid: 6084700112404349415
       type: {class: TryUseAbilityAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -240,13 +240,12 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162747
+          rid: 6084700112404349413
         Self:
           rid: 6084700015470051397
         CombatTarget:
           rid: 6084700015470051399
-        enableLogs: 1
-    - rid: 6084700019374162750
+    - rid: 6084700112404349416
       type: {class: WaitAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -255,10 +254,10 @@ MonoBehaviour:
         Graph:
           rid: 6084699970293203497
         m_Parent:
-          rid: 6084700019374162747
+          rid: 6084700112404349413
         SecondsToWait:
-          rid: 6084700019374162752
-    - rid: 6084700019374162751
+          rid: 6084700112404349418
+    - rid: 6084700112404349417
       type: {class: VariableComparisonCondition, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         Graph:
@@ -266,10 +265,10 @@ MonoBehaviour:
         Variable:
           rid: 6084700015470051398
         Operator:
-          rid: 6084700019374162753
+          rid: 6084700112404349419
         ComparisonValue:
-          rid: 6084700019374162754
-    - rid: 6084700019374162752
+          rid: 6084700112404349420
+    - rid: 6084700112404349418
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -277,7 +276,7 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 0.1
-    - rid: 6084700019374162753
+    - rid: 6084700112404349419
       type: {class: 'BlackboardVariable`1[[Unity.Behavior.ConditionOperator, Unity.Behavior]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -285,7 +284,7 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 0
-    - rid: 6084700019374162754
+    - rid: 6084700112404349420
       type: {class: 'BlackboardVariable`1[[System.Boolean, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:
@@ -384,7 +383,7 @@ MonoBehaviour:
   - rid: 6084700014250819767
   - rid: 6084700014250819768
   - rid: 6084700014250820137
-  m_VersionTimestamp: 639096371050793709
+  m_VersionTimestamp: 639099967090331876
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: 773297963590857962}
   m_RuntimeGraph: {fileID: -5134130593792042651}

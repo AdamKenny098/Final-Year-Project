@@ -18,4 +18,4 @@ MonoBehaviour:
   rarity: 1
   value: 10
   isSellable: 1
-  itemId: Bone
+  itemId: bone

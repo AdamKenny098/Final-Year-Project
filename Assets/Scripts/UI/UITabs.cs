@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,12 +10,16 @@ public class UITabBar : MonoBehaviour
     {
         public string id;
         public Button button;
-        public GameObject pageRoot;
+        public List<GameObject> pageRoot;
     }
 
     public List<Tab> tabs = new();
     public string defaultTabId = "Stats";
     public string currentTabId;
+
+    [Header("Inventory Specific")]
+    public CanvasGroup inventory;
+    public CanvasGroup middle;
 
     void Awake()
     {
@@ -37,15 +41,51 @@ public class UITabBar : MonoBehaviour
     {
         currentTabId = id;
 
+        bool isInventoryTab = string.Equals(id, "Inventory", StringComparison.Ordinal);
+
         for (int i = 0; i < tabs.Count; i++)
         {
-            bool active = string.Equals(tabs[i].id, id);
+            bool active = string.Equals(tabs[i].id, id, StringComparison.Ordinal);
 
             if (tabs[i].pageRoot != null)
-                tabs[i].pageRoot.SetActive(active);
+            {
+                foreach (var page in tabs[i].pageRoot)
+                {
+                    if (page != null)
+                        page.SetActive(active);
+                }
+            }
 
             if (tabs[i].button != null)
                 tabs[i].button.interactable = !active;
         }
+
+        if (isInventoryTab)
+            OpenInventory();
+        else
+            CloseInventory();
+    }
+
+    public void OpenInventory()
+    {
+        inventory.alpha = 1f;
+        inventory.interactable = true;
+        inventory.blocksRaycasts = true;
+
+        middle.alpha = 1f;
+        middle.interactable = true;
+        middle.blocksRaycasts = true;
+        InventoryUI.Instance.BuildPlayerList();
+    }
+
+    public void CloseInventory()
+    {
+        inventory.alpha = 0f;
+        inventory.interactable = false;
+        inventory.blocksRaycasts = false;
+
+        middle.alpha = 0f;
+        middle.interactable = false;
+        middle.blocksRaycasts = false;
     }
 }

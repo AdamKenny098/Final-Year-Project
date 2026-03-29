@@ -857,6 +857,8 @@ GameObject:
   - component: {fileID: 4935183624220087861}
   - component: {fileID: 1839086803969153114}
   - component: {fileID: 7185815517289795672}
+  - component: {fileID: 1541998941322480568}
+  - component: {fileID: 6942769376291392059}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Untagged
@@ -966,8 +968,6 @@ MonoBehaviour:
   m_Graph: {fileID: -6656301798112960638, guid: e731e7fe3d92281419559a6f59094c5b, type: 2}
   m_BlackboardVariableOverridesList:
   - rid: 824340278334193925
-  - rid: 824340606610047151
-  - rid: 6084699579803501143
   m_OriginalGraph: {fileID: -6656301798112960638, guid: e731e7fe3d92281419559a6f59094c5b, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -982,22 +982,6 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 2978007110918247917}
-    - rid: 824340606610047151
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 5403469199998878016
-          m_Value1: 11361454388814014731
-        Name: Player
-        m_Value: {fileID: 0}
-    - rid: 6084699579803501143
-      type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 14074546340163186410
-          m_Value1: 3724900779824680822
-        Name: MaxHealth
-        m_Value: 30
 --- !u!114 &527749064431507723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1179,12 +1163,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AIAbilityController
   owner: {fileID: 4954545318780691773}
   abilityManager: {fileID: 1839086803969153114}
-  target: {fileID: 0}
-  thinkRate: 0.2
   anim: {fileID: 0}
-  speedFloat: Speed
-  attackTrigger: Attack
+  attackInt: Attack
   minTimeBetweenAnimTriggers: 0.2
+  attackStateTag: Attack
 --- !u!114 &1839086803969153114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1213,6 +1195,52 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealthBarSpawner
   healthBarPrefab: {fileID: 8645933605066457111, guid: 5f5ff9aa0d68def4295e17358fb4b7cb, type: 3}
   offset: {x: 0, y: 2.3, z: 0}
+--- !u!114 &1541998941322480568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2978007110918247917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275cd472652e6d54f81f80d92e7e9e1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimatorDriver
+  agent: {fileID: 1339363164481784720}
+  anim: {fileID: 14307083751479329}
+  moveBool: IsMoving
+  attackInt: Attack
+  moveThreshold: 0.1
+--- !u!114 &6942769376291392059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2978007110918247917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
+  m_Graph: {fileID: -5134130593792042651, guid: 9111d15d777c89349b8f65d026d398d6, type: 2}
+  m_BlackboardVariableOverridesList:
+  - rid: 6084699979919655711
+  m_OriginalGraph: {fileID: -5134130593792042651, guid: e28d7a0cb3f16f34292aecbc06ea8e95, type: 2}
+  m_IsInitialised: 0
+  m_IsStarted: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 6084699979919655711
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 2978007110918247917}
 --- !u!1 &3216804711626219428
 GameObject:
   m_ObjectHideFlags: 0

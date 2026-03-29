@@ -157,7 +157,7 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void BuildPlayerList()
+    public void BuildPlayerList()
     {
         ClearChildren(playerContent);
 

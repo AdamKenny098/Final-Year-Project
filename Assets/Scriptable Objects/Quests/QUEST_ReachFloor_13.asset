@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9faa86d61f78e34794bfe8d03e7022f, type: 3}
+  m_Name: QUEST_ReachFloor_13
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  questId: quest_reach_floor_13
+  title: Reach Floor 13
+  description: Descend until you reach Floor 13.
+  objectives:
+  - {fileID: 11400000, guid: fdf9e58ffea16814e98d21c338c11017, type: 2}
+  reward:
+    experience: 220
+    gold: 75

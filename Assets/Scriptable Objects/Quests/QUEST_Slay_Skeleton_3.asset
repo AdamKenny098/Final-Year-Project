@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9faa86d61f78e34794bfe8d03e7022f, type: 3}
+  m_Name: QUEST_Slay_Skeleton_3
+  m_EditorClassIdentifier: Assembly-CSharp::QuestData
+  questId: quest_slay_skeleton_3
+  title: Slay 3 Skeleton
+  description: Eliminate 3 Skeleton.
+  objectives:
+  - {fileID: 11400000, guid: 9911c31fa2b74c14a9f0bf26c6954562, type: 2}
+  reward:
+    experience: 39
+    gold: 25
