@@ -7,8 +7,7 @@ public class AIAbilityManager : MonoBehaviour
     public AbilityManager abilityManager;
 
     [Header("Animation")]
-    public Animator anim;
-    public string attackInt = "Attack";
+    public EnemyAnimationController animController;
     public float minTimeBetweenAnimTriggers = 0.2f;
     public string attackStateTag = "Attack";
 
@@ -22,73 +21,52 @@ public class AIAbilityManager : MonoBehaviour
         if (owner == null) owner = GetComponentInParent<Entity>();
         if (abilityManager == null) abilityManager = GetComponentInParent<AbilityManager>();
         if (abilityManager != null) abilityManager.owner = owner;
-        if (anim == null) anim = GetComponentInParent<Animator>();
+        if (animController == null) animController = GetComponentInParent<EnemyAnimationController>();
     }
 
     public bool TrySlot(int slot, Entity targetEntity, Vector3 hitPoint)
     {
-
         if (owner == null || owner.isDead)
-        {
             return false;
-        }
 
         if (abilityManager == null)
-        {
             return false;
-        }
 
         if (targetEntity == null || targetEntity.isDead)
-        {
             return false;
-        }
 
         if (attackAnimating)
-        {
-           return false;
-        }
+            return false;
 
         bool ready = abilityManager.IsReady(slot);
         if (!ready)
-        {
             return false;
-        }
 
         AbilityData abilityData = abilityManager.GetAbility(slot);
         if (abilityData == null)
-        {
             return false;
-        }
 
         if (abilityData.range > 0f)
         {
             float distance = Vector3.Distance(owner.transform.position, targetEntity.transform.position);
 
             if (distance > abilityData.range)
-            {
                 return false;
-            }
         }
 
         bool ok = abilityManager.TryCast(slot, abilityData, targetEntity, hitPoint);
 
         if (!ok)
-        {
             return false;
-        }
 
-        if (anim == null)
-        {
+        if (animController == null)
             return true;
-        }
 
         if (Time.time < nextAnimAllowed)
-        {
             return true;
-        }
 
         int attackValue = Random.value < 0.5f ? 1 : 2;
-        anim.SetInteger(attackInt, attackValue);
+        animController.PlayAttack(attackValue);
 
         attackAnimating = true;
         nextAnimAllowed = Time.time + minTimeBetweenAnimTriggers;
@@ -117,6 +95,14 @@ public class AIAbilityManager : MonoBehaviour
 
     IEnumerator ResetAttackWhenStateFinishes()
     {
+        Animator anim = animController != null ? animController.GetAnimator() : null;
+        if (anim == null)
+        {
+            attackAnimating = false;
+            attackResetRoutine = null;
+            yield break;
+        }
+
         yield return null;
 
         int enterSafety = 0;
@@ -138,10 +124,8 @@ public class AIAbilityManager : MonoBehaviour
             yield return null;
         }
 
-        if (anim != null)
-        {
-            anim.SetInteger(attackInt, 0);
-        }
+        if (animController != null)
+            animController.ResetAttack();
 
         int exitSafety = 0;
 

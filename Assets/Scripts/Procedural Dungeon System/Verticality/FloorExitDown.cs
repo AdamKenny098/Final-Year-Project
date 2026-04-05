@@ -2,12 +2,23 @@ using UnityEngine;
 
 public class FloorExitDown : MonoBehaviour
 {
-    private bool triggered = false;
+    static float blockUntilTime;
 
-    private void OnTriggerEnter(Collider other)
+    public static void BlockTriggers(float duration)
     {
-        if (triggered) return;
-        if (!other.CompareTag("Player")) return;
+        blockUntilTime = Time.time + duration;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player"))
+            return;
+
+        if (Time.time < blockUntilTime)
+            return;
+
+        if (LabyrinthManager.Instance == null || LabyrinthManager.Instance.isLoadingFloor)
+            return;
 
         LabyrinthManager.Instance.GoToNextFloor();
     }

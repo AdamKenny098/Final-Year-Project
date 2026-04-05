@@ -101,12 +101,11 @@ MonoBehaviour:
   torchPillarPrefab: {fileID: 7719254509111908209, guid: 9f11c8db388e821498974670e0cebb7f, type: 3}
   torchHeight: 3.5
   wallInset: 1
-  genericRoomItems: []
   dungeonRoomBuilder: {fileID: 1342027116123360731}
   roomItemDatabase: {fileID: 2740437994585087622}
-  generatePillars: 0
-  replacePillarsWithTorchPillars: 0
-  generateTorches: 0
+  generatePillars: 1
+  replacePillarsWithTorchPillars: 1
+  generateTorches: 1
   cleanGenericDecor: 0
   allWorkableRooms: []
 --- !u!114 &4995576262903173120
@@ -154,6 +153,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7577572392352351139}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 465b975f3e5318e458c185ea241c6544, type: 3}
+  m_Script: {fileID: 11500000, guid: 39b14dee0f2d4ff42a3f39d818fb2c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomSetPath: RoomItems/RoomSets/Default_Set
+  useDefaultForAllRooms: 1
+  emptyItems: []

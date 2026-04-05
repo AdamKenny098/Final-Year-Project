@@ -9,28 +9,32 @@ public class DungeonManager : MonoBehaviour
         Generating,
         Built,
         Optimizing,
-        DecoratedGenerically,
-        DecoratedSpecifically,
+        RoomTypesAssigned,
+        PlansBuilt,
+        SpecificPlanned,
+        GenericPlanned,
+        Instantiated,
+        Validated,
         Completed
     }
 
     public DungeonState currentState = DungeonState.Generating;
 
-    // Flags for pipeline control
     public bool dungeonGenerated;
     public bool dungeonBuilt;
     public bool dungeonOptimized;
-    public bool dungeonPillarsPlaced;
-    public bool dungeonTorchPillarsPlaced;
-    public bool dungeonTorchesPlaced;
-    public bool dungeonGenericDecorCleaned;
-    public bool dungeonDecoratedGenerically;
-    public bool dungeonDecoratedSpecifically;
+    public bool roomTypesAssigned;
+    public bool plansBuilt;
+    public bool specificPlanned;
+    public bool genericPlanned;
+    public bool decorInstantiated;
+    public bool dungeonValidated;
     public bool dungeonFinalized;
-    public bool doorwaysCleared;
+    public bool exitsSpawned;
 
     public GameObject nextFloorPrefab;
     public GameObject lastFloorPrefab;
+
     public DungeonGenerator generator;
     public DungeonRoomBuilder builder;
     public DungeonRoomOptimizer optimizer;
@@ -40,8 +44,7 @@ public class DungeonManager : MonoBehaviour
     public static DungeonManager Instance;
     public Transform activeFloorRoot;
 
-
-    private void Awake()
+    void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -50,151 +53,128 @@ public class DungeonManager : MonoBehaviour
         }
 
         Instance = this;
-
-        // Reset flags
-        dungeonGenerated = false;
-        dungeonBuilt = false;
-        dungeonOptimized = false;
-        dungeonDecoratedGenerically = false;
-        dungeonDecoratedSpecifically = false;
-
-        dungeonPillarsPlaced = false;
-        dungeonTorchPillarsPlaced = false;
-        dungeonTorchesPlaced = false;
-        dungeonGenericDecorCleaned = false;
-        dungeonFinalized = false;
-        doorwaysCleared = false;
+        ResetPipeline();
     }
 
-    public void StartPipeline()
+    void Update()
     {
-        // Initial step: generate dungeon layout
-        dungeonGenerated = true;
-        SetDungeonState(DungeonState.Built);
-    }
-
-    private void Update()
-    {
-        // === STEP 1: BUILD STRUCTURE ===
         if (dungeonGenerated && !dungeonBuilt)
         {
             builder.StartBuildProcess();
-
             dungeonBuilt = true;
-            SetDungeonState(DungeonState.Optimizing);
+            SetDungeonState(DungeonState.Built);
+            return;
         }
 
-        // === STEP 2: OPTIMIZE MESHES ===
         if (dungeonBuilt && !dungeonOptimized)
         {
             optimizer.StartOptimization();
             decorator.PopulateWorkableRooms();
-
             dungeonOptimized = true;
-            SetDungeonState(DungeonState.DecoratedGenerically);
+            SetDungeonState(DungeonState.Optimizing);
+            return;
         }
 
-        // === STEP 3: GENERIC DECORATION (Pillars, Torches, etc.) ===
-        if (dungeonOptimized && !dungeonPillarsPlaced)
+        if (dungeonOptimized && !roomTypesAssigned)
         {
-            decorator.generatePillars = true;
-            decorator.DecorateRoomsGenerically();
-            dungeonPillarsPlaced = true;
+            decorator.AssignRoomTypesIfNeeded();
+            roomTypesAssigned = true;
+            SetDungeonState(DungeonState.RoomTypesAssigned);
+            return;
         }
 
-        if (dungeonPillarsPlaced && !dungeonTorchPillarsPlaced)
+        if (roomTypesAssigned && !plansBuilt)
         {
-            decorator.replacePillarsWithTorchPillars = true;
-            decorator.DecorateRoomsGenerically();
-            dungeonTorchPillarsPlaced = true;
+            decorator.BuildAllRoomPlans();
+            plansBuilt = true;
+            SetDungeonState(DungeonState.PlansBuilt);
+            return;
         }
 
-        if (dungeonTorchPillarsPlaced && !dungeonTorchesPlaced)
+        if (plansBuilt && !specificPlanned)
         {
-            decorator.generateTorches = true;
-            decorator.DecorateRoomsGenerically();
-            dungeonTorchesPlaced = true;
+            decorator.PlanSpecificDecorFromPlans();
+            specificPlanned = true;
+            SetDungeonState(DungeonState.SpecificPlanned);
+            return;
         }
 
-        if (dungeonTorchesPlaced && !dungeonGenericDecorCleaned)
+        if (specificPlanned && !genericPlanned)
         {
-            decorator.cleanGenericDecor = true;
-            decorator.DecorateRoomsGenerically();
-            dungeonGenericDecorCleaned = true;
+            decorator.PlanGenericDecorFromPlans();
+            genericPlanned = true;
+            SetDungeonState(DungeonState.GenericPlanned);
+            return;
         }
 
-        // Mark the generic decoration phase as done
-        if (!dungeonDecoratedGenerically && dungeonPillarsPlaced && dungeonTorchPillarsPlaced && dungeonTorchesPlaced && dungeonGenericDecorCleaned)
+        if (genericPlanned && !decorInstantiated)
         {
-            dungeonDecoratedGenerically = true;
-            SetDungeonState(DungeonState.DecoratedSpecifically);
+            decorator.InstantiateAllDecorFromPlans();
+            decorInstantiated = true;
+            SetDungeonState(DungeonState.Instantiated);
+            return;
         }
 
-        // === STEP 4: SPECIFIC DECORATION (Room items by type) ===
-        if (dungeonDecoratedGenerically && !dungeonDecoratedSpecifically)
+        if (decorInstantiated && !dungeonValidated)
         {
-            decorator.DecorateRooms();
-            dungeonDecoratedSpecifically = true;
+            decorator.ValidateAllDecor();
+            dungeonValidated = true;
+            SetDungeonState(DungeonState.Validated);
+            return;
         }
 
-        // === STEP 5: FINALIZE & SPAWN ===
-        if (dungeonDecoratedSpecifically && !dungeonFinalized)
+        if (dungeonValidated && !dungeonFinalized)
         {
             decorator.FinalizeDecor();
-
             optimizer.CollectBounds();
             optimizer.DestroyOldRoomShellObjects();
             dungeonFinalized = true;
+            return;
         }
 
-        if (dungeonFinalized && !doorwaysCleared)
+        if (dungeonFinalized && !exitsSpawned)
         {
-            decorator.ClearDoorways();
-
             SpawnNextFloorExit();
-
-            doorwaysCleared = true;
+            ClearDecorAroundExits(1f);
+            exitsSpawned = true;
             SetDungeonState(DungeonState.Completed);
-
-            Debug.Log("Dungeon generation pipeline completed!");
+            Debug.Log("Dungeon generation pipeline completed.");
         }
-
-
     }
 
-    private void SetDungeonState(DungeonState newState)
+    void SetDungeonState(DungeonState newState)
     {
         currentState = newState;
     }
 
-    public UnityEngine.Vector3 GetValidPointInRoom(Room room)
+    public Vector3 GetValidPointInRoom(Room room)
     {
         BoxCollider box = room.GetComponent<BoxCollider>();
 
-        UnityEngine.Vector3 localCenter = box.center;
-        UnityEngine.Vector3 localSize = box.size;
+        Vector3 localCenter = box.center;
+        Vector3 localSize = box.size;
 
-        UnityEngine.Vector3 localPoint = localCenter + new UnityEngine.Vector3(
+        Vector3 localPoint = localCenter + new Vector3(
             Random.Range(-localSize.x * 0.4f, localSize.x * 0.4f),
             0f,
             Random.Range(-localSize.z * 0.4f, localSize.z * 0.4f)
         );
 
-        UnityEngine.Vector3 worldPoint = room.transform.TransformPoint(localPoint);
-
+        Vector3 worldPoint = room.transform.TransformPoint(localPoint);
         worldPoint.y = box.bounds.min.y + 0.05f;
 
         return worldPoint;
     }
 
-    void SpawnNextFloorExit()
+    public void SpawnNextFloorExit()
     {
         Room targetRoom = null;
         float maxArea = 0f;
 
         foreach (Room room in builder.allRooms)
         {
-            if (room.isCorridor) continue;
+            if (room == null || room.isCorridor)
+                continue;
 
             if (room.roomArea > maxArea)
             {
@@ -209,23 +189,42 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        UnityEngine.Vector3 spawnPos = GetValidPointInRoom(targetRoom);
-        Instantiate(nextFloorPrefab, spawnPos, UnityEngine.Quaternion.identity, activeFloorRoot);
+        if (decorator == null)
+        {
+            Debug.LogError("DungeonRoomDecorator missing.");
+            return;
+        }
+
+        if (!decorator.TryGetExitPosition(targetRoom, out Vector3 spawnPos))
+        {
+            Debug.LogError("Failed to find valid next floor exit position.");
+            return;
+        }
+
+        Instantiate(nextFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
     }
 
     public void SpawnLastFloorExit(Room playerRoom)
     {
-        Room targetRoom = playerRoom;
-        float maxArea = 0f;
-
-        if (targetRoom == null)
+        if (playerRoom == null)
         {
-            Debug.LogError("No valid room found for next floor exit.");
+            Debug.LogError("No valid room found for last floor exit.");
             return;
         }
 
-        UnityEngine.Vector3 spawnPos = GetValidPointInRoom(targetRoom);
-        Instantiate(lastFloorPrefab, spawnPos, UnityEngine.Quaternion.identity, activeFloorRoot);
+        if (decorator == null)
+        {
+            Debug.LogError("DungeonRoomDecorator missing.");
+            return;
+        }
+
+        if (!decorator.TryGetExitPosition(playerRoom, out Vector3 spawnPos))
+        {
+            Debug.LogError("Failed to find valid last floor exit position.");
+            return;
+        }
+
+        Instantiate(lastFloorPrefab, spawnPos, Quaternion.identity, activeFloorRoot);
     }
 
     public void ResetPipeline()
@@ -233,16 +232,14 @@ public class DungeonManager : MonoBehaviour
         dungeonGenerated = false;
         dungeonBuilt = false;
         dungeonOptimized = false;
-
-        dungeonPillarsPlaced = false;
-        dungeonTorchPillarsPlaced = false;
-        dungeonTorchesPlaced = false;
-        dungeonGenericDecorCleaned = false;
-
-        dungeonDecoratedGenerically = false;
-        dungeonDecoratedSpecifically = false;
+        roomTypesAssigned = false;
+        plansBuilt = false;
+        specificPlanned = false;
+        genericPlanned = false;
+        decorInstantiated = false;
+        dungeonValidated = false;
         dungeonFinalized = false;
-        doorwaysCleared = false;
+        exitsSpawned = false;
 
         currentState = DungeonState.Generating;
     }
@@ -265,14 +262,59 @@ public class DungeonManager : MonoBehaviour
         spawner.FillReferences(builder, decorator, floorRoot);
 
         generator.CreateDungeon();
-
-        if (QuestSystem.Instance != null && builder != null && LabyrinthManager.Instance != null)
-        {
-            int floorIndex = LabyrinthManager.Instance ? LabyrinthManager.Instance.currentFloorIndex : 0;
-            QuestSystem.Instance.RegisterFloorAreaCount(floorIndex, builder.allRooms.Count);
-        }
-
         dungeonGenerated = true;
     }
 
+    void ClearDecorAroundExits(float radius = 1f)
+    {
+        if (activeFloorRoot == null)
+            return;
+
+        List<Transform> exits = new List<Transform>();
+
+        for (int i = 0; i < activeFloorRoot.childCount; i++)
+        {
+            Transform child = activeFloorRoot.GetChild(i);
+            if (child == null)
+                continue;
+
+            if (child.GetComponent<FloorExitDown>() != null ||
+                child.GetComponent<FloorExitUp>() != null ||
+                child.GetComponent<StairsInstance>() != null)
+            {
+                exits.Add(child);
+            }
+        }
+
+        if (exits.Count == 0)
+            return;
+
+        GameObject[] decorObjects = GameObject.FindGameObjectsWithTag("Decor");
+
+        for (int i = 0; i < decorObjects.Length; i++)
+        {
+            GameObject decor = decorObjects[i];
+            if (decor == null)
+                continue;
+
+            for (int j = 0; j < exits.Count; j++)
+            {
+                Transform exitTransform = exits[j];
+                if (exitTransform == null)
+                    continue;
+
+                Vector3 flatDecorPos = decor.transform.position;
+                Vector3 flatExitPos = exitTransform.position;
+
+                flatDecorPos.y = 0f;
+                flatExitPos.y = 0f;
+
+                if (Vector3.Distance(flatDecorPos, flatExitPos) <= radius)
+                {
+                    Destroy(decor);
+                    break;
+                }
+            }
+        }
+    }
 }

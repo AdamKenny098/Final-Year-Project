@@ -10,6 +10,8 @@ public class Character : Entity
     [Header("Abilities")]
     public AbilityManager abilityManager;
 
+    bool deathHandled;
+
     public override void Awake()
     {
         base.Awake();
@@ -62,6 +64,26 @@ public class Character : Entity
             chosen = ClassSystem.Instance.GetLoadout(characterClass);
 
         abilityManager.SetLoadout(chosen);
+    }
 
+    public override void Die()
+    {
+        if (deathHandled)
+            return;
+
+        deathHandled = true;
+
+        if (stats != null)
+            stats.health = 0;
+
+        if (CompareTag("Player"))
+        {
+            if (GameOverManager.Instance != null)
+                GameOverManager.Instance.TriggerGameOver();
+
+            return;
+        }
+
+        gameObject.SetActive(false);
     }
 }

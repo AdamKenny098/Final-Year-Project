@@ -153,7 +153,7 @@ public void BuildRoom(Node node, float rotationDegrees = 0f, bool isCorridor = f
 
     BoxCollider boxC = roomAsGameObject.AddComponent<BoxCollider>();
     boxC.center = new Vector3(0f, (ceilingLevel - floorLevel) / 2f, 0f);
-    roomComponent.roomArea = roomWidth * roomLength;
+    roomComponent.roomArea = (roomWidth - 2) * (roomLength - 2);
     boxC.size = new Vector3(roomWidth - 2, ceilingLevel - 1.5f, roomLength - 2);
     boxC.isTrigger = true;
 }

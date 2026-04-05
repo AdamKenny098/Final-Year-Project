@@ -7,19 +7,9 @@ public class Room : MonoBehaviour
     public enum RoomType
     {
         Default,
-        Tomb,
-        Forge,
-        Library,
         Armory,
         Barracks,
-        Altar,
-        Treasury,
-        DiningHall,
         Warehouse,
-        ShopKeeper,
-        Kitchen,
-        Tavern,
-        Prison,
     }
 
     public Node node;

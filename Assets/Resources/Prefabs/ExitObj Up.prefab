@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5569802104827512368}
   - component: {fileID: 4383353657366723843}
   - component: {fileID: 8623701340550369881}
+  - component: {fileID: 2589613084184499075}
   m_Layer: 0
   m_Name: ExitObj Up
   m_TagString: Untagged
@@ -67,6 +68,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3666639a3952fc54b97438c6d8419ac4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloorExitUp
+--- !u!114 &2589613084184499075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5858999444723640002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f1ada5320c22094f96fa55d799d7bda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StairsInstance
+  direction: 0
 --- !u!1001 &4774716299189629498
 PrefabInstance:
   m_ObjectHideFlags: 0

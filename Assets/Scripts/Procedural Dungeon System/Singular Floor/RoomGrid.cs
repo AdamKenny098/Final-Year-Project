@@ -46,10 +46,10 @@ public class RoomGrid
                     gridPos = new Vector2Int(gridX, gridZ),
                     worldPos = worldPosition,
                     blocked = false,
-                    reserved = false,
                     isDoorway = false,
                     isDoorBuffer = false
                 };
+                tiles[gridX, gridZ].reservation.gridPos = new Vector2Int(gridX, gridZ);
             }
         }
     }
@@ -82,8 +82,9 @@ public class RoomGrid
 
             if (IsInside(doorGridPosition.x, doorGridPosition.y))
             {
-                tiles[doorGridPosition.x, doorGridPosition.y].isDoorway = true;
-                tiles[doorGridPosition.x, doorGridPosition.y].reserved = true;
+                RoomTile doorwayTile = tiles[doorGridPosition.x, doorGridPosition.y];
+                doorwayTile.isDoorway = true;
+                doorwayTile.TryReserve(DecorReservationPriority.Protected, DecorReservationType.Doorway, "Doorway");
             }
 
             for (int offsetX = -2; offsetX <= 2; offsetX++)
@@ -96,7 +97,13 @@ public class RoomGrid
                     if (!IsInside(bufferX, bufferZ))
                         continue;
 
-                    tiles[bufferX, bufferZ].isDoorBuffer = true;
+                    RoomTile bufferTile = tiles[bufferX, bufferZ];
+                    bufferTile.isDoorBuffer = true;
+
+                    if (!bufferTile.isDoorway)
+                    {
+                        bufferTile.TryReserve(DecorReservationPriority.Protected, DecorReservationType.DoorBuffer, "DoorBuffer");
+                    }
                 }
             }
         }
@@ -156,30 +163,16 @@ public class RoomGrid
         }
     }
 
-    public bool CanPlace(int startX, int startZ, int itemWidth, int itemLength, int extraClearance = 0)
+    public bool IsInside(int x, int z)
     {
-        for (int x = startX - extraClearance; x < startX + itemWidth + extraClearance; x++)
-        {
-            for (int z = startZ - extraClearance; z < startZ + itemLength + extraClearance; z++)
-            {
-                if (!IsInside(x, z)) return false;
-                if (!tiles[x, z].IsFree) return false;
-            }
-        }
-
-        return true;
+        return x >= 0 && x < width && z >= 0 && z < length;
     }
 
-    public void Reserve(int startX, int startZ, int itemWidth, int itemLength)
+    public Vector2Int WorldToGrid(Vector3 world)
     {
-        for (int x = startX; x < startX + itemWidth; x++)
-        {
-            for (int z = startZ; z < startZ + itemLength; z++)
-            {
-                if (IsInside(x, z))
-                    tiles[x, z].reserved = true;
-            }
-        }
+        int x = Mathf.RoundToInt(world.x - minimumX);
+        int z = Mathf.RoundToInt(world.z - minimumZ);
+        return new Vector2Int(x, z);
     }
 
     public Vector3 GetPlacementWorldCenter(int startX, int startZ, int itemWidth, int itemLength)
@@ -190,16 +183,188 @@ public class RoomGrid
         return new Vector3(centerX, room.transform.position.y + 2f, centerZ);
     }
 
-    public Vector2Int WorldToGrid(Vector3 world)
+    public RoomTile GetTile(int x, int z)
     {
-        int x = Mathf.RoundToInt(world.x - minimumX);
-        int z = Mathf.RoundToInt(world.z - minimumZ);
-        return new Vector2Int(x, z);
+        if (!IsInside(x, z))
+            return null;
+
+        return tiles[x, z];
     }
 
-    public bool IsInside(int x, int z)
+    public RoomTile GetTile(Vector2Int pos)
     {
-        return x >= 0 && x < width && z >= 0 && z < length;
+        return GetTile(pos.x, pos.y);
+    }
+
+    public bool CanReserveCell(
+        int x,
+        int z,
+        DecorReservationPriority priority)
+    {
+        if (!IsInside(x, z))
+            return false;
+
+        RoomTile tile = tiles[x, z];
+        return tile.CanReserve(priority);
+    }
+
+    public bool TryReserveCell(
+        int x,
+        int z,
+        DecorReservationPriority priority,
+        DecorReservationType type,
+        string source)
+    {
+        if (!IsInside(x, z))
+            return false;
+
+        return tiles[x, z].TryReserve(priority, type, source);
+    }
+
+    public bool CanReserveArea(
+        int startX,
+        int startZ,
+        int areaWidth,
+        int areaLength,
+        DecorReservationPriority priority)
+    {
+        for (int x = startX; x < startX + areaWidth; x++)
+        {
+            for (int z = startZ; z < startZ + areaLength; z++)
+            {
+                if (!IsInside(x, z))
+                    return false;
+
+                if (!tiles[x, z].CanReserve(priority))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool TryReserveArea(int startX, int startZ, int areaWidth, int areaLength, DecorReservationPriority priority,DecorReservationType type, string source)
+    {
+        if (!CanReserveArea(startX, startZ, areaWidth, areaLength, priority))
+            return false;
+
+        for (int x = startX; x < startX + areaWidth; x++)
+        {
+            for (int z = startZ; z < startZ + areaLength; z++)
+            {
+                tiles[x, z].TryReserve(priority, type, source);
+            }
+        }
+
+        return true;
+    }
+
+    public bool CanReserveCells(List<Vector2Int> cells,DecorReservationPriority priority)
+    {
+        for (int i = 0; i < cells.Count; i++)
+        {
+            Vector2Int pos = cells[i];
+
+            if (!IsInside(pos.x, pos.y))
+                return false;
+
+            if (!tiles[pos.x, pos.y].CanReserve(priority))
+                return false;
+        }
+        return true;
+    }
+
+    public bool TryReserveCells(List<Vector2Int> cells,DecorReservationPriority priority,DecorReservationType type, string source)
+    {
+        if (!CanReserveCells(cells, priority))
+            return false;
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            Vector2Int pos = cells[i];
+            tiles[pos.x, pos.y].TryReserve(priority, type, source);
+        }
+
+        return true;
+    }
+
+    public bool TryReserveClusterFootprint(DecorCluster cluster)
+    {
+        if (cluster == null)
+            return false;
+
+        return TryReserveCells( cluster.footprintCells, DecorReservationPriority.Cluster, DecorReservationType.ClusterFootprint, cluster.id);
+    }
+
+    public bool TryReserveSlot(DecorSlot slot)
+    {
+        if (slot == null)
+            return false;
+
+        DecorReservationType type = DecorReservationType.None;
+
+        switch (slot.tier)
+        {
+            case DecorSlotTier.Primary:
+                type = DecorReservationType.PrimarySlot;
+                break;
+
+            case DecorSlotTier.Secondary:
+                type = DecorReservationType.SecondarySlot;
+                break;
+
+            case DecorSlotTier.Tertiary:
+                type = DecorReservationType.TertiarySlot;
+                break;
+        }
+
+        DecorReservationPriority priority = slot.tier == DecorSlotTier.Primary ? DecorReservationPriority.Protected : DecorReservationPriority.Cluster;
+
+        return TryReserveCell(slot.gridPos.x, slot.gridPos.y, priority, type, slot.ownerClusterId);
+    }
+
+    public void ClearReservation(int x, int z)
+    {
+        if (!IsInside(x, z))
+            return;
+
+        tiles[x, z].ClearReservation();
+    }
+
+    public void ClearReservationsBySource(string source)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int z = 0; z < length; z++)
+            {
+                RoomTile tile = tiles[x, z];
+
+                if (tile.reservation.source == source && !tile.blocked)
+                    tile.ClearReservation();
+            }
+        }
+    }
+
+    public bool CanPlace(int startX, int startZ, int itemWidth, int itemLength, int extraClearance = 0)
+    {
+        for (int x = startX - extraClearance; x < startX + itemWidth + extraClearance; x++)
+        {
+            for (int z = startZ - extraClearance; z < startZ + itemLength + extraClearance; z++)
+            {
+                if (!IsInside(x, z))
+                    return false;
+
+                if (!tiles[x, z].IsFree)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void Reserve(int startX, int startZ, int itemWidth, int itemLength)
+    {
+        TryReserveArea(startX, startZ, itemWidth, itemLength, DecorReservationPriority.Cluster, DecorReservationType.ClusterFootprint, "LegacyReserve");
     }
 
     public float ScorePlacement(RoomItem item, int startX, int startZ, int itemWidth, int itemLength)
@@ -228,7 +393,8 @@ public class RoomGrid
 
             foreach (DecorAnchor anchor in anchors)
             {
-                if (anchor.tag != item.anchorTag) continue;
+                if (anchor.tag != item.anchorTag)
+                    continue;
 
                 float dist = Mathf.Abs(anchor.gridPos.x - centerX) + Mathf.Abs(anchor.gridPos.y - centerZ);
 
@@ -245,7 +411,8 @@ public class RoomGrid
         {
             foreach (DecorAnchor anchor in anchors)
             {
-                if (anchor.tag != item.itemTag) continue;
+                if (anchor.tag != item.itemTag)
+                    continue;
 
                 float dist = Mathf.Abs(anchor.gridPos.x - centerX) + Mathf.Abs(anchor.gridPos.y - centerZ);
                 score += Mathf.Max(0f, item.preferNearSameTag * (6f - dist));

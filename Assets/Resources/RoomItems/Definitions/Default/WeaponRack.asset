@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e651ef1f01c72c946947db9e3d5a69af, type: 3}
+  m_Name: WeaponRack
+  m_EditorClassIdentifier: Assembly-CSharp::RoomItemDefinition
+  itemName: WeaponRack
+  itemTag: WeaponRack
+  anchorTag: 
+  prefab: {fileID: 3474988419989466183, guid: bd1580a4925a2d2488afec4680736536, type: 3}
+  priority: 0
+  gridWidth: 1
+  gridLength: 2
+  allowRotation: 1
+  minCount: 1
+  maxCount: 3
+  preferWall: 5
+  preferCenter: 0
+  avoidCenter: 2
+  avoidDoors: 5
+  preferNearAnchor: 0
+  preferNearSameTag: 1
+  minAnchorDistance: 1
+  maxAnchorDistance: 4

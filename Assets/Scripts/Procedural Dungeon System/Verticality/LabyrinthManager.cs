@@ -65,6 +65,8 @@ public class LabyrinthManager : MonoBehaviour
         if (index < 0 || index >= floorPlan.Count)
             return;
 
+        int previousFloorIndex = currentFloorIndex;
+
         if (floors.TryGetValue(currentFloorIndex, out var current))
             current.root.SetActive(false);
 
@@ -77,6 +79,10 @@ public class LabyrinthManager : MonoBehaviour
         }
 
         floor.root.SetActive(true);
+
+        if (index == 0 && previousFloorIndex != 0)
+            RefreshSafeFloorMerchantStock();
+
         OnFloorChanged();
 
         if (MapInitiator.Instance != null)
@@ -166,6 +172,8 @@ public class LabyrinthManager : MonoBehaviour
 
         AsyncOperation overlayLoad = null;
 
+        int previousFloorIndex = currentFloorIndex;
+
         if (!string.IsNullOrEmpty(loadingSceneName))
         {
             overlayLoad = SceneManager.LoadSceneAsync(loadingSceneName, LoadSceneMode.Additive);
@@ -198,6 +206,11 @@ public class LabyrinthManager : MonoBehaviour
         yield return null;
 
         floor.root.SetActive(true);
+        RepositionPlayerAtPortal(previousFloorIndex, targetIndex);
+
+        if (targetIndex == 0 && previousFloorIndex != 0)
+            RefreshSafeFloorMerchantStock();
+
         OnFloorChanged();
 
         if (MapInitiator.Instance != null)
@@ -211,5 +224,160 @@ public class LabyrinthManager : MonoBehaviour
 
         isLoadingFloor = false;
         floorLoadProgress = 0f;
+    }
+
+    public void RefreshSafeFloorMerchantStock()
+    {
+        if (!floors.TryGetValue(0, out var safeFloor) || safeFloor.root == null)
+            return;
+
+        MerchantStockGenerator[] merchants = safeFloor.root.GetComponentsInChildren<MerchantStockGenerator>(true);
+
+        for (int i = 0; i < merchants.Length; i++)
+        {
+            if (merchants[i] != null)
+                merchants[i].GenerateStock();
+        }
+    }
+
+    void RepositionPlayerAtPortal(int previousFloorIndex, int targetFloorIndex)
+    {
+        if (!floors.TryGetValue(targetFloorIndex, out var targetFloor))
+            return;
+
+        if (targetFloor == null || targetFloor.root == null)
+            return;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+            return;
+
+        bool movedDown = targetFloorIndex > previousFloorIndex;
+
+        Transform portal = FindArrivalPortal(targetFloor.root, movedDown);
+        if (portal == null)
+            return;
+
+        Vector3 spawnPos = GetSafeArrivalPosition(targetFloor.root, portal);
+        StartCoroutine(MovePlayerSafely(player, spawnPos));
+    }
+
+    Transform FindArrivalPortal(GameObject floorRoot, bool movedDown)
+    {
+        if (floorRoot == null)
+            return null;
+
+        StairsInstance[] stairs = floorRoot.GetComponentsInChildren<StairsInstance>(true);
+
+        for (int i = 0; i < stairs.Length; i++)
+        {
+            if (stairs[i] == null)
+                continue;
+
+            if (movedDown && stairs[i].direction == StairDirection.Up)
+                return stairs[i].transform;
+
+            if (!movedDown && stairs[i].direction == StairDirection.Down)
+                return stairs[i].transform;
+        }
+
+        if (movedDown)
+        {
+            FloorExitUp[] upExits = floorRoot.GetComponentsInChildren<FloorExitUp>(true);
+            if (upExits.Length > 0 && upExits[0] != null)
+                return upExits[0].transform;
+        }
+        else
+        {
+            FloorExitDown[] downExits = floorRoot.GetComponentsInChildren<FloorExitDown>(true);
+            if (downExits.Length > 0 && downExits[0] != null)
+                return downExits[0].transform;
+        }
+
+        return null;
+    }
+
+    Vector3 GetSafeArrivalPosition(GameObject floorRoot, Transform portal)
+    {
+        Vector3 portalPos = portal.position;
+        portalPos.y = 1.55f;
+
+        Room portalRoom = FindRoomContainingPoint(floorRoot, portal.position);
+
+        if (portalRoom == null)
+            return portalPos;
+
+        Vector3 toCenter = portalRoom.node.center - portal.position;
+        toCenter.y = 0f;
+
+        if (toCenter.sqrMagnitude < 0.001f)
+            return new Vector3(portalRoom.node.center.x, 1.55f, portalRoom.node.center.z);
+
+        toCenter.Normalize();
+
+        Vector3 candidate = portal.position + toCenter * 1.25f;
+        candidate.y = 1.55f;
+
+        return candidate;
+    }
+
+    Room FindRoomContainingPoint(GameObject floorRoot, Vector3 point)
+    {
+        if (floorRoot == null)
+            return null;
+
+        Room[] rooms = floorRoot.GetComponentsInChildren<Room>(true);
+
+        for (int i = 0; i < rooms.Length; i++)
+        {
+            Room room = rooms[i];
+            if (room == null || room.isCorridor)
+                continue;
+
+            Vector3 center = room.node.center;
+            float halfWidth = room.node.width * 0.5f;
+            float halfLength = room.node.length * 0.5f;
+
+            if (point.x >= center.x - halfWidth && point.x <= center.x + halfWidth && point.z >= center.z - halfLength && point.z <= center.z + halfLength)
+            {
+                return room;
+            }
+        }
+
+        return null;
+    }
+
+    IEnumerator MovePlayerSafely(GameObject player, Vector3 spawnPos)
+    {
+        if (player == null)
+            yield break;
+
+        CharacterController controller = player.GetComponent<CharacterController>();
+        Rigidbody rb = player.GetComponent<Rigidbody>();
+
+        if (controller != null)
+            controller.enabled = false;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
+
+        player.transform.position = spawnPos;
+        player.transform.rotation = Quaternion.identity;
+
+        yield return null;
+
+        if (rb != null)
+            rb.isKinematic = false;
+
+        if (controller != null)
+            controller.enabled = true;
+
+        FloorExitUp.BlockTriggers(2.5f);
+        FloorExitDown.BlockTriggers(2.5f);
+        StairsInstance.BlockTriggers(2.5f);
     }
 }

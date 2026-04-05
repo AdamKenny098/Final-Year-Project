@@ -1,31 +1,37 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
 
 public class DungeonRoomDecorator : MonoBehaviour
 {
-
+    [Header("Generic Prefabs")]
     public GameObject pillarPrefab;
     public GameObject torchPrefab;
     public GameObject torchPillarPrefab;
 
+    [Header("Generic Settings")]
     [Range(0, 5)] public float torchHeight = 3.5f;
     [Range(-3, 4)] public float wallInset = 1f;
 
-    public List<GenericRoomItem> genericRoomItems = new List<GenericRoomItem>();
+    [Header("References")]
     public DungeonRoomBuilder dungeonRoomBuilder;
-    [SerializeField] private RoomItemDatabase roomItemDatabase;
+    [SerializeField] RoomItemDatabase roomItemDatabase;
 
-    public bool generatePillars = false;
-    public bool replacePillarsWithTorchPillars = false;
-    public bool generateTorches = false;
+    [Header("Legacy Pass Toggles")]
+    public bool generatePillars = true;
+    public bool replacePillarsWithTorchPillars = true;
+    public bool generateTorches = true;
     public bool cleanGenericDecor = false;
 
     public List<Room> allWorkableRooms = new List<Room>();
 
-    private DungeonRoomBuilder builder;
-    private Transform floorRoot;
+    DungeonRoomBuilder builder;
+    Transform floorRoot;
+
+    public Dictionary<Room, RoomDecorPlan> roomPlans = new Dictionary<Room, RoomDecorPlan>();
+
+    public RoomDecorPlanner roomDecorPlanner = new RoomDecorPlanner();
+    public RoomSpecificDecorPlacer roomSpecificDecorPlacer = new RoomSpecificDecorPlacer();
+    public RoomDecorInstantiator roomDecorInstantiator = new RoomDecorInstantiator();
 
     public void FillReferences(DungeonRoomBuilder builder, Transform floorRoot)
     {
@@ -33,156 +39,233 @@ public class DungeonRoomDecorator : MonoBehaviour
         this.floorRoot = floorRoot;
     }
 
-
     void Awake()
     {
-        genericRoomItems.Add(new GenericRoomItem()
-        {
-            name = "Torch",
-            prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Torch"),
-            type = GenericRoomItem.GenericType.Torch
-        });
+        if (pillarPrefab == null)
+            pillarPrefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Pillar");
 
-        genericRoomItems.Add(new GenericRoomItem()
-        {
-            name = "Pillar",
-            prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Pillar"),
-            type = GenericRoomItem.GenericType.Pillar
-        });
+        if (torchPrefab == null)
+            torchPrefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Torch");
 
-        genericRoomItems.Add(new GenericRoomItem()
-        {
-            name = "TorchPillar",
-            prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/TorchPillar"),
-            type = GenericRoomItem.GenericType.TorchPillar
-        });
-
-        genericRoomItems.Add(new GenericRoomItem()
-        {
-            name = "Banner",
-            prefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/Banner"),
-            type = GenericRoomItem.GenericType.Banner
-        });
+        if (torchPillarPrefab == null)
+            torchPillarPrefab = Resources.Load<GameObject>("Prefabs/RoomItems/Generic/TorchPillar");
     }
 
     public void PopulateWorkableRooms()
     {
         allWorkableRooms.Clear();
 
+        if (DungeonManager.Instance == null || DungeonManager.Instance.activeFloorRoot == null)
+            return;
+
         Transform rooms = DungeonManager.Instance.activeFloorRoot.Find("Rooms");
+        if (rooms == null)
+            return;
 
         foreach (Transform child in rooms)
         {
             Room roomComp = child.GetComponent<Room>();
             if (roomComp != null)
-            {
                 allWorkableRooms.Add(roomComp);
-            }
         }
     }
 
-    public void DecorateRoomsGenerically()
+    RoomDecorPlan GetOrCreatePlan(Room room)
     {
-        if (allWorkableRooms.Count == 0)
-            {
-                Debug.LogWarning("No rooms available for decoration.");
-                return;
-            }
+        if (room == null)
+            return null;
 
-        foreach (Room room in allWorkableRooms)
-        {   
-            
-            if (room.isCorridor) continue;
+        if (roomPlans.TryGetValue(room, out RoomDecorPlan existingPlan) && existingPlan != null)
+            return existingPlan;
 
-            UnityEngine.Vector3 roomCenter = room.transform.position;
-            float roomWidth = room.node.width;
-            float roomLength = room.node.length;
-            UnityEngine.Quaternion rot = room.transform.rotation;
-            room.roomType = GetRandomRoomType();
+        RoomDecorPlan newPlan = roomDecorPlanner.BuildPlan(room);
+        if (newPlan != null)
+            roomPlans[room] = newPlan;
 
-            // Only perform what’s enabled this pass
-            if (generatePillars)
-                GeneratePillars(room, rot, roomCenter, roomWidth, roomLength);
-
-            if (replacePillarsWithTorchPillars)
-                ReplacePillarsWithTorchPillars(room);
-
-            if (generateTorches)
-                GenerateTorches(room, rot, roomCenter, roomWidth, roomLength);
-
-            if (cleanGenericDecor)
-            DeleteRandomGenericDecor(room);
-        }
-
-        // Reset flags automatically after all rooms are processed
-        generatePillars = false;
-        replacePillarsWithTorchPillars = false;
-        generateTorches = false;
+        return newPlan;
     }
 
-
-    public void DecorateRooms()
+    void RebuildAllRoomPlans()
     {
-        foreach (Room room in allWorkableRooms)
+        roomPlans.Clear();
+
+        for (int i = 0; i < allWorkableRooms.Count; i++)
         {
-            if (room == null) continue;
-            if (room.isCorridor) continue;
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
+                continue;
 
-            if (!roomItemDatabase.roomItems.TryGetValue(room.roomType, out List<RoomItem> items))
+            RoomDecorPlan plan = roomDecorPlanner.BuildPlan(room);
+            if (plan != null)
+                roomPlans[room] = plan;
+        }
+    }
+
+    public Dictionary<Room, RoomDecorPlan> GetRoomPlans()
+    {
+        return roomPlans;
+    }
+
+    public void BuildAllRoomPlans()
+    {
+        RebuildAllRoomPlans();
+    }
+
+    public void PlanSpecificDecorFromPlans()
+    {
+        if (roomItemDatabase == null)
+        {
+            Debug.LogWarning("RoomItemDatabase missing on DungeonRoomDecorator.");
+            return;
+        }
+
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
+                continue;
+
+            if (!roomItemDatabase.HasItemsForRoom(room.roomType))
+                continue;
+
+            RoomDecorPlan plan = GetOrCreatePlan(room);
+            if (plan == null)
+                continue;
+
+            roomSpecificDecorPlacer.PlanRoom(plan, roomItemDatabase);
+        }
+    }
+
+    public void PlanGenericDecorFromPlans()
+    {
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
                 continue;
 
             room.EnsureDecorationRoots();
-            Transform parent = room.roomItemsRoot;
+            ClearExistingGenericDecor(room);
 
-            RoomGrid grid = new RoomGrid(room);
+            GeneratePillars(room);
+            ReplacePillarsWithTorchPillars(room);
+            GenerateTorches(room);
 
-            List<RoomItem> primary = items.FindAll(i => i.priority == RoomItem.Priority.Primary);
-            List<RoomItem> secondary = items.FindAll(i => i.priority == RoomItem.Priority.Secondary);
-            List<RoomItem> tertiary = items.FindAll(i => i.priority == RoomItem.Priority.Tertiary);
-
-            PlaceItemGroup(grid, room, primary, parent);
-            PlaceItemGroup(grid, room, secondary, parent);
-            PlaceItemGroup(grid, room, tertiary, parent);
+            if (cleanGenericDecor)
+                DeleteRandomGenericDecor(room);
         }
     }
-    public UnityEngine.Vector3 RandomRoomPosition(Room room)
+
+    public void InstantiateAllDecorFromPlans()
     {
-        UnityEngine.Vector3 roomCenter = room.node.center;
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
+                continue;
+
+            RoomDecorPlan plan = GetOrCreatePlan(room);
+            if (plan == null)
+                continue;
+
+            room.EnsureDecorationRoots();
+
+            roomDecorInstantiator.InstantiatePlan(
+                plan,
+                room.roomItemsRoot,
+                room.pillarsRoot,
+                room.torchesRoot
+            );
+        }
+    }
+
+    public void AssignRoomTypesIfNeeded()
+    {
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
+                continue;
+
+            room.roomType = Room.RoomType.Default;
+        }
+    }
+
+    public void ValidateAllDecor()
+    {
+        RoomDecorValidator validator = new RoomDecorValidator();
+
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room == null || room.isCorridor)
+                continue;
+
+            RoomDecorPlan plan = GetOrCreatePlan(room);
+            if (plan == null)
+                continue;
+
+            validator.ValidatePlan(plan);
+        }
+    }
+
+    public Vector3 RandomRoomPosition(Room room)
+    {
+        Vector3 roomCenter = room.node.center;
         float roomWidth = room.node.width;
         float roomLength = room.node.length;
 
         float randomX = Random.Range(roomCenter.x - roomWidth / 2f + 1f, roomCenter.x + roomWidth / 2f - 1f);
         float randomZ = Random.Range(roomCenter.z - roomLength / 2f + 1f, roomCenter.z + roomLength / 2f - 1f);
 
-        return new UnityEngine.Vector3(randomX, roomCenter.y, randomZ);
+        return new Vector3(randomX, roomCenter.y, randomZ);
     }
 
-    void GeneratePillars(Room room, UnityEngine.Quaternion rot, UnityEngine.Vector3 roomCenter, float roomWidth, float roomLength)
+    void GeneratePillars(Room room)
     {
-        if (room == null) return;
-        if (pillarPrefab == null) return;
-        if (room.isCorridor) return;
+        if (!generatePillars)
+            return;
 
-        room.EnsureDecorationRoots();
-        if (room.pillarsRoot == null) return;
+        if (room == null || room.isCorridor || pillarPrefab == null)
+            return;
 
-        Transform pillarParent = room.pillarsRoot;
-        pillarParent.localPosition = new UnityEngine.Vector3(0f, 1.5f, 0f);
-        pillarParent.localRotation = UnityEngine.Quaternion.identity;
-
-        int width = Mathf.FloorToInt(roomWidth);
-        int length = Mathf.FloorToInt(roomLength);
+        int width = Mathf.FloorToInt(room.node.width);
+        int length = Mathf.FloorToInt(room.node.length);
 
         if (width < 8 || length < 8)
             return;
 
-        float pillarY = 1.5f;
+        float floorTopY = GetRoomFloorTopY(room);
+        List<Vector3> offsets = BuildPillarOffsets(width, length);
 
-        float edgeInset = 2f;
+        for (int i = 0; i < offsets.Count; i++)
+        {
+            Vector3 worldPos = room.transform.position + room.transform.rotation * offsets[i];
+            worldPos.y = floorTopY + 1.5f;
+
+            GameObject placed = TryPlaceGenericObjectAtHeight(
+                room,
+                pillarPrefab,
+                worldPos,
+                room.transform.rotation,
+                room.pillarsRoot,
+                0.35f,
+                0.45f,
+                0.1f
+            );
+
+            if (placed != null)
+                placed.transform.position += Vector3.up * 1.5f;
+        }
+    }
+
+    List<Vector3> BuildPillarOffsets(int width, int length)
+    {
+        List<Vector3> offsets = new List<Vector3>();
+
         float midInsetX = Mathf.Max(2f, Mathf.Floor(width * 0.25f));
         float midInsetZ = Mathf.Max(2f, Mathf.Floor(length * 0.25f));
-
-        List<UnityEngine.Vector3> candidateOffsets = new List<UnityEngine.Vector3>();
+        float edgeInset = 2f;
 
         bool veryLargeRoom = width >= 14 && length >= 14;
         bool longRoom = length >= width + 4;
@@ -190,86 +273,126 @@ public class DungeonRoomDecorator : MonoBehaviour
 
         if (veryLargeRoom)
         {
-            candidateOffsets.Add(new UnityEngine.Vector3(-midInsetX, pillarY, -midInsetZ));
-            candidateOffsets.Add(new UnityEngine.Vector3(-midInsetX, pillarY, midInsetZ));
-            candidateOffsets.Add(new UnityEngine.Vector3(midInsetX, pillarY, -midInsetZ));
-            candidateOffsets.Add(new UnityEngine.Vector3(midInsetX, pillarY, midInsetZ));
+            offsets.Add(new Vector3(-midInsetX, 0f, -midInsetZ));
+            offsets.Add(new Vector3(-midInsetX, 0f,  midInsetZ));
+            offsets.Add(new Vector3( midInsetX, 0f, -midInsetZ));
+            offsets.Add(new Vector3( midInsetX, 0f,  midInsetZ));
 
-            if (width >= 18)
-            {
-                candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, -midInsetZ));
-                candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, midInsetZ));
-            }
+            offsets.Add(new Vector3(0f, 0f, -midInsetZ));
+            offsets.Add(new Vector3(0f, 0f,  midInsetZ));
+            offsets.Add(new Vector3(-midInsetX, 0f, 0f));
+            offsets.Add(new Vector3( midInsetX, 0f, 0f));
 
-            if (length >= 18)
-            {
-                candidateOffsets.Add(new UnityEngine.Vector3(-midInsetX, pillarY, 0f));
-                candidateOffsets.Add(new UnityEngine.Vector3(midInsetX, pillarY, 0f));
-            }
+            if (width >= 18 && length >= 18)
+                offsets.Add(new Vector3(0f, 0f, 0f));
         }
         else if (longRoom)
         {
-            candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, -midInsetZ));
-            candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, midInsetZ));
+            offsets.Add(new Vector3(0f, 0f, -midInsetZ));
+            offsets.Add(new Vector3(0f, 0f,  midInsetZ));
 
             if (length >= 12)
             {
-                candidateOffsets.Add(new UnityEngine.Vector3(-2f, pillarY, 0f));
-                candidateOffsets.Add(new UnityEngine.Vector3(2f, pillarY, 0f));
+                offsets.Add(new Vector3(-2f, 0f, 0f));
+                offsets.Add(new Vector3( 2f, 0f, 0f));
             }
         }
         else if (wideRoom)
         {
-            candidateOffsets.Add(new UnityEngine.Vector3(-midInsetX, pillarY, 0f));
-            candidateOffsets.Add(new UnityEngine.Vector3(midInsetX, pillarY, 0f));
+            offsets.Add(new Vector3(-midInsetX, 0f, 0f));
+            offsets.Add(new Vector3( midInsetX, 0f, 0f));
 
             if (width >= 12)
             {
-                candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, -2f));
-                candidateOffsets.Add(new UnityEngine.Vector3(0f, pillarY, 2f));
+                offsets.Add(new Vector3(0f, 0f, -2f));
+                offsets.Add(new Vector3(0f, 0f,  2f));
             }
         }
         else
         {
-            candidateOffsets.Add(new UnityEngine.Vector3(-edgeInset, pillarY, -edgeInset));
-            candidateOffsets.Add(new UnityEngine.Vector3(-edgeInset, pillarY, edgeInset));
-            candidateOffsets.Add(new UnityEngine.Vector3(edgeInset, pillarY, -edgeInset));
-            candidateOffsets.Add(new UnityEngine.Vector3(edgeInset, pillarY, edgeInset));
+            offsets.Add(new Vector3(-edgeInset, 0f, -edgeInset));
+            offsets.Add(new Vector3(-edgeInset, 0f,  edgeInset));
+            offsets.Add(new Vector3( edgeInset, 0f, -edgeInset));
+            offsets.Add(new Vector3( edgeInset, 0f,  edgeInset));
         }
 
-        for (int i = 0; i < candidateOffsets.Count; i++)
+        for (int i = 0; i < offsets.Count; i++)
         {
-            UnityEngine.Vector3 localOffset = candidateOffsets[i];
-            localOffset.x = Mathf.Round(localOffset.x);
-            localOffset.z = Mathf.Round(localOffset.z);
+            Vector3 o = offsets[i];
+            o.x = Mathf.Round(o.x);
+            o.z = Mathf.Round(o.z);
+            offsets[i] = o;
+        }
 
-            UnityEngine.Vector3 worldPos = roomCenter + rot * localOffset;
+        return offsets;
+    }
 
-            TryPlaceGenericObject(room, pillarPrefab, worldPos, rot, pillarParent, 0.35f, 0.45f);
+    void ReplacePillarsWithTorchPillars(Room room)
+    {
+        if (!replacePillarsWithTorchPillars)
+            return;
+
+        if (room == null || torchPillarPrefab == null || room.pillarsRoot == null)
+            return;
+
+        List<Transform> toReplace = new List<Transform>();
+
+        for (int i = 0; i < room.pillarsRoot.childCount; i++)
+        {
+            Transform pillar = room.pillarsRoot.GetChild(i);
+            if (pillar == null)
+                continue;
+
+            if (Random.value <= 0.3f)
+                toReplace.Add(pillar);
+        }
+
+        float floorTopY = GetRoomFloorTopY(room);
+
+        for (int i = 0; i < toReplace.Count; i++)
+        {
+            Transform pillar = toReplace[i];
+            Vector3 pos = pillar.position;
+            Quaternion rot = pillar.rotation;
+
+            RemoveOccupiedAreaNearPoint(room, pos, 1.5f);
+            Destroy(pillar.gameObject);
+
+            pos.y = floorTopY + 1.5f;
+
+            GameObject placed = TryPlaceGenericObjectAtHeight(
+                room,
+                torchPillarPrefab,
+                pos,
+                rot,
+                room.pillarsRoot,
+                0.3f,
+                0.4f,
+                0.1f
+            );
+
+            if (placed != null)
+                placed.transform.position += Vector3.up * 1.5f;
         }
     }
-    void GenerateTorches(Room room, UnityEngine.Quaternion rot, UnityEngine.Vector3 roomCenter, float roomWidth, float roomLength)
+
+    void GenerateTorches(Room room)
     {
-        if (room == null) return;
-        if (torchPrefab == null) return;
-        if (room.isCorridor) return;
+        if (!generateTorches)
+            return;
 
-        room.EnsureDecorationRoots();
-        if (room.torchesRoot == null) return;
+        if (room == null || room.isCorridor || torchPrefab == null)
+            return;
 
-        Transform torchParent = room.torchesRoot;
-        torchParent.localPosition = UnityEngine.Vector3.zero;
-        torchParent.localRotation = UnityEngine.Quaternion.identity;
-
-        int width = Mathf.FloorToInt(roomWidth);
-        int length = Mathf.FloorToInt(roomLength);
+        int width = Mathf.FloorToInt(room.node.width);
+        int length = Mathf.FloorToInt(room.node.length);
 
         if (width < 5 || length < 5)
             return;
 
+        float floorTopY = GetRoomFloorTopY(room);
         float inwardOffset = 0.2f;
-        float verticalOffset = -0.5f;
-        float torchY = torchHeight + verticalOffset;
+        float torchWorldY = floorTopY + (torchHeight - 0.5f);
 
         int northSouthCount = Mathf.Clamp(width / 4, 1, 4);
         int eastWestCount = Mathf.Clamp(length / 4, 1, 4);
@@ -280,470 +403,140 @@ public class DungeonRoomDecorator : MonoBehaviour
         for (int i = 0; i < northSouthCount; i++)
         {
             float t = northSouthCount == 1 ? 0.5f : (float)i / (northSouthCount - 1);
+            float x = Mathf.Lerp(-room.node.width / 2f + 1.5f, room.node.width / 2f - 1.5f, t);
 
-            float x = Mathf.Lerp(
-                -roomWidth / 2f + 1.5f,
-                roomWidth / 2f - 1.5f,
-                t
-            );
+            Vector3 northOffset = new Vector3(x, 0f, room.node.length / 2f - wallInset - inwardOffset);
+            Vector3 southOffset = new Vector3(x, 0f, -room.node.length / 2f + wallInset + inwardOffset);
 
-            UnityEngine.Vector3 northOffset = new UnityEngine.Vector3(
-                x,
-                torchY,
-                roomLength / 2f - wallInset - inwardOffset
-            );
+            Vector3 northPos = room.transform.position + room.transform.rotation * northOffset;
+            Vector3 southPos = room.transform.position + room.transform.rotation * southOffset;
 
-            UnityEngine.Vector3 southOffset = new UnityEngine.Vector3(
-                x,
-                torchY,
-                -roomLength / 2f + wallInset + inwardOffset
-            );
+            northPos.y = torchWorldY;
+            southPos.y = torchWorldY;
 
-            UnityEngine.Vector3 northPos = roomCenter + rot * northOffset;
-            UnityEngine.Vector3 southPos = roomCenter + rot * southOffset;
-
-            UnityEngine.Quaternion northRot = rot * UnityEngine.Quaternion.Euler(0f, 180f, 0f);
-            UnityEngine.Quaternion southRot = rot;
-
-            TryPlaceGenericObject(
+            TryPlaceGenericObjectAtHeight(
                 room,
                 torchPrefab,
                 northPos,
-                northRot,
-                torchParent,
+                room.transform.rotation * Quaternion.Euler(0f, 180f, 0f),
+                room.torchesRoot,
                 0.05f,
-                0.4f
+                0.4f,
+                0.1f
             );
 
-            TryPlaceGenericObject(
+            TryPlaceGenericObjectAtHeight(
                 room,
                 torchPrefab,
                 southPos,
-                southRot,
-                torchParent,
+                room.transform.rotation,
+                room.torchesRoot,
                 0.05f,
-                0.4f
+                0.4f,
+                0.1f
             );
         }
 
         for (int i = 0; i < eastWestCount; i++)
         {
             float t = eastWestCount == 1 ? 0.5f : (float)i / (eastWestCount - 1);
+            float z = Mathf.Lerp(-room.node.length / 2f + 1.5f, room.node.length / 2f - 1.5f, t);
 
-            float z = Mathf.Lerp(
-                -roomLength / 2f + 1.5f,
-                roomLength / 2f - 1.5f,
-                t
-            );
+            Vector3 eastOffset = new Vector3(room.node.width / 2f - wallInset - inwardOffset, 0f, z);
+            Vector3 westOffset = new Vector3(-room.node.width / 2f + wallInset + inwardOffset, 0f, z);
 
-            UnityEngine.Vector3 eastOffset = new UnityEngine.Vector3(
-                roomWidth / 2f - wallInset - inwardOffset,
-                torchY,
-                z
-            );
+            Vector3 eastPos = room.transform.position + room.transform.rotation * eastOffset;
+            Vector3 westPos = room.transform.position + room.transform.rotation * westOffset;
 
-            UnityEngine.Vector3 westOffset = new UnityEngine.Vector3(
-                -roomWidth / 2f + wallInset + inwardOffset,
-                torchY,
-                z
-            );
+            eastPos.y = torchWorldY;
+            westPos.y = torchWorldY;
 
-            UnityEngine.Vector3 eastPos = roomCenter + rot * eastOffset;
-            UnityEngine.Vector3 westPos = roomCenter + rot * westOffset;
-
-            UnityEngine.Quaternion eastRot = rot * UnityEngine.Quaternion.Euler(0f, 270f, 0f);
-            UnityEngine.Quaternion westRot = rot * UnityEngine.Quaternion.Euler(0f, 90f, 0f);
-
-            TryPlaceGenericObject(
+            TryPlaceGenericObjectAtHeight(
                 room,
                 torchPrefab,
                 eastPos,
-                eastRot,
-                torchParent,
+                room.transform.rotation * Quaternion.Euler(0f, 270f, 0f),
+                room.torchesRoot,
                 0.05f,
-                0.4f
+                0.4f,
+                0.1f
             );
 
-            TryPlaceGenericObject(
+            TryPlaceGenericObjectAtHeight(
                 room,
                 torchPrefab,
                 westPos,
-                westRot,
-                torchParent,
+                room.transform.rotation * Quaternion.Euler(0f, 90f, 0f),
+                room.torchesRoot,
                 0.05f,
-                0.4f
+                0.4f,
+                0.1f
             );
-        }
-    }
-
-    void ReplacePillarsWithTorchPillars(Room room)
-    {
-        if (room == null)
-        {
-            Debug.LogWarning("ReplacePillarsWithTorchPillars called with null room.");
-            return;
-        }
-
-        if (torchPillarPrefab == null)
-        {
-            Debug.LogWarning("Torch pillar prefab is missing on DungeonRoomDecorator.");
-            return;
-        }
-
-        room.EnsureDecorationRoots();
-
-        if (room.pillarsRoot == null)
-        {
-            Debug.LogWarning("Room pillarsRoot is still null after EnsureDecorationRoots on room: " + room.name);
-            return;
-        }
-
-        Transform pillarParent = room.pillarsRoot;
-
-        List<Transform> pillarsToReplace = new List<Transform>();
-
-        for (int i = 0; i < pillarParent.childCount; i++)
-        {
-            Transform pillar = pillarParent.GetChild(i);
-            if (pillar == null) continue;
-
-            float replaceChance = Random.Range(0f, 1f);
-            if (replaceChance <= 0.3f)
-            {
-                pillarsToReplace.Add(pillar);
-            }
-        }
-
-        for (int i = 0; i < pillarsToReplace.Count; i++)
-        {
-            Transform pillar = pillarsToReplace[i];
-            if (pillar == null) continue;
-
-            UnityEngine.Vector3 position = pillar.position;
-            UnityEngine.Quaternion rotation = pillar.rotation;
-
-            Destroy(pillar.gameObject);
-
-            TryPlaceGenericObject(room, torchPillarPrefab, position, rotation, pillarParent, 0.3f, 0.4f);
         }
     }
 
     void DeleteRandomGenericDecor(Room room)
     {
-        room.EnsureDecorationRoots();
-
-        Transform pillars = room.pillarsRoot;
-        Transform torches = room.torchesRoot;
-
-        float deleteChance = Random.Range(0.1f, 0.4f);
-        for(int i = 0; i < pillars.transform.childCount; i++)
-        {
-            Transform child = pillars.transform.GetChild(i);
-            float chance = Random.Range(0.3f, 1f);
-            if (chance < deleteChance)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-        
-        for(int i = 0; i < torches.transform.childCount; i++)
-        {
-            Transform child = torches.transform.GetChild(i);
-            float chance = Random.Range(0.3f, 1f);
-            if (chance < deleteChance)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-    }
-
-    float GetItemArea(GameObject prefab)
-    {
-        Collider col = prefab.GetComponent<Collider>();
-        if (col == null) return 1f;
-        Bounds b = col.bounds;
-        return b.size.x * b.size.z;
-    }
-
-
-    Room.RoomType GetRandomRoomType()
-    {
-        var values = System.Enum.GetValues(typeof(Room.RoomType));
-        return (Room.RoomType)values.GetValue(Random.Range(0, values.Length));
-    }
-
-    public void FinalizeDecor()
-    {
-        foreach (Room room in allWorkableRooms)
-        {
-            room.FinalizeDecorations();
-        }
-    }
-
-    public void ClearDoorways()
-    {
-        foreach (Room room in builder.allRooms)
-        {
-            foreach (Transform door in room.doorways)
-            {   
-                UnityEngine.Vector3 size = new UnityEngine.Vector3(5f, 3f, 5f);
-                Bounds doorBounds = new Bounds(door.position + UnityEngine.Vector3.up * 1.5f, size);
-
-                GameObject[] decorObjects = GameObject.FindGameObjectsWithTag("Decor");
-                foreach (GameObject decor in decorObjects)
-                {
-                    Collider col = decor.GetComponentInChildren<Collider>();
-                    if (col == null) continue;
-
-                    if (doorBounds.Intersects(col.bounds))
-                    {
-                        Destroy(decor);
-                    }
-                }
-            }
-        }
-    }
-
-    public void CullDecor()
-    {
-        foreach (Room room in builder.allRooms)
-        {
-            GameObject roomDecorRoot = room.roomItemsRoot.gameObject;
-            foreach (Transform decor in roomDecorRoot.transform)
-            {
-                Collider col = decor.GetComponentInChildren<Collider>();
-                if (col == null) continue;
-
-                UnityEngine.Vector3 roomCenter = room.node.center;
-                float roomWidth = room.node.width;
-                float roomLength = room.node.length;
-
-                Bounds roomBounds = new Bounds(roomCenter, new UnityEngine.Vector3(roomWidth, 10f, roomLength));
-
-                if (!roomBounds.Intersects(col.bounds))
-                {
-                    Destroy(decor.gameObject);
-                }
-            }
-        }
-    }
-
-    void PlaceItemGroup(RoomGrid grid, Room room, List<RoomItem> items, Transform parent)
-    {
-        foreach (RoomItem item in items)
-        {
-            if (item == null || item.prefab == null) continue;
-
-            int spawnCount = Random.Range(item.minCount, item.maxCount + 1);
-
-            for (int i = 0; i < spawnCount; i++)
-            {
-                TryPlaceItem(grid, room, item, parent);
-            }
-        }
-    }
-
-    bool TryPlaceItem(RoomGrid grid, Room room, RoomItem item, Transform parent)
-    {
-        float bestScore = float.NegativeInfinity;
-        Vector2Int bestCell = new Vector2Int(-1, -1);
-        int bestWidth = item.gridWidth;
-        int bestLength = item.gridLength;
-        UnityEngine.Quaternion bestRotation = UnityEngine.Quaternion.identity;
-
-        TryEvaluateOrientation(grid, room, item, item.gridWidth, item.gridLength, UnityEngine.Quaternion.identity, ref bestScore, ref bestCell, ref bestWidth, ref bestLength, ref bestRotation);
-
-        if (item.allowRotation && item.gridWidth != item.gridLength)
-        {
-            TryEvaluateOrientation(grid, room, item, item.gridLength, item.gridWidth, UnityEngine.Quaternion.Euler(0f, 90f, 0f), ref bestScore, ref bestCell, ref bestWidth, ref bestLength, ref bestRotation);
-        }
-
-        if (bestCell.x < 0 || bestCell.y < 0)
-            return false;
-
-        UnityEngine.Vector3 spawnPos = grid.GetPlacementWorldCenter(bestCell.x, bestCell.y, bestWidth, bestLength);
-        GameObject instance = Instantiate(item.prefab, spawnPos, room.transform.rotation * bestRotation, parent);
-
-        grid.Reserve(bestCell.x, bestCell.y, bestWidth, bestLength);
-
-        string tagToUse = string.IsNullOrEmpty(item.itemTag) ? item.name : item.itemTag;
-        grid.anchors.Add(new DecorAnchor(tagToUse, bestCell, new Vector2Int(bestWidth, bestLength), instance.transform));
-
-        return true;
-    }
-
-    void TryEvaluateOrientation(
-        RoomGrid grid,
-        Room room,
-        RoomItem item,
-        int itemWidth,
-        int itemLength,
-        UnityEngine.Quaternion rotation,
-        ref float bestScore,
-        ref Vector2Int bestCell,
-        ref int bestWidth,
-        ref int bestLength,
-        ref UnityEngine.Quaternion bestRotation)
-    {
-        for (int x = 0; x <= grid.width - itemWidth; x++)
-        {
-            for (int z = 0; z <= grid.length - itemLength; z++)
-            {
-                if (!grid.CanPlace(x, z, itemWidth, itemLength, item.extraClearance))
-                    continue;
-
-                float score = grid.ScorePlacement(item, x, z, itemWidth, itemLength);
-
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    bestCell = new Vector2Int(x, z);
-                    bestWidth = itemWidth;
-                    bestLength = itemLength;
-                    bestRotation = rotation;
-                }
-            }
-        }
-    }
-    bool IsSelfOrChild(Transform root, Transform other)
-    {
-        if (root == null || other == null) return false;
-        return other == root || other.IsChildOf(root);
-    }
-
-    bool TryGetCombinedColliderBounds(GameObject obj, out Bounds combinedBounds)
-    {
-        combinedBounds = new Bounds();
-        Collider[] colliders = obj.GetComponentsInChildren<Collider>();
-
-        bool found = false;
-
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            Collider col = colliders[i];
-            if (col == null || !col.enabled) continue;
-
-            if (!found)
-            {
-                combinedBounds = col.bounds;
-                found = true;
-            }
-            else
-            {
-                combinedBounds.Encapsulate(col.bounds);
-            }
-        }
-
-        return found;
-    }
-
-    bool IsWithinRoomBounds(Room room, Bounds objectBounds, float inset)
-    {
-        UnityEngine.Vector3 roomCenter = room.transform.position;
-
-        float halfWidth = Mathf.FloorToInt(room.node.width) * 0.5f;
-        float halfLength = Mathf.FloorToInt(room.node.length) * 0.5f;
-
-        float minX = roomCenter.x - halfWidth + inset;
-        float maxX = roomCenter.x + halfWidth - inset;
-        float minZ = roomCenter.z - halfLength + inset;
-        float maxZ = roomCenter.z + halfLength - inset;
-
-        if (objectBounds.min.x < minX) return false;
-        if (objectBounds.max.x > maxX) return false;
-        if (objectBounds.min.z < minZ) return false;
-        if (objectBounds.max.z > maxZ) return false;
-
-        return true;
-    }
-
-    bool IntersectsDoorwayBounds(Room room, Bounds objectBounds, float padding)
-    {
-        for (int i = 0; i < room.doorways.Count; i++)
-        {
-            Transform door = room.doorways[i];
-            if (door == null) continue;
-
-            Bounds doorBounds = new Bounds(
-                door.position + UnityEngine.Vector3.up * 1.5f,
-                new UnityEngine.Vector3(3f + padding, 3f, 3f + padding)
-            );
-
-            if (doorBounds.Intersects(objectBounds))
-                return true;
-        }
-
-        return false;
-    }
-
-    bool IntersectsExistingDecor(Room room, GameObject instance, Bounds objectBounds)
-    {
-        Collider[] ownColliders = instance.GetComponentsInChildren<Collider>();
+        if (room == null)
+            return;
 
         room.EnsureDecorationRoots();
 
-        Transform[] roots =
+        float pillarDeleteChance = 0.15f;
+        float torchDeleteChance = 0.10f;
+
+        for (int i = room.pillarsRoot.childCount - 1; i >= 0; i--)
         {
-            room.pillarsRoot,
-            room.torchesRoot,
-            room.roomItemsRoot
-        };
+            Transform child = room.pillarsRoot.GetChild(i);
+            if (child == null)
+                continue;
 
-        for (int r = 0; r < roots.Length; r++)
-        {
-            Transform root = roots[r];
-            if (root == null) continue;
-
-            Collider[] existing = root.GetComponentsInChildren<Collider>();
-
-            for (int i = 0; i < existing.Length; i++)
+            if (Random.value < pillarDeleteChance)
             {
-                Collider other = existing[i];
-                if (other == null || !other.enabled) continue;
-
-                if (IsSelfOrChild(instance.transform, other.transform))
-                    continue;
-
-                for (int j = 0; j < ownColliders.Length; j++)
-                {
-                    Collider own = ownColliders[j];
-                    if (own == null || !own.enabled) continue;
-
-                    if (own.bounds.Intersects(other.bounds))
-                        return true;
-                }
+                RemoveOccupiedAreaNearPoint(room, child.position, 1.5f);
+                Destroy(child.gameObject);
             }
         }
 
-        return false;
-    }
-
-    void TagDecorRecursive(GameObject obj)
-    {
-        obj.tag = "Decor";
-
-        for (int i = 0; i < obj.transform.childCount; i++)
+        for (int i = room.torchesRoot.childCount - 1; i >= 0; i--)
         {
-            TagDecorRecursive(obj.transform.GetChild(i).gameObject);
+            Transform child = room.torchesRoot.GetChild(i);
+            if (child == null)
+                continue;
+
+            if (Random.value < torchDeleteChance)
+            {
+                RemoveOccupiedAreaNearPoint(room, child.position, 1.5f);
+                Destroy(child.gameObject);
+            }
         }
     }
 
-    GameObject TryPlaceGenericObject(
-        Room room,
-        GameObject prefab,
-        UnityEngine.Vector3 position,
-        UnityEngine.Quaternion rotation,
-        Transform parent,
-        float roomInset = 0.2f,
-        float doorwayPadding = 0.25f)
+    float GetRoomFloorTopY(Room room)
     {
-        if (prefab == null) return null;
+        if (room == null)
+            return 0f;
+
+        Transform floor = room.transform.Find("Floor");
+        if (floor != null)
+        {
+            Collider col = floor.GetComponent<Collider>();
+            if (col != null)
+                return col.bounds.max.y;
+        }
+
+        return room.transform.position.y + 1.5f;
+    }
+
+    GameObject TryPlaceGenericObjectAtHeight(Room room, GameObject prefab, Vector3 position, Quaternion rotation, Transform parent, float roomInset = 0.2f, float doorwayPadding = 0.25f, float occupiedPadding = 0.1f)
+    {
+        if (room == null || prefab == null)
+            return null;
 
         GameObject instance = Instantiate(prefab, position, rotation, parent);
         TagDecorRecursive(instance);
 
-        Bounds objectBounds;
-        if (!TryGetCombinedColliderBounds(instance, out objectBounds))
+        if (!TryGetCombinedColliderBounds(instance, out Bounds objectBounds))
         {
             Destroy(instance);
             return null;
@@ -761,12 +554,248 @@ public class DungeonRoomDecorator : MonoBehaviour
             return null;
         }
 
-        if (IntersectsExistingDecor(room, instance, objectBounds))
+        if (IntersectsOccupiedArea(room, objectBounds, occupiedPadding))
         {
             Destroy(instance);
             return null;
         }
 
+        room.occupiedAreas.Add(objectBounds);
+        ReservePlacedGenericInPlan(room, objectBounds, prefab.name);
         return instance;
+    }
+
+    bool TryGetCombinedColliderBounds(GameObject obj, out Bounds combinedBounds)
+    {
+        combinedBounds = new Bounds();
+        Collider[] colliders = obj.GetComponentsInChildren<Collider>();
+
+        bool found = false;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            Collider col = colliders[i];
+            if (col == null || !col.enabled)
+                continue;
+
+            if (!found)
+            {
+                combinedBounds = col.bounds;
+                found = true;
+            }
+            else
+            {
+                combinedBounds.Encapsulate(col.bounds);
+            }
+        }
+
+        return found;
+    }
+
+    bool IsWithinRoomBounds(Room room, Bounds objectBounds, float inset)
+    {
+        Vector3 center = room.transform.position;
+
+        float halfWidth = Mathf.FloorToInt(room.node.width) * 0.5f;
+        float halfLength = Mathf.FloorToInt(room.node.length) * 0.5f;
+
+        float minX = center.x - halfWidth + inset;
+        float maxX = center.x + halfWidth - inset;
+        float minZ = center.z - halfLength + inset;
+        float maxZ = center.z + halfLength - inset;
+
+        if (objectBounds.min.x < minX) return false;
+        if (objectBounds.max.x > maxX) return false;
+        if (objectBounds.min.z < minZ) return false;
+        if (objectBounds.max.z > maxZ) return false;
+
+        return true;
+    }
+
+    bool IntersectsDoorwayBounds(Room room, Bounds objectBounds, float padding)
+    {
+        for (int i = 0; i < room.doorways.Count; i++)
+        {
+            Transform door = room.doorways[i];
+            if (door == null)
+                continue;
+
+            Bounds doorBounds = new Bounds(
+                door.position + Vector3.up * 1.5f,
+                new Vector3(3f + padding, 3f, 3f + padding)
+            );
+
+            if (doorBounds.Intersects(objectBounds))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool IntersectsOccupiedArea(Room room, Bounds bounds, float padding)
+    {
+        if (room == null)
+            return false;
+
+        Bounds expanded = bounds;
+        expanded.Expand(padding * 2f);
+
+        for (int i = 0; i < room.occupiedAreas.Count; i++)
+        {
+            Bounds existing = room.occupiedAreas[i];
+            if (existing.Intersects(expanded))
+                return true;
+        }
+
+        return false;
+    }
+
+    void RemoveOccupiedAreaNearPoint(Room room, Vector3 point, float radius)
+    {
+        if (room == null)
+            return;
+
+        for (int i = room.occupiedAreas.Count - 1; i >= 0; i--)
+        {
+            Bounds bounds = room.occupiedAreas[i];
+            Vector3 closest = bounds.ClosestPoint(point);
+
+            if (Vector3.Distance(closest, point) <= radius)
+                room.occupiedAreas.RemoveAt(i);
+        }
+    }
+
+    void ClearExistingGenericDecor(Room room)
+    {
+        if (room == null)
+            return;
+
+        room.occupiedAreas.Clear();
+
+        room.EnsureDecorationRoots();
+
+        for (int i = room.pillarsRoot.childCount - 1; i >= 0; i--)
+            Destroy(room.pillarsRoot.GetChild(i).gameObject);
+
+        for (int i = room.torchesRoot.childCount - 1; i >= 0; i--)
+            Destroy(room.torchesRoot.GetChild(i).gameObject);
+    }
+
+    void TagDecorRecursive(GameObject obj)
+    {
+        obj.tag = "Decor";
+
+        for (int i = 0; i < obj.transform.childCount; i++)
+            TagDecorRecursive(obj.transform.GetChild(i).gameObject);
+    }
+
+    public void FinalizeDecor()
+    {
+        for (int i = 0; i < allWorkableRooms.Count; i++)
+        {
+            Room room = allWorkableRooms[i];
+            if (room != null)
+                room.FinalizeDecorations();
+        }
+    }
+
+    void ReservePlacedGenericInPlan(Room room, Bounds bounds, string source)
+    {
+        if (room == null)
+            return;
+
+        RoomDecorPlan plan = GetOrCreatePlan(room);
+        if (plan == null || plan.grid == null)
+            return;
+
+        Vector2Int min = plan.grid.WorldToGrid(bounds.min);
+        Vector2Int max = plan.grid.WorldToGrid(bounds.max);
+
+        int startX = Mathf.Min(min.x, max.x);
+        int endX = Mathf.Max(min.x, max.x);
+        int startZ = Mathf.Min(min.y, max.y);
+        int endZ = Mathf.Max(min.y, max.y);
+
+        for (int x = startX; x <= endX; x++)
+        {
+            for (int z = startZ; z <= endZ; z++)
+            {
+                if (!plan.grid.IsInside(x, z))
+                    continue;
+
+                plan.grid.TryReserveCell(
+                    x,
+                    z,
+                    DecorReservationPriority.Protected,
+                    DecorReservationType.Blocked,
+                    source
+                );
+            }
+        }
+    }
+
+    public bool TryGetExitPosition(Room room, out Vector3 position)
+    {
+        position = Vector3.zero;
+
+        if (room == null)
+            return false;
+
+        float clearanceRadius = 1.5f;
+        float clearanceHeight = 2.5f;
+        float roomInset = 2f;
+        float doorwayPadding = 0.5f;
+
+        float halfRoomWidth = room.node.width * 0.5f;
+        float halfRoomLength = room.node.length * 0.5f;
+
+        float minLocalX = -halfRoomWidth + clearanceRadius + roomInset;
+        float maxLocalX =  halfRoomWidth - clearanceRadius - roomInset;
+        float minLocalZ = -halfRoomLength + clearanceRadius + roomInset;
+        float maxLocalZ =  halfRoomLength - clearanceRadius - roomInset;
+
+        if (minLocalX > maxLocalX || minLocalZ > maxLocalZ)
+            return false;
+
+        List<Vector3> candidates = new List<Vector3>();
+
+        candidates.Add(Vector3.zero);
+        candidates.Add(new Vector3(-2f, 0f, -2f));
+        candidates.Add(new Vector3(-2f, 0f,  2f));
+        candidates.Add(new Vector3( 2f, 0f, -2f));
+        candidates.Add(new Vector3( 2f, 0f,  2f));
+        candidates.Add(new Vector3(-3f, 0f,  0f));
+        candidates.Add(new Vector3( 3f, 0f,  0f));
+        candidates.Add(new Vector3( 0f, 0f, -3f));
+        candidates.Add(new Vector3( 0f, 0f,  3f));
+
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            Vector3 local = candidates[i];
+            local.x = Mathf.Clamp(local.x, minLocalX, maxLocalX);
+            local.z = Mathf.Clamp(local.z, minLocalZ, maxLocalZ);
+
+            Vector3 world = room.transform.position + room.transform.rotation * local;
+            world.y = 1.5f;
+
+            Bounds testBounds = new Bounds(
+                world + Vector3.up * (clearanceHeight * 0.5f),
+                new Vector3(clearanceRadius * 2f, clearanceHeight, clearanceRadius * 2f)
+            );
+
+            if (!IsWithinRoomBounds(room, testBounds, 0.1f))
+                continue;
+
+            if (IntersectsDoorwayBounds(room, testBounds, doorwayPadding))
+                continue;
+
+            if (IntersectsOccupiedArea(room, testBounds, 0.2f))
+                continue;
+
+            room.occupiedAreas.Add(testBounds);
+            position = world;
+            return true;
+        }
+        return false;
     }
 }

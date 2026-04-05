@@ -5,7 +5,6 @@ using UnityEngine;
 public class DungeonEntitySpawner : MonoBehaviour
 {
     public GameObject hitboxTesterPrefab;
-    public GameObject playerPrefab;
     public List<Room> allRooms = new List<Room>();
 
     [Header("Enemy Spawning")]
@@ -15,10 +14,7 @@ public class DungeonEntitySpawner : MonoBehaviour
 
     public float enemyHeight = 2f;
     public float enemyRadius = 0.5f;
-
-    [Header("NPC Spawning")]
-    public GameObject merchantPrefab;
-
+    
     private Transform dungeonRoot;
     private Transform enemyRoot;
     private Transform npcRoot;
@@ -52,7 +48,6 @@ public class DungeonEntitySpawner : MonoBehaviour
         allRooms = decorator.allWorkableRooms;
         SpawnPlayer();
         SpawnEntitiesInRooms();
-        SpawnMerchantInRoom();
     }
 
     public void SpawnPlayer()
@@ -84,6 +79,7 @@ public class DungeonEntitySpawner : MonoBehaviour
                 player.transform.rotation = Quaternion.identity;
 
                 playerRoom.preventSpawning = true;
+                playerRoom.preventEnemySpawning = true;
 
                 DungeonManager.Instance.SpawnLastFloorExit(playerRoom);
                 return;
@@ -92,28 +88,23 @@ public class DungeonEntitySpawner : MonoBehaviour
     }
 
     bool IsValidSpawn(Room room, Vector3 position, float height, float radius)
+{
+    float clearanceX = 2f;
+    float clearanceZ = 2f;
+
+    Bounds spawnBounds = new Bounds(
+        position + Vector3.up * (height * 0.5f),
+        new Vector3(clearanceX, height, clearanceZ)
+    );
+
+    foreach (Bounds b in room.occupiedAreas)
     {
-        GameObject hitbox = Instantiate(hitboxTesterPrefab, position, Quaternion.identity);
-
-        CapsuleCollider capsule = hitbox.GetComponent<CapsuleCollider>();
-        capsule.height = height;
-        capsule.radius = radius;
-        capsule.center = Vector3.up * (height / 2f);
-
-        Bounds hitboxB = capsule.bounds;
-
-        foreach (Bounds b in room.occupiedAreas)
-        {
-            if (b.Intersects(hitboxB))
-            {
-                Destroy(hitbox);
-                return false;
-            }
-        }
-
-        Destroy(hitbox);
-        return true;
+        if (b.Intersects(spawnBounds))
+            return false;
     }
+
+    return true;
+}
 
 
     public void SpawnEntitiesInRooms()
@@ -122,13 +113,8 @@ public class DungeonEntitySpawner : MonoBehaviour
 
         foreach (Room room in allRooms)
         {
-            if (room.roomType == Room.RoomType.ShopKeeper)
-            {   
-                room.preventEnemySpawning = true;
+            if (room.preventSpawning || room.preventEnemySpawning)
                 continue;
-            }
-
-            if (room.preventEnemySpawning) continue;
             
             int enemiesToSpawn = Random.Range(minEnemiesPerRoom, maxEnemiesPerRoom + 1);
 
@@ -171,44 +157,4 @@ public class DungeonEntitySpawner : MonoBehaviour
         room.occupiedAreas.Add(b);
     }
 
-    void SpawnMerchantInRoom()
-    {
-        int maxAttempts = 10;
-
-        foreach (Room room in allRooms)
-        {
-            if (room.roomType != Room.RoomType.ShopKeeper)
-                continue;
-
-            if (room.preventNPCSpawning)
-                continue;
-
-            for (int attempt = 0; attempt < maxAttempts; attempt++)
-            {
-                Vector3 spawnPos = decorator.RandomRoomPosition(room);
-                spawnPos.y = 2.5f;
-
-                if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
-                {
-                    Instantiate(
-                        merchantPrefab,
-                        spawnPos,
-                        Quaternion.identity,
-                        npcRoot
-                    );
-
-                    RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
-                    room.preventNPCSpawning = true;
-
-                    break;
-                }
-            }
-        }
-    }
-
-
-
-
-
-    
 }

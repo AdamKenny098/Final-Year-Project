@@ -17,8 +17,7 @@ public enum GenericType
 {
     Torch,
     Pillar,
-    TorchPillar,
-    Banner
+    TorchPillar
 }
 
 void Awake()

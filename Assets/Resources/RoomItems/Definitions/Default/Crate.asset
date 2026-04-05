@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e651ef1f01c72c946947db9e3d5a69af, type: 3}
+  m_Name: Crate
+  m_EditorClassIdentifier: Assembly-CSharp::RoomItemDefinition
+  itemName: Crate
+  itemTag: Crate
+  anchorTag: 
+  prefab: {fileID: 3380766609563553451, guid: c9f3cf7dbe8ef5840b1405051ccdef2c, type: 3}
+  priority: 0
+  gridWidth: 1
+  gridLength: 1
+  allowRotation: 1
+  minCount: 2
+  maxCount: 5
+  preferWall: 4
+  preferCenter: 0
+  avoidCenter: 1
+  avoidDoors: 4
+  preferNearAnchor: 0
+  preferNearSameTag: 2
+  minAnchorDistance: 1
+  maxAnchorDistance: 4
