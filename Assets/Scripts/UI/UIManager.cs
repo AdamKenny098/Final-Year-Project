@@ -5,11 +5,19 @@ public class UIManager : MonoBehaviour
     public GameObject playerMenuRoot;
     public UITabBar playerMenuTabs;
     public GameObject tabsRoot;
+    public GameObject combatUIRoot;
+    public GameObject minimapRoot;
 
     void Awake()
     {
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(false);
+
+        if (tabsRoot != null)
+            tabsRoot.SetActive(false);
+
+        if (playerMenuTabs != null)
+            playerMenuTabs.CloseAll();
     }
 
     void Update()
@@ -22,7 +30,7 @@ public class UIManager : MonoBehaviour
     {
         if (GameStates.Instance == null) return;
 
-        var currentState  = GameStates.Instance.currentState;
+        var currentState = GameStates.Instance.currentState;
 
         if (currentState == GameState.Paused || currentState == GameState.Talking || currentState == GameState.Trading)
             return;
@@ -30,17 +38,55 @@ public class UIManager : MonoBehaviour
         GameStates.Instance.SetState(currentState == GameState.Menu ? GameState.Exploration : GameState.Menu);
     }
 
-    public void OnStateChanged(GameState prev, GameState next)
+    void ForceClosePlayerMenu()
     {
-        bool active = next == GameState.Menu;
-
-        if (playerMenuRoot != null)
-            playerMenuRoot.SetActive(active);
+        if (playerMenuTabs != null)
+            playerMenuTabs.CloseAll();
 
         if (tabsRoot != null)
-            tabsRoot.SetActive(active);
+            tabsRoot.SetActive(false);
 
-        if (active  && playerMenuTabs != null)
+        if (playerMenuRoot != null)
+            playerMenuRoot.SetActive(false);
+    }
+
+    public void OnStateChanged(GameState prev, GameState next)
+    {
+        if (GameStates.Instance != null && GameStates.Instance.currentState != GameState.Exploration)
+        {
+            if (combatUIRoot != null)
+                combatUIRoot.SetActive(false);
+            
+            if (minimapRoot != null)
+                minimapRoot.SetActive(false);
+        }
+
+        else
+        {
+            if (combatUIRoot != null)
+                combatUIRoot.SetActive(true);
+            
+            if (minimapRoot != null)
+                minimapRoot.SetActive(true);
+        }
+
+        bool active = next == GameState.Menu;
+
+        if (!active)
+        {
+            ForceClosePlayerMenu();
+            return;
+        }
+
+        if (playerMenuRoot != null)
+            playerMenuRoot.SetActive(true);
+
+        if (tabsRoot != null)
+            tabsRoot.SetActive(true);
+
+        if (playerMenuTabs != null)
             playerMenuTabs.OpenDefault();
+
+        
     }
 }

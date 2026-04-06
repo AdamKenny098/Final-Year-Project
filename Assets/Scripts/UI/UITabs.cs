@@ -88,4 +88,26 @@ public class UITabBar : MonoBehaviour
         middle.interactable = false;
         middle.blocksRaycasts = false;
     }
+
+    public void CloseAll()
+    {
+        currentTabId = null;
+
+        for (int i = 0; i < tabs.Count; i++)
+        {
+            if (tabs[i].pageRoot != null)
+            {
+                foreach (var page in tabs[i].pageRoot)
+                {
+                    if (page != null)
+                        page.SetActive(false);
+                }
+            }
+
+            if (tabs[i].button != null)
+                tabs[i].button.interactable = true;
+        }
+
+        CloseInventory();
+    }
 }

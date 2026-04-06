@@ -6,6 +6,11 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private CanvasGroup merchantInventory;
     [SerializeField] private CanvasGroup middlePanel;
 
+    void Awake()
+    {
+        HideShop();
+    }
+
     public void ShowShop()
     {
         SetGroup(merchantInventory, true);
@@ -20,7 +25,11 @@ public class ShopUI : MonoBehaviour
 
     void SetGroup(CanvasGroup group, bool show)
     {
-        group.alpha = show ? 1 : 0;
+        if (group == null)
+            return;
+
+        group.gameObject.SetActive(show);
+        group.alpha = show ? 1f : 0f;
         group.interactable = show;
         group.blocksRaycasts = show;
     }

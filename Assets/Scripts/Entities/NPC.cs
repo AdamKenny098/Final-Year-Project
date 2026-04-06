@@ -69,6 +69,9 @@ public class NPC : Character, IInteractable
 
     public virtual void Interact()
     {
+        if (GameStates.Instance == null || GameStates.Instance.currentState != GameState.Exploration)
+            return;
+
         if (dialogueInkJSON == null) return;
 
         DialogueSystem.Instance.StartDialogue(this);
