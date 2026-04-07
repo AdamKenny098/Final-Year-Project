@@ -55,6 +55,9 @@ public class InventoryUI : MonoBehaviour
     public GameObject playerMenuRoot;
     public GameObject combatUI;
 
+    public EquipmentManager equipmentManager;
+    public EquipmentPanelUI equipmentPanelUI;
+
     public void Awake()
     {
         if (!Instance)
@@ -73,6 +76,11 @@ public class InventoryUI : MonoBehaviour
         secondaryButton.onClick.AddListener(HandleSecondaryButton);
         tertiaryButton.onClick.AddListener(HandleTertiaryButton);
         playerCharacter = FindPlayerCharacter();
+
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindFirstObjectByType<EquipmentManager>();
+        }
     }
 
     void Update()
@@ -327,7 +335,9 @@ public class InventoryUI : MonoBehaviour
 
         if (containerInventory == null)
         {
-            primaryButton.GetComponentInChildren<TMP_Text>().text = "Use";
+            bool isEquippable = item is ArmorItem || item is WeaponItem;
+
+            primaryButton.GetComponentInChildren<TMP_Text>().text = isEquippable ? "Equip" : "Use";
             secondaryButton.gameObject.SetActive(false);
             tertiaryButton.gameObject.SetActive(false);
         }
@@ -352,11 +362,26 @@ public class InventoryUI : MonoBehaviour
 
     private void HandlePrimaryButton()
     {
-        if (selectedInventory == null || selectedSlot == null)
+        if (selectedInventory == null || selectedSlot == null || selectedSlot.item == null)
             return;
 
         if (containerInventory == null)
         {
+            if (equipmentManager != null)
+            {
+                bool equipped = equipmentManager.Equip(selectedSlot.item);
+
+                if (equipped)
+                {
+                    BuildPlayerList();
+
+                    if (equipmentPanelUI != null)
+                        equipmentPanelUI.Refresh();
+
+                    ClearSelection();
+                }
+            }
+
             return;
         }
 

@@ -17,6 +17,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: bef56024e78708a40a24e6c8f00ff980, type: 3}
   rarity: 1
   value: 10
+  isSellable: 1
+  itemId: apple
   consumableType: 0
-  restoreValue: 0
-  duration: 0
+  restoreValue: 10
+  duration: 1

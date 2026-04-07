@@ -25,6 +25,12 @@ public class Character : Entity
         }
 
         ApplyClassToStats();
+
+        if (EquipmentManager.Instance != null)
+        {
+            EquipmentManager.Instance.CacheBaseStats();
+            EquipmentManager.Instance.RecalculateStats();
+        }
     }
 
     public void ApplyClassToStats()

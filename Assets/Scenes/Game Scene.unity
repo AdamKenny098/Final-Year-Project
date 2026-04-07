@@ -849,6 +849,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!1 &480738832 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8725040418064113104, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+  m_PrefabInstance: {fileID: 5585628258186341181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &480738834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 480738832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c77edeab2a330742a9e7bbd78ea803c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rarity
 --- !u!1 &486423327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1177,6 +1194,11 @@ CanvasRenderer:
 --- !u!1 &741464286 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5547990598087906856, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+  m_PrefabInstance: {fileID: 2691077015999900267}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &755976118 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2893159838764721259, guid: f260ade562775e84f80a35e89aed687a, type: 3}
   m_PrefabInstance: {fileID: 2691077015999900267}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &820614469 stripped
@@ -3957,7 +3979,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1904988880
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4482,6 +4504,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2893159838764721259, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3197722498645771507, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -4700,7 +4726,7 @@ PrefabInstance:
       objectReference: {fileID: 1499511046}
     - target: {fileID: 5206861226953904331, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_Alpha
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5206861226953904331, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_Interactable
@@ -5149,6 +5175,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1503715599}
     - target: {fileID: 7860713237722923842, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      propertyPath: minimapRoot
+      value: 
+      objectReference: {fileID: 1904988879}
+    - target: {fileID: 7860713237722923842, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      propertyPath: combatUIRoot
+      value: 
+      objectReference: {fileID: 755976118}
+    - target: {fileID: 7860713237722923842, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
       propertyPath: shopInvUIRoot
       value: 
       objectReference: {fileID: 741464286}
@@ -5174,6 +5208,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 31511138788983833, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2120026800}
+    - targetCorrespondingSourceObject: {fileID: 8725040418064113104, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 480738834}
   m_SourcePrefab: {fileID: 100100000, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
