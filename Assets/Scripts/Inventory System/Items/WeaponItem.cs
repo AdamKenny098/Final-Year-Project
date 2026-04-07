@@ -8,6 +8,12 @@ public class WeaponItem : Item
 
     public DamageType damageType;
 
+    [Header("Stat Bonuses")]
+    public int strength;
+    public int dexterity;
+    public int intelligence;
+    public int charisma;
+
     public enum ClassType
     {
         Warrior,

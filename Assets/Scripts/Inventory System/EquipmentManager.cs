@@ -203,6 +203,7 @@ public class EquipmentManager : MonoBehaviour
         ApplyArmor(chestplate, stats);
         ApplyArmor(leggings, stats);
         ApplyArmor(boots, stats);
+        ApplyWeapon(equippedWeapon, stats);
 
         if (healthWasFull)
             stats.health = stats.maxHealth;
@@ -226,6 +227,17 @@ public class EquipmentManager : MonoBehaviour
             return;
 
         stats.armorBonus += item.GetDefense();
+        stats.strength += item.strength;
+        stats.dexterity += item.dexterity;
+        stats.intelligence += item.intelligence;
+        stats.charisma += item.charisma;
+    }
+
+    void ApplyWeapon(WeaponItem item, Stats stats)
+    {
+        if (item == null || stats == null)
+            return;
+
         stats.strength += item.strength;
         stats.dexterity += item.dexterity;
         stats.intelligence += item.intelligence;
