@@ -8,14 +8,6 @@ public class PlayerAbilityUI : MonoBehaviour
     public Character player;
     public AbilityManager abilities;
 
-    [Header("Bars")]
-    public Slider healthBar;
-    public Slider manaBar;
-    public Slider staminaBar;
-    public TMP_Text healthText;
-    public TMP_Text manaText;
-    public TMP_Text staminaText;
-
     [Header("Ability Slots (dynamic)")]
     public AbilitySlotUI slotPrefab;
     public Transform slotsRoot;
@@ -49,8 +41,6 @@ public class PlayerAbilityUI : MonoBehaviour
     void Update()
     {
         if (player == null || player.stats == null) return;
-
-        UpdateBars();
 
         if (abilities != null && abilities.loadout != lastLoadout)
         {
@@ -97,18 +87,6 @@ public class PlayerAbilityUI : MonoBehaviour
                 slots[i].BindAbility(abilityData);
             }
         }
-    }
-
-    void UpdateBars()
-    {
-        Stats s = player.stats;
-
-        if (healthBar != null) { healthBar.maxValue = s.maxHealth; healthBar.value = s.health; }
-        if (manaBar != null) { manaBar.maxValue = s.maxMana; manaBar.value = s.mana; }
-        if (staminaBar != null) { staminaBar.maxValue = s.maxStamina; staminaBar.value = s.stamina; }
-        if (healthText != null) healthText.text = s.health + " / " + s.maxHealth;
-        if (manaText != null) manaText.text = s.mana + " / " + s.maxMana;
-        if (staminaText != null) staminaText.text = s.stamina + " / " + s.maxStamina;
     }
 
     void UpdateCooldowns()

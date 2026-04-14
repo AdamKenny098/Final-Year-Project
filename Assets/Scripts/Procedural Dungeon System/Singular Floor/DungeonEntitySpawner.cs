@@ -130,8 +130,21 @@ public class DungeonEntitySpawner : MonoBehaviour
                     if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
                     {
                         GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity, enemyRoot);
+                        enemy.name = enemyPrefab.name;
 
-                        // Register occupied space so future spawns respect it
+                        Character enemyCharacter = enemy.GetComponent<Character>();
+                        if (enemyCharacter != null && enemyCharacter.stats != null)
+                        {
+                            int dungeonLevel = 1;
+
+                            if (LabyrinthManager.Instance != null)
+                                dungeonLevel = LabyrinthManager.Instance.currentFloorIndex;
+
+                            enemyCharacter.level = dungeonLevel;
+                            enemyCharacter.stats.level = dungeonLevel;
+                            enemyCharacter.ApplyClassToStats();
+                        }
+
                         RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
 
                         spawned = true;

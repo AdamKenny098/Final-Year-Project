@@ -24,5 +24,5 @@ MonoBehaviour:
   cooldown: 25
   range: 30
   radius: 0.25
-  icon: {fileID: 21300000, guid: 0b63e1a4cf6ece440bdfc8a6422df6c5, type: 3}
+  icon: {fileID: 21300000, guid: fcd758fa46bb7c445a0265890385e0ba, type: 3}
   requiredLevel: 1

@@ -268,6 +268,7 @@ public class DialogueSystem : MonoBehaviour
                     break;
 
                 case OPENQUESTS_TAG:
+                {
                     QuestGiverNPC questNPC = currentNPC as QuestGiverNPC;
                     if (questNPC == null)
                         break;
@@ -276,10 +277,13 @@ public class DialogueSystem : MonoBehaviour
                     GameStates.Instance.SetState(GameState.Trading);
 
                     if (QuestGiverUI.Instance != null)
+                    {
                         QuestGiverUI.Instance.root.SetActive(true);
                         QuestGiverUI.Instance.Open(questNPC, questNPC.GetAvailableQuests());
+                    }
 
                     break;
+                }
             }
         }
     }

@@ -106,6 +106,40 @@ public class Entity : MonoBehaviour
 
         CombatSystem.Instance.PayCosts(this, ability);
         CombatResult result = CombatSystem.Instance.Resolve(this, target, ability);
+
+        if (CombatRollUI.Instance != null)
+        {
+            if (ability.resolution == AbilityResolution.AttackRoll)
+            {
+                int bonus = result.totalToHitOrSave - result.d20;
+
+                CombatRollUI.Instance.ShowAttackRoll(
+                    ability.abilityName,
+                    result.d20,
+                    bonus,
+                    result.totalToHitOrSave,
+                    result.targetNumber,
+                    result.outcome,
+                    result.damage
+                );
+            }
+            else
+            {
+                int bonus = result.totalToHitOrSave - result.d20;
+
+                CombatRollUI.Instance.ShowSaveRoll(
+                    ability.abilityName,
+                    ability.saveType,
+                    result.d20,
+                    bonus,
+                    result.totalToHitOrSave,
+                    result.targetNumber,
+                    result.saved,
+                    result.damage
+                );
+            }
+        }
+        
         DamageInfo dmg = new DamageInfo
         {
             source = gameObject,

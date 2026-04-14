@@ -104,7 +104,7 @@ public class QuestGiverUI : MonoBehaviour
         RebuildQuestButtons();
 
         if (currentQuests.Count > 0)
-            SelectQuest(currentQuests[0]);
+            ClearDetails();
         else
             Close();
     }
@@ -147,9 +147,16 @@ public class QuestGiverUI : MonoBehaviour
 
     void ClearDetails()
     {
-        if (questTitleText != null) questTitleText.text = "No Quest Selected";
-        if (questDescriptionText != null) questDescriptionText.text = "";
-        if (rewardText != null) rewardText.text = "";
+        selectedQuest = null;
+
+        if (questTitleText != null)
+            questTitleText.text = "No Quest Selected";
+
+        if (questDescriptionText != null)
+            questDescriptionText.text = "";
+
+        if (rewardText != null)
+            rewardText.text = "";
 
         if (acceptButton != null)
             acceptButton.interactable = false;
@@ -183,14 +190,12 @@ public class QuestGiverUI : MonoBehaviour
             acceptButton.interactable = true;
     }
 
-    void AcceptSelectedQuest()
+    public void AcceptSelectedQuest()
     {
         if (selectedQuest == null || QuestSystem.Instance == null)
             return;
 
-        QuestData acceptedQuest = selectedQuest;
-
-        bool started = QuestSystem.Instance.TryStartQuest(acceptedQuest);
+        bool started = QuestSystem.Instance.TryStartQuest(selectedQuest);
         if (!started)
             return;
 

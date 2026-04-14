@@ -34,7 +34,6 @@ public class Monster : Character
 
         if (QuestSystem.Instance != null)
             QuestSystem.Instance.NotifyEnemyKilled(enemyType);
-
             
         GrantXP();
     }

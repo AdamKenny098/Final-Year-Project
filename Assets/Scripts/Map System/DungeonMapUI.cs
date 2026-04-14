@@ -22,6 +22,8 @@ public class DungeonMapUI : MonoBehaviour
 
     public float minimumX;
     public float minimumZ;
+    public float maximumX;
+    public float maximumZ;
 
     public void SetRoomBuilder(DungeonRoomBuilder builder)
     {
@@ -38,7 +40,8 @@ public class DungeonMapUI : MonoBehaviour
         if (roomBuilder.allRooms == null || roomBuilder.allRooms.Count == 0)
             return;
 
-        CalculateMapOrigin();
+        CalculateMapBounds();
+        PrepareContainer();
 
         foreach (Room room in roomBuilder.allRooms)
         {
@@ -51,7 +54,10 @@ public class DungeonMapUI : MonoBehaviour
             CreateIcon(room);
         }
 
-        UpdateCurrentRoomView();
+        if (centerOnCurrentRoom)
+            UpdateCurrentRoomView();
+        else
+            CenterWholeMap();
     }
 
     void Update()
@@ -66,7 +72,63 @@ public class DungeonMapUI : MonoBehaviour
             spawnedIcons[i].Refresh(spawnedIcons[i].room == current);
         }
 
-        UpdateCurrentRoomView();
+        if (centerOnCurrentRoom)
+            UpdateCurrentRoomView();
+    }
+
+    void CalculateMapBounds()
+    {
+        bool first = true;
+
+        foreach (Room room in roomBuilder.allRooms)
+        {
+            if (room == null || room.node == null)
+                continue;
+
+            float halfWidth = Mathf.FloorToInt(room.node.width) * 0.5f;
+            float halfLength = Mathf.FloorToInt(room.node.length) * 0.5f;
+
+            float roomMinX = room.transform.position.x - halfWidth;
+            float roomMinZ = room.transform.position.z - halfLength;
+            float roomMaxX = room.transform.position.x + halfWidth;
+            float roomMaxZ = room.transform.position.z + halfLength;
+
+            if (first)
+            {
+                minimumX = roomMinX;
+                minimumZ = roomMinZ;
+                maximumX = roomMaxX;
+                maximumZ = roomMaxZ;
+                first = false;
+            }
+            else
+            {
+                minimumX = Mathf.Min(minimumX, roomMinX);
+                minimumZ = Mathf.Min(minimumZ, roomMinZ);
+                maximumX = Mathf.Max(maximumX, roomMaxX);
+                maximumZ = Mathf.Max(maximumZ, roomMaxZ);
+            }
+        }
+    }
+
+    void PrepareContainer()
+    {
+        float width = (maximumX - minimumX) * pixelsPerWorldUnit;
+        float height = (maximumZ - minimumZ) * pixelsPerWorldUnit;
+
+        mapContainer.anchorMin = new Vector2(0.5f, 0.5f);
+        mapContainer.anchorMax = new Vector2(0.5f, 0.5f);
+        mapContainer.pivot = new Vector2(0.5f, 0.5f);
+        mapContainer.sizeDelta = new Vector2(width, height);
+        mapContainer.anchoredPosition = Vector2.zero;
+    }
+
+    void CenterWholeMap()
+    {
+        if (mapContainer == null)
+            return;
+
+        mapContainer.anchoredPosition = Vector2.zero;
     }
 
     void UpdateCurrentRoomView()
@@ -85,38 +147,9 @@ public class DungeonMapUI : MonoBehaviour
             return;
 
         Vector2 roomCenter = currentRect.anchoredPosition + (currentRect.sizeDelta * 0.5f);
-        Vector2 viewportCenter = mapViewport.rect.size * 0.5f;
+        Vector2 containerCenter = mapContainer.sizeDelta * 0.5f;
 
-        mapContainer.anchoredPosition = viewportCenter - roomCenter;
-    }
-
-    void CalculateMapOrigin()
-    {
-        bool first = true;
-
-        foreach (Room room in roomBuilder.allRooms)
-        {
-            if (room == null || room.node == null)
-                continue;
-
-            float halfWidth = Mathf.FloorToInt(room.node.width) * 0.5f;
-            float halfLength = Mathf.FloorToInt(room.node.length) * 0.5f;
-
-            float roomMinX = room.transform.position.x - halfWidth;
-            float roomMinZ = room.transform.position.z - halfLength;
-
-            if (first)
-            {
-                minimumX = roomMinX;
-                minimumZ = roomMinZ;
-                first = false;
-            }
-            else
-            {
-                minimumX = Mathf.Min(minimumX, roomMinX);
-                minimumZ = Mathf.Min(minimumZ, roomMinZ);
-            }
-        }
+        mapContainer.anchoredPosition = containerCenter - roomCenter;
     }
 
     void CreateIcon(Room room)
@@ -157,7 +190,6 @@ public class DungeonMapUI : MonoBehaviour
                 drawWidth = baseHeight;
                 drawHeight = baseWidth;
 
-                // keep the same center after swapping dimensions
                 float centerX = uiX + (baseWidth * 0.5f);
                 float centerY = uiY + (baseHeight * 0.5f);
 

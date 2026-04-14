@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
     public GameObject tabsRoot;
     public GameObject combatUIRoot;
     public GameObject minimapRoot;
+    public GameObject explorationUIRoot;
 
     void Awake()
     {
@@ -18,6 +19,8 @@ public class UIManager : MonoBehaviour
 
         if (playerMenuTabs != null)
             playerMenuTabs.CloseAll();
+        
+
     }
 
     void Update()
@@ -54,20 +57,14 @@ public class UIManager : MonoBehaviour
     {
         if (GameStates.Instance != null && GameStates.Instance.currentState != GameState.Exploration)
         {
-            if (combatUIRoot != null)
-                combatUIRoot.SetActive(false);
-            
-            if (minimapRoot != null)
-                minimapRoot.SetActive(false);
+            if (explorationUIRoot != null)
+                explorationUIRoot.SetActive(false);
         }
 
         else
         {
-            if (combatUIRoot != null)
-                combatUIRoot.SetActive(true);
-            
-            if (minimapRoot != null)
-                minimapRoot.SetActive(true);
+            if (explorationUIRoot != null)
+                explorationUIRoot.SetActive(true);
         }
 
         bool active = next == GameState.Menu;

@@ -19,14 +19,14 @@ public class Character : Entity
 
     public virtual void Start()
     {
-        if (GameManager.Instance != null)
+        if (CompareTag("Player") && GameManager.Instance != null)
         {
             characterClass = GameManager.Instance.selectedClass;
         }
 
         ApplyClassToStats();
 
-        if (EquipmentManager.Instance != null)
+        if (CompareTag("Player") && EquipmentManager.Instance != null)
         {
             EquipmentManager.Instance.CacheBaseStats();
             EquipmentManager.Instance.RecalculateStats();
@@ -41,8 +41,11 @@ public class Character : Entity
         }
 
         ClassStats cs = ClassSystem.Instance.GetStats(characterClass);
-        
-        int lvl = Mathf.Max(1, stats.level); // Ensure level is at least 1
+
+        stats.level = Mathf.Max(1, stats.level);
+        level = stats.level;
+
+        int lvl = stats.level;
 
         stats.maxHealth = cs.baseHealth + cs.healthPerLevel * (lvl - 1);
         stats.maxMana = cs.baseMana + cs.manaPerLevel * (lvl - 1);
@@ -59,7 +62,40 @@ public class Character : Entity
 
     public void AddXP(int amount)
     {
+        if (amount <= 0)
+            return;
+
         currentXP += amount;
+        TryLevelUp();
+    }
+
+    public int GetXPToNextLevel()
+    {
+        int currentLevel = Mathf.Max(1, stats.level);
+        return 100 + ((currentLevel - 1) * 50);
+    }
+
+    void TryLevelUp()
+    {
+        bool leveledUp = false;
+
+        while (currentXP >= GetXPToNextLevel())
+        {
+            currentXP -= GetXPToNextLevel();
+            stats.level++;
+            level = stats.level;
+            leveledUp = true;
+        }
+
+        if (!leveledUp)
+            return;
+
+        ApplyClassToStats();
+
+        if (CompareTag("Player") && EquipmentManager.Instance != null)
+        {
+            EquipmentManager.Instance.RecalculateStats();
+        }
     }
 
     public void ApplyClassAbilities()

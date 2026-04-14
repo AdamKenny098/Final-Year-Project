@@ -210,6 +210,7 @@ public class LabyrinthManager : MonoBehaviour
 
         if (targetIndex == 0 && previousFloorIndex != 0)
             RefreshSafeFloorMerchantStock();
+            RestorePlayerStats();
 
         OnFloorChanged();
 
@@ -379,5 +380,20 @@ public class LabyrinthManager : MonoBehaviour
         FloorExitUp.BlockTriggers(2.5f);
         FloorExitDown.BlockTriggers(2.5f);
         StairsInstance.BlockTriggers(2.5f);
+    }
+
+    void RestorePlayerStats()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+            return;
+
+        Character character = player.GetComponentInParent<Character>();
+        if (character == null || character.stats == null)
+            return;
+
+        character.stats.health = character.stats.maxHealth;
+        character.stats.mana = character.stats.maxMana;
+        character.stats.stamina = character.stats.maxStamina;
     }
 }
