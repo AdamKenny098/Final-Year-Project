@@ -9,12 +9,25 @@ public class DungeonMapUI : MonoBehaviour
     public RectTransform mapContainer;
     public Image roomIconPrefab;
 
+    [Header("Optional Theme References")]
+    public Image backgroundImage;
+    public Image frameImage;
+
     [Header("Map Scale")]
     public float pixelsPerWorldUnit = 6f;
     public bool includeCorridors = true;
 
     [Header("Minimap Follow")]
     public bool centerOnCurrentRoom = false;
+
+    [Header("Theme Colors")]
+    public Color backgroundColor = new Color(0.08f, 0.07f, 0.06f, 0.95f);
+    public Color frameColor = new Color(0.16f, 0.13f, 0.11f, 0.95f);
+
+    [Header("Shape Styling")]
+    public float roomInsetPixels = 3f;
+    public float corridorInsetPixels = 2f;
+    public float minimumVisualSize = 4f;
 
     DungeonRoomBuilder roomBuilder;
     public List<MapRoomIcon> spawnedIcons = new();
@@ -40,6 +53,7 @@ public class DungeonMapUI : MonoBehaviour
         if (roomBuilder.allRooms == null || roomBuilder.allRooms.Count == 0)
             return;
 
+        ApplyTheme();
         CalculateMapBounds();
         PrepareContainer();
 
@@ -74,6 +88,18 @@ public class DungeonMapUI : MonoBehaviour
 
         if (centerOnCurrentRoom)
             UpdateCurrentRoomView();
+    }
+
+    void ApplyTheme()
+    {
+        if (backgroundImage == null && mapViewport != null)
+            backgroundImage = mapViewport.GetComponent<Image>();
+
+        if (backgroundImage != null)
+            backgroundImage.color = backgroundColor;
+
+        if (frameImage != null)
+            frameImage.color = frameColor;
     }
 
     void CalculateMapBounds()
@@ -158,6 +184,8 @@ public class DungeonMapUI : MonoBehaviour
             return;
 
         Image iconImage = Instantiate(roomIconPrefab, mapContainer);
+        iconImage.raycastTarget = false;
+
         RectTransform rectTransform = iconImage.rectTransform;
 
         float baseWidth = Mathf.FloorToInt(room.node.width) * pixelsPerWorldUnit;
@@ -198,12 +226,19 @@ public class DungeonMapUI : MonoBehaviour
             }
         }
 
+        float inset = room.isCorridor ? corridorInsetPixels : roomInsetPixels;
+        drawX += inset;
+        drawY += inset;
+        drawWidth = Mathf.Max(minimumVisualSize, drawWidth - (inset * 2f));
+        drawHeight = Mathf.Max(minimumVisualSize, drawHeight - (inset * 2f));
+
         rectTransform.anchorMin = new Vector2(0f, 0f);
         rectTransform.anchorMax = new Vector2(0f, 0f);
         rectTransform.pivot = new Vector2(0f, 0f);
         rectTransform.anchoredPosition = new Vector2(drawX, drawY);
         rectTransform.sizeDelta = new Vector2(drawWidth, drawHeight);
         rectTransform.localEulerAngles = Vector3.zero;
+        rectTransform.localScale = Vector3.one;
 
         MapRoomIcon icon = iconImage.GetComponent<MapRoomIcon>();
         if (icon == null)

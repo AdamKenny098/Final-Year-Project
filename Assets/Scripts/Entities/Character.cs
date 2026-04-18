@@ -10,6 +10,9 @@ public class Character : Entity
     [Header("Abilities")]
     public AbilityManager abilityManager;
 
+    [Header("Damage Feedback")]
+    [SerializeField] PlayerDamageFeedback damageFeedback;
+
     bool deathHandled;
 
     public override void Awake()
@@ -31,6 +34,28 @@ public class Character : Entity
             EquipmentManager.Instance.CacheBaseStats();
             EquipmentManager.Instance.RecalculateStats();
         }
+
+        if (CompareTag("Player") && damageFeedback == null)
+        {
+            damageFeedback = FindFirstObjectByType<PlayerDamageFeedback>();
+        }
+    }
+
+    protected override void OnDamaged(int damageAmount)
+    {
+        base.OnDamaged(damageAmount);
+
+        if (!CompareTag("Player"))
+            return;
+
+        if (damageFeedback == null)
+            return;
+
+        if (stats == null || stats.maxHealth <= 0)
+            return;
+
+        float intensity = Mathf.Clamp01((float)damageAmount / stats.maxHealth);
+        damageFeedback.PlayDamageFlash(intensity);
     }
 
     public void ApplyClassToStats()

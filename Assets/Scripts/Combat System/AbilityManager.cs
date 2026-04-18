@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class AbilityManager : MonoBehaviour
 {
@@ -8,14 +9,26 @@ public class AbilityManager : MonoBehaviour
     public AbilityLoadout loadout;
 
     float[] nextReady;
+    private MageVFXController mageVfx;
+    private ArcherVFXController archerVfx;
 
     void Awake()
     {
         if (owner == null) owner = GetComponent<Entity>();
         if (nextReady == null || nextReady.Length != 5)
-        {
             nextReady = new float[5];
+
+        if (owner != null)
+        {
+            mageVfx = owner.GetComponentInChildren<MageVFXController>();
+            archerVfx = owner.GetComponentInChildren<ArcherVFXController>();
         }
+
+        if (mageVfx == null)
+            mageVfx = GetComponentInChildren<MageVFXController>();
+
+        if (archerVfx == null)
+            archerVfx = GetComponentInChildren<ArcherVFXController>();
     }
 
     public bool IsReady(int slot)
@@ -73,6 +86,8 @@ public class AbilityManager : MonoBehaviour
         bool ok = owner.TryUseAbilityOn(target, ability, hitPoint);
         if (!ok) return false;
 
+        PlayAbilityVFX(ability, target, hitPoint);
+
         nextReady[slot] = Time.time + Mathf.Max(0f, ability.cooldown);
         return true;
     }
@@ -91,5 +106,90 @@ public class AbilityManager : MonoBehaviour
         AbilityData abilityData = GetAbility(slot);
         if (abilityData == null) return 0f;
         return Mathf.Max(0f, abilityData.cooldown);
+    }
+
+    private void PlayAbilityVFX(AbilityData ability, Entity target, Vector3 hitPoint)
+    {
+        if (ability == null)
+            return;
+
+        string nameLower = ability.abilityName.Trim().ToLowerInvariant();
+
+        // Mage
+        if (mageVfx != null)
+        {
+            if (nameLower == "firebolt")
+            {
+                mageVfx.PlayFireboltCast();
+                mageVfx.PlayFireboltImpact(hitPoint);
+                return;
+            }
+
+            if (nameLower == "fireball")
+            {
+                mageVfx.PlayFireballCast();
+                mageVfx.PlayFireballImpact(hitPoint);
+                return;
+            }
+
+            if (nameLower == "frost nova")
+            {
+                mageVfx.PlayFrostNova();
+                return;
+            }
+
+            if (nameLower == "meteor")
+            {
+                StartCoroutine(PlayMeteorSequence(hitPoint));
+                return;
+            }
+
+            if (nameLower == "chain lightning")
+            {
+                mageVfx.PlayChainLightningCast();
+
+                if (target != null)
+                    mageVfx.PlayChainLightningHit(target.transform);
+
+                return;
+            }
+        }
+
+        // Archer
+        if (archerVfx != null && IsArrowAbility(nameLower))
+        {
+            ArrowVisualType visualType = GetArrowVisualType(nameLower);
+            archerVfx.FireArrow(hitPoint, visualType, target != null ? target.transform : null);
+        }
+    }
+
+    private IEnumerator PlayMeteorSequence(Vector3 hitPoint)
+    {
+        if (mageVfx == null)
+            yield break;
+
+        mageVfx.PlayMeteorSummon(hitPoint);
+        yield return new WaitForSeconds(0.6f);
+        mageVfx.PlayMeteorImpact(hitPoint, Vector3.up);
+    }
+
+    private bool IsArrowAbility(string nameLower)
+    {
+        return nameLower == "piercing shot"
+            || nameLower == "power shot"
+            || nameLower == "quick shot"
+            || nameLower == "snare shot"
+            || nameLower == "volley";
+    }
+
+    private ArrowVisualType GetArrowVisualType(string nameLower)
+    {
+        if (nameLower == "piercing shot") return ArrowVisualType.PiercingShot;
+        if (nameLower == "power shot")    return ArrowVisualType.PowerShot;
+        if (nameLower == "quick shot")    return ArrowVisualType.QuickShot;
+        if (nameLower == "snare shot")    return ArrowVisualType.SnareShot;
+        if (nameLower == "volley")        return ArrowVisualType.Volley;
+
+        return ArrowVisualType.Normal;
     }
 }

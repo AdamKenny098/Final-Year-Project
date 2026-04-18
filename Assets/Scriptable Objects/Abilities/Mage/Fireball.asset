@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19b630a055cac904988fb70beecf3fb1, type: 3}
   m_Name: Fireball
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
-  abilityName: Basic Attack
+  abilityName: Fireball
   resolution: 1
   damageType: 3
   damageDice: 4D6+INT

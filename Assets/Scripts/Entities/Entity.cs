@@ -32,12 +32,20 @@ public class Entity : MonoBehaviour
     {
         if (isDead) return;
         if (stats == null) return;
+        if (info.amount <= 0) return;
 
         lastDamageSource = info.source;
         lastAttacker = info.attacker != null? info.attacker: (info.source ? info.source.GetComponentInParent<Entity>() : null);
         lastHitPoint = info.hitPoint;
         lastDamageTime = Time.time;
+        int previousHealth = stats.health;
         stats.health -= info.amount;
+        stats.health = Mathf.Max(0, stats.health);
+
+        int actualDamage = previousHealth - stats.health;
+
+        if (actualDamage > 0)
+            OnDamaged(actualDamage);
 
         if (stats.health <= 0)
             Die();
@@ -47,12 +55,25 @@ public class Entity : MonoBehaviour
     {
         if (isDead) return;
         if (stats == null) return;
+        if (amount <= 0) return;
+
+        int previousHealth = stats.health;
         stats.health -= amount;
+        stats.health = Mathf.Max(0, stats.health);
+
+        int actualDamage = previousHealth - stats.health;
+
+        if (actualDamage > 0)
+            OnDamaged(actualDamage);
 
         if (stats.health <= 0)
         {
             Die();
         }
+    }
+
+    protected virtual void OnDamaged(int damageAmount)
+    {
     }
 
     public void Heal(int amount)
@@ -63,7 +84,6 @@ public class Entity : MonoBehaviour
         if (stats.health > stats.maxHealth)
             stats.health = stats.maxHealth;
     }
-
 
     public virtual void Die()
     {
@@ -89,9 +109,7 @@ public class Entity : MonoBehaviour
        return false;
 
         if (stats == null)
-        {
             return false;
-        }
 
         if (!IsAbilityOffCooldown(ability))
             return false;
@@ -139,7 +157,6 @@ public class Entity : MonoBehaviour
                 );
             }
         }
-        
         DamageInfo dmg = new DamageInfo
         {
             source = gameObject,
