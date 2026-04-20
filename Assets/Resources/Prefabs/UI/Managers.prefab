@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8803953947443732164}
   - component: {fileID: 3981642460702368965}
+  - component: {fileID: 1476893884479711429}
   m_Layer: 0
   m_Name: GameStates
   m_TagString: Untagged
@@ -45,6 +46,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameStates
   currentState: 0
+  ui: {fileID: 0}
+  pause: {fileID: 0}
+--- !u!114 &1476893884479711429
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31511138788983833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd29e08f1327df4ba0c9e8d1f900057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameOverManager
+  gameOverUI: {fileID: 0}
+  mainMenuSceneName: Main Menu
 --- !u!1 &715737293324015818
 GameObject:
   m_ObjectHideFlags: 0
@@ -56,6 +73,7 @@ GameObject:
   - component: {fileID: 3701645678709838343}
   - component: {fileID: 880286350728571649}
   - component: {fileID: 7444049628750805366}
+  - component: {fileID: 8891975994393931943}
   m_Layer: 0
   m_Name: CombatSystem
   m_TagString: Untagged
@@ -102,6 +120,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f5ba652412b0641b4dd98e2c04b509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dice
+--- !u!114 &8891975994393931943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 715737293324015818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa9d403e77bf2f64bb40a791d5ea1219, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentManager
+  playerInventory: {fileID: 0}
+  playerCharacter: {fileID: 0}
+  helmet: {fileID: 0}
+  chestplate: {fileID: 0}
+  leggings: {fileID: 0}
+  boots: {fileID: 0}
+  equippedWeapon: {fileID: 0}
+  baseMaxHealth: 0
+  baseMaxMana: 0
+  baseMaxStamina: 0
+  baseStrength: 0
+  baseDexterity: 0
+  baseIntelligence: 0
+  baseCharisma: 0
+  baseArmorBonus: 0
+  baseShieldBonus: 0
 --- !u!1 &724200890932361329
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,11 +193,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuestSystem
   questUI: {fileID: 0}
-  startingQuests:
-  - {fileID: 11400000, guid: 516235e86770a8d4aa5b6fd35f6457a7, type: 2}
-  - {fileID: 11400000, guid: 342df40837c4bbd4caf7e57170faf5bf, type: 2}
-  - {fileID: 11400000, guid: cb7f58a508034b64a91c03bf5b75e073, type: 2}
-  - {fileID: 11400000, guid: df3e3b02c5949044391160c8611ff75a, type: 2}
+  startingQuests: []
+--- !u!1 &2161145484959091454
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6058619126837206067}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6058619126837206067
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2161145484959091454}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2904833516147169331}
+  m_Father: {fileID: 5652506209359047618}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2777492674436101423
 GameObject:
   m_ObjectHideFlags: 0
@@ -181,16 +255,166 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8803953947443732164}
-  - {fileID: 5426034074545688670}
-  - {fileID: 5886187579645843622}
+  - {fileID: 6058619126837206067}
   - {fileID: 7911585765140815296}
-  - {fileID: 2114194721532931994}
-  - {fileID: 928825282182307151}
   - {fileID: 3701645678709838343}
+  - {fileID: 5886187579645843622}
+  - {fileID: 2114194721532931994}
+  - {fileID: 8803953947443732164}
+  - {fileID: 8950428791092636473}
+  - {fileID: 928825282182307151}
+  - {fileID: 5426034074545688670}
   - {fileID: 4785331248394921843}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2909111181252535359
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2904833516147169331}
+  - component: {fileID: 5977568396626254015}
+  - component: {fileID: 7606277615037017888}
+  m_Layer: 0
+  m_Name: Music
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2904833516147169331
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2909111181252535359}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6058619126837206067}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &5977568396626254015
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2909111181252535359}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &7606277615037017888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2909111181252535359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f060236a54a7edb4793771e1e561fdd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MusicManager
+  safeClip: {fileID: 8300000, guid: 83937c423c2336b468274bf6b832bc94, type: 3}
+  explorationClip: {fileID: 8300000, guid: 041747fb5c8cd8a4aa935aff199fd6a1, type: 3}
+  combatClip: {fileID: 8300000, guid: 5bf404cc70c4ace409eca36550b16992, type: 3}
+  deathClip: {fileID: 8300000, guid: 7ce911100859c4645bedb3fbcbad8a63, type: 3}
+  volume: 1
+  playOnStart: 1
 --- !u!1 &3295041211472716204
 GameObject:
   m_ObjectHideFlags: 0
@@ -241,6 +465,9 @@ MonoBehaviour:
   safeFloorPrefab: {fileID: 6993517621958879293, guid: b913bb28683adbf4aa539cc156de14ba, type: 3}
   labyrinthRoot: {fileID: 0}
   currentFloorIndex: 0
+  loadingSceneName: Loading Screen
+  isLoadingFloor: 0
+  floorLoadProgress: 0
 --- !u!114 &9087152825699711039
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,14 +484,14 @@ MonoBehaviour:
   dungeonGenerated: 0
   dungeonBuilt: 0
   dungeonOptimized: 0
-  dungeonPillarsPlaced: 0
-  dungeonTorchPillarsPlaced: 0
-  dungeonTorchesPlaced: 0
-  dungeonGenericDecorCleaned: 0
-  dungeonDecoratedGenerically: 0
-  dungeonDecoratedSpecifically: 0
+  roomTypesAssigned: 0
+  plansBuilt: 0
+  specificPlanned: 0
+  genericPlanned: 0
+  decorInstantiated: 0
+  dungeonValidated: 0
   dungeonFinalized: 0
-  doorwaysCleared: 0
+  exitsSpawned: 0
   nextFloorPrefab: {fileID: 5454696075560632496, guid: abcbd63a7d62e0b409a2b973523da72f, type: 3}
   lastFloorPrefab: {fileID: 5858999444723640002, guid: 4fa0f322efddfbb4c85b884b33208aba, type: 3}
   generator: {fileID: 0}
@@ -322,6 +549,130 @@ MonoBehaviour:
   mageLoadout: {fileID: 11400000, guid: 9332af93c87bc3141b1654f11f4d4335, type: 2}
   thiefLoadout: {fileID: 11400000, guid: da62d0f9116951b448aac3d223495831, type: 2}
   merchantLoadout: {fileID: 11400000, guid: da62d0f9116951b448aac3d223495831, type: 2}
+--- !u!1 &4579546529885770253
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8950428791092636473}
+  - component: {fileID: 4131983140802906971}
+  - component: {fileID: 8354539780663028814}
+  - component: {fileID: 1665381269978001882}
+  - component: {fileID: 9035651307411369795}
+  m_Layer: 0
+  m_Name: MapManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8950428791092636473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4579546529885770253}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5652506209359047618}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4131983140802906971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4579546529885770253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb9767a88f94b14d8def9953bc30447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomMapTracker
+--- !u!114 &8354539780663028814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4579546529885770253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aa7f15b86308004c8872d2f16a8d248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonMapUI
+  mapViewport: {fileID: 0}
+  mapContainer: {fileID: 0}
+  roomIconPrefab: {fileID: 2381306150569252937, guid: 8a9246394f556df49ae3351848e28bb6, type: 3}
+  backgroundImage: {fileID: 0}
+  frameImage: {fileID: 0}
+  pixelsPerWorldUnit: 3
+  includeCorridors: 1
+  centerOnCurrentRoom: 1
+  backgroundColor: {r: 0.08, g: 0.07, b: 0.06, a: 0.95}
+  frameColor: {r: 0.16, g: 0.13, b: 0.11, a: 0.95}
+  roomInsetPixels: 3
+  corridorInsetPixels: 2
+  minimumVisualSize: 4
+  spawnedIcons: []
+  minimumX: 0
+  minimumZ: 0
+  maximumX: 0
+  maximumZ: 0
+--- !u!114 &1665381269978001882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4579546529885770253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aa7f15b86308004c8872d2f16a8d248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DungeonMapUI
+  mapViewport: {fileID: 0}
+  mapContainer: {fileID: 0}
+  roomIconPrefab: {fileID: 2381306150569252937, guid: 8a9246394f556df49ae3351848e28bb6, type: 3}
+  backgroundImage: {fileID: 0}
+  frameImage: {fileID: 0}
+  pixelsPerWorldUnit: 2
+  includeCorridors: 1
+  centerOnCurrentRoom: 0
+  backgroundColor: {r: 0.08, g: 0.07, b: 0.06, a: 0.95}
+  frameColor: {r: 0.16, g: 0.13, b: 0.11, a: 0.95}
+  roomInsetPixels: 3
+  corridorInsetPixels: 2
+  minimumVisualSize: 4
+  spawnedIcons: []
+  minimumX: 0
+  minimumZ: 0
+  maximumX: 0
+  maximumZ: 0
+--- !u!114 &9035651307411369795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4579546529885770253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d83dad6784e800745857f82c7890ff0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapInitiator
+  minimapUI: {fileID: 8354539780663028814}
+  fullMapUI: {fileID: 1665381269978001882}
+  searchInterval: 0.25
+  maxSearchTime: 10
+  initialized: 0
 --- !u!1 &5629280382991146575
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,6 +788,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   playerMenuRoot: {fileID: 0}
   playerMenuTabs: {fileID: 0}
+  tabsRoot: {fileID: 0}
+  combatUIRoot: {fileID: 0}
+  minimapRoot: {fileID: 0}
+  explorationUIRoot: {fileID: 0}
 --- !u!1 &8725040418064113104
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,6 +804,7 @@ GameObject:
   - component: {fileID: 4982746499625684323}
   - component: {fileID: 1064020529231445102}
   - component: {fileID: 6443866169576047096}
+  - component: {fileID: 1437132743109681808}
   m_Layer: 0
   m_Name: Shop System
   m_TagString: Untagged
@@ -517,3 +873,15 @@ MonoBehaviour:
   group: {fileID: 0}
   messageText: {fileID: 0}
   displayTime: 1.5
+--- !u!114 &1437132743109681808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8725040418064113104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c77edeab2a330742a9e7bbd78ea803c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rarity

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponItem
   name: Hardwood Bow of Dexterity
   maxStack: 1
-  icon: {fileID: 21300000, guid: 0b63e1a4cf6ece440bdfc8a6422df6c5, type: 3}
+  icon: {fileID: 21300000, guid: aedd28400b491794cb072a4cf85de905, type: 3}
   rarity: 4
   value: 58
   isSellable: 1

@@ -973,3 +973,5 @@ MonoBehaviour:
   item: {fileID: 0}
   inventory: {fileID: 0}
   pickupPrompt: {fileID: 0}
+  pickupSfx: {fileID: 8300000, guid: 1c23cb9b5ec56ed46b32562f41d358aa, type: 3}
+  pickupVolume: 1

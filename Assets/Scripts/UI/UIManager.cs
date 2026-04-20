@@ -9,8 +9,16 @@ public class UIManager : MonoBehaviour
     public GameObject minimapRoot;
     public GameObject explorationUIRoot;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip menuToggleSfx;
+    [Range(0f, 1f)] [SerializeField] private float menuToggleVolume = 1f;
+
     void Awake()
     {
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(false);
 
@@ -19,8 +27,6 @@ public class UIManager : MonoBehaviour
 
         if (playerMenuTabs != null)
             playerMenuTabs.CloseAll();
-        
-
     }
 
     void Update()
@@ -43,6 +49,8 @@ public class UIManager : MonoBehaviour
 
     void ForceClosePlayerMenu()
     {
+        bool wasOpen = playerMenuRoot != null && playerMenuRoot.activeSelf;
+
         if (playerMenuTabs != null)
             playerMenuTabs.CloseAll();
 
@@ -51,6 +59,9 @@ public class UIManager : MonoBehaviour
 
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(false);
+
+        if (wasOpen)
+            PlaymenuToggle();
     }
 
     public void OnStateChanged(GameState prev, GameState next)
@@ -60,7 +71,6 @@ public class UIManager : MonoBehaviour
             if (explorationUIRoot != null)
                 explorationUIRoot.SetActive(false);
         }
-
         else
         {
             if (explorationUIRoot != null)
@@ -75,6 +85,8 @@ public class UIManager : MonoBehaviour
             return;
         }
 
+        bool wasClosed = playerMenuRoot != null && !playerMenuRoot.activeSelf;
+
         if (playerMenuRoot != null)
             playerMenuRoot.SetActive(true);
 
@@ -84,6 +96,15 @@ public class UIManager : MonoBehaviour
         if (playerMenuTabs != null)
             playerMenuTabs.OpenDefault();
 
-        
+        if (wasClosed)
+            PlaymenuToggle();
+    }
+
+    void PlaymenuToggle()
+    {
+        if (audioSource == null || menuToggleSfx == null)
+            return;
+
+        audioSource.PlayOneShot(menuToggleSfx, menuToggleVolume);
     }
 }

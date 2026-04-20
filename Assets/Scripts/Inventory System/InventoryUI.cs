@@ -294,12 +294,21 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleSlotClick(Inventory inventory, int index)
     {
+        if (inventory == null) return;
+
+        bool sameSelection = selectedInventory == inventory && selectedIndex == index;
+
         selectedInventory = inventory;
         selectedIndex = index;
         selectedSlot = inventory.invSlots[index];
 
         if (selectedSlot == null || selectedSlot.item == null)
             return;
+
+        if (!sameSelection)
+        {
+            ShopSystem.Instance?.shopAudio?.PlaySelectItem();
+        }
 
         DisplaySelectedItem(selectedSlot.item, inventory == playerInventory);
     }

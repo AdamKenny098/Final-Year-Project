@@ -18,6 +18,8 @@ public class ShopSystem : MonoBehaviour
     private Item barteredItem = null;
     private int barteredPrice = 0;
 
+    public ShopAudio shopAudio;
+
     private void Awake()
     {
         if (!Instance)
@@ -29,6 +31,9 @@ public class ShopSystem : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        if (shopAudio == null)
+            shopAudio = GetComponent<ShopAudio>();
     }
 
     public void Start()
@@ -107,6 +112,7 @@ public class ShopSystem : MonoBehaviour
         barteredItem = null;
         barteredPrice = 0;
 
+        shopAudio?.PlaySell();
         NotifyTradeChanged();
         return true;
     }
@@ -136,6 +142,7 @@ public class ShopSystem : MonoBehaviour
         merchantInventory.RemoveItem(goldItem, payout);
         playerInventory.AddItem(goldItem, payout);
 
+        shopAudio?.PlaySell();
         NotifyTradeChanged();
         return true;
     }
@@ -187,6 +194,7 @@ public class ShopSystem : MonoBehaviour
         barteredPrice = CalculateBarteredPrice(item);
         DialogueSystem.Instance.SetTradeOutcome("barter_success");
 
+        shopAudio?.PlayShopSuccess();
 
         InventoryUI.Instance.OnTradeChanged(item);
         TradeFeedbackUI.Instance.Show($"Barter successful — new price: {barteredPrice}g");
@@ -196,9 +204,11 @@ public class ShopSystem : MonoBehaviour
     {
         DialogueSystem.Instance.SetTradeOutcome("barter_refused");
         TradeFeedbackUI.Instance.Show("The merchant refuses to negotiate.");
+        shopAudio?.PlayShopFailure();
 
         CloseShop();
     }
+
 
 
     int CalculateBarteredPrice(Item item)
@@ -243,18 +253,19 @@ public class ShopSystem : MonoBehaviour
             return;
 
         if (!merchantInventory.HasItem(item, 1))
-        return;
+            return;
 
         bool added = playerInventory.AddItem(item, 1);
-        if (!added) return;
+        if (!added)
+            return;
 
         merchantInventory.RemoveItem(item, 1);
-        
+        shopAudio?.PlayShopSuccess();
+
         barteredItem = null;
         barteredPrice = 0;
 
         DialogueSystem.Instance.SetTradeOutcome("steal_success");
-
         InventoryUI.Instance.OnTradeChanged();
         TradeFeedbackUI.Instance.Show($"You stole the {item.name} unnoticed.");
     }
@@ -264,6 +275,7 @@ public class ShopSystem : MonoBehaviour
         if (currentMerchant == null)
             return;
 
+        shopAudio?.PlayShopFailure();
         currentMerchant.isAlerted = true;
         currentMerchant.requiresForgivenessQuest = true;
         DialogueSystem.Instance.SetTradeOutcome("steal_caught");
@@ -283,6 +295,4 @@ public class ShopSystem : MonoBehaviour
         float multiplier = Rarity.Instance.GetMultiplier(item.rarity);
         return Mathf.RoundToInt(item.value * multiplier);
     }
-
-
 }

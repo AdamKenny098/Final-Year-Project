@@ -2,9 +2,13 @@ using UnityEngine;
 
 public class LootBag : MonoBehaviour, IInteractable
 {
-    public Item item;   // ScriptableObject reference
+    public Item item;
     public Inventory inventory;
     public ItemPickupPrompt pickupPrompt;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip pickupSfx;
+    [Range(0f, 1f)] [SerializeField] private float pickupVolume = 1f;
 
     void Awake()
     {
@@ -28,12 +32,21 @@ public class LootBag : MonoBehaviour, IInteractable
 
     public void Interact()
     {
+        if (item == null)
+            return;
+
         if (QuestSystem.Instance != null)
             QuestSystem.Instance.NotifyItemCollected(item.itemId, 1);
 
-        if (item == null) return;
+        bool added = inventory.AddItem(item, 1);
+        if (!added)
+            return;
 
-        inventory.AddItem(item, 1);
+        if (pickupSfx != null)
+        {
+            AudioSource.PlayClipAtPoint(pickupSfx, transform.position, pickupVolume);
+        }
+
         Destroy(gameObject);
     }
 

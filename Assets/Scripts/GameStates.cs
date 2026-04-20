@@ -3,10 +3,13 @@ using UnityEngine;
 public enum GameState
 {
     Exploration,
+    Combat,
     Talking,
     Trading,
     Paused,
     Menu,
+    Death,
+    Loading
 }
 
 public class GameStates : MonoBehaviour
@@ -49,6 +52,10 @@ public class GameStates : MonoBehaviour
                 SetState(GameState.Paused);
                 break;
 
+            case GameState.Combat:
+                SetState(GameState.Paused);
+                break;
+
             case GameState.Paused:
             case GameState.Menu:
                 SetState(GameState.Exploration);
@@ -62,6 +69,10 @@ public class GameStates : MonoBehaviour
             case GameState.Talking:
                 DialogueSystem.Instance.HideDialogue();
                 SetState(GameState.Exploration);
+                break;
+            
+            case GameState.Death:
+            case GameState.Loading:
                 break;
         }
     }
@@ -93,8 +104,15 @@ public class GameStates : MonoBehaviour
                 Time.timeScale = 1f;
                 break;
 
+            case GameState.Combat:
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                Time.timeScale = 1f;
+                break;
+
             case GameState.Talking:
             case GameState.Trading:
+            case GameState.Loading:
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 Time.timeScale = 1f;
@@ -102,6 +120,12 @@ public class GameStates : MonoBehaviour
 
             case GameState.Menu:
             case GameState.Paused:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                Time.timeScale = 0f;
+                break;
+
+            case GameState.Death:
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 Time.timeScale = 0f;

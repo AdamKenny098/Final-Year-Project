@@ -187,6 +187,7 @@ public class LabyrinthManager : MonoBehaviour
 
         yield return null;
         floorLoadProgress = 0.4f;
+        GameStates.Instance.SetState(GameState.Loading);
 
         if (floors.TryGetValue(currentFloorIndex, out var current))
             current.root.SetActive(false);
@@ -222,7 +223,8 @@ public class LabyrinthManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(loadingSceneName))
             yield return SceneManager.UnloadSceneAsync(loadingSceneName);
-
+        
+        GameStates.Instance.SetState(GameState.Exploration);
         isLoadingFloor = false;
         floorLoadProgress = 0f;
     }

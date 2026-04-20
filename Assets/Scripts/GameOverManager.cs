@@ -30,6 +30,7 @@ public class GameOverManager : MonoBehaviour
             return;
 
         gameOverTriggered = true;
+        GameStates.Instance.SetState(GameState.Death);
 
         Time.timeScale = 0f;
 
