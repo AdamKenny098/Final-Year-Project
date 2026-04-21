@@ -12,7 +12,7 @@ public partial class HearingAction : Action
     [SerializeReference] public BlackboardVariable<bool> HearsNoise;
     [SerializeReference] public BlackboardVariable<Vector3> LastHeardNoisePosition;
 
-    public float hearingRadius = 30f;
+    public float hearingRadius = 12f;
     public float memoryTime = 3f;
 
     float lastHeardTime;
