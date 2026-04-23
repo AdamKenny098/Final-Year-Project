@@ -17,9 +17,21 @@ public partial class HearingAction : Action
 
     float lastHeardTime;
 
+    private EnemyPerformanceController perf;
+
+    protected override Status OnStart()
+    {
+        perf = Agent.Value.GetComponent<EnemyPerformanceController>();
+
+        return Status.Running;
+    }
+
     protected override Status OnUpdate()
     {
         if (Agent?.Value == null)
+            return Status.Running;
+
+        if (perf != null && !perf.CanRunSense())
             return Status.Running;
 
         bool heard = ScanForAudio();

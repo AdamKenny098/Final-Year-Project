@@ -15,9 +15,16 @@ public partial class CombatSenseAction : Action
     [SerializeReference] public BlackboardVariable<Transform> CombatTarget;
     [SerializeReference] public BlackboardVariable<bool> IsAbilityReady;
     [SerializeReference] public BlackboardVariable<bool> CanAttack;
+    private EnemyPerformanceController perf;
 
     [Header("Fallbacks")]
     public float fallbackRange = 2f;
+
+    protected override Status OnStart()
+    {
+        perf = Self.Value.GetComponent<EnemyPerformanceController>();
+        return Status.Running;
+    }
 
     protected override Status OnUpdate()
     {
@@ -33,6 +40,8 @@ public partial class CombatSenseAction : Action
             return Status.Running;
         }
 
+        if (perf != null && !perf.CanRunSense())
+            return Status.Running;
 
         Entity selfEntity = Self.Value.GetComponent<Entity>();
         if (selfEntity == null)

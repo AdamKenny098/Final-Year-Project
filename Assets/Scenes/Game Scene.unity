@@ -1872,6 +1872,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2586050972498625232, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2617798479669930069, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1880,6 +1884,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3028314089411306153, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3028314089411306153, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4372ea4ad524229469bc1f8ab498e5a5, type: 3}
     - target: {fileID: 3133423432910389732, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -1943,6 +1955,18 @@ PrefabInstance:
     - target: {fileID: 3233210889181634532, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3408254681785355230, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3408254681785355230, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.53333336
+      objectReference: {fileID: 0}
+    - target: {fileID: 3408254681785355230, guid: f260ade562775e84f80a35e89aed687a, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.6784314
       objectReference: {fileID: 0}
     - target: {fileID: 3543665887891659114, guid: f260ade562775e84f80a35e89aed687a, type: 3}
       propertyPath: m_IsActive

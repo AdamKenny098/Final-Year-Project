@@ -11,10 +11,15 @@ public class DungeonEntitySpawner : MonoBehaviour
     public GameObject enemyPrefab;
     public int minEnemiesPerRoom = 1;
     public int maxEnemiesPerRoom = 3;
-
     public float enemyHeight = 2f;
     public float enemyRadius = 0.5f;
-    
+
+    [Header("Elite Enemy Spawning")]
+    public GameObject eliteEnemyPrefab;
+    public int minElitesPerFloor = 1;
+    public int maxElitesPerFloor = 2;
+    public int eliteLevelBonus = 4;
+
     private Transform dungeonRoot;
     private Transform enemyRoot;
     private Transform npcRoot;
@@ -23,7 +28,7 @@ public class DungeonEntitySpawner : MonoBehaviour
     private DungeonRoomDecorator decorator;
     private Transform floorRoot;
 
-    public void FillReferences(DungeonRoomBuilder builder,DungeonRoomDecorator decorator,Transform floorRoot)
+    public void FillReferences(DungeonRoomBuilder builder, DungeonRoomDecorator decorator, Transform floorRoot)
     {
         this.builder = builder;
         this.decorator = decorator;
@@ -48,6 +53,9 @@ public class DungeonEntitySpawner : MonoBehaviour
         allRooms = decorator.allWorkableRooms;
         SpawnPlayer();
         SpawnEntitiesInRooms();
+
+        if (RoomEnemyActivityManager.Instance != null)
+            RoomEnemyActivityManager.Instance.RegisterRooms(allRooms);
     }
 
     public void SpawnPlayer()
@@ -57,7 +65,7 @@ public class DungeonEntitySpawner : MonoBehaviour
         float playerHeight = 1.5f;
         float playerRadius = 0.5f;
 
-        for(int attempt = 0; attempt < maxSpawnAttempts; attempt++)
+        for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
         {
             Room playerRoom = allRooms[Random.Range(0, allRooms.Count)];
             Vector3 spawnPosition = decorator.RandomRoomPosition(playerRoom);
@@ -88,34 +96,36 @@ public class DungeonEntitySpawner : MonoBehaviour
     }
 
     bool IsValidSpawn(Room room, Vector3 position, float height, float radius)
-{
-    float clearanceX = 2f;
-    float clearanceZ = 2f;
-
-    Bounds spawnBounds = new Bounds(
-        position + Vector3.up * (height * 0.5f),
-        new Vector3(clearanceX, height, clearanceZ)
-    );
-
-    foreach (Bounds b in room.occupiedAreas)
     {
-        if (b.Intersects(spawnBounds))
-            return false;
+        float clearanceX = 2f;
+        float clearanceZ = 2f;
+
+        Bounds spawnBounds = new Bounds(
+            position + Vector3.up * (height * 0.5f),
+            new Vector3(clearanceX, height, clearanceZ)
+        );
+
+        foreach (Bounds b in room.occupiedAreas)
+        {
+            if (b.Intersects(spawnBounds))
+                return false;
+        }
+
+        return true;
     }
-
-    return true;
-}
-
 
     public void SpawnEntitiesInRooms()
     {
         int maxSpawnAttempts = 15;
+        List<Room> validRooms = new List<Room>();
 
         foreach (Room room in allRooms)
         {
             if (room.preventSpawning || room.preventEnemySpawning)
                 continue;
-            
+
+            validRooms.Add(room);
+
             int enemiesToSpawn = Random.Range(minEnemiesPerRoom, maxEnemiesPerRoom + 1);
 
             for (int i = 0; i < enemiesToSpawn; i++)
@@ -129,35 +139,82 @@ public class DungeonEntitySpawner : MonoBehaviour
 
                     if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
                     {
-                        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity, enemyRoot);
-                        enemy.name = enemyPrefab.name;
-
-                        Character enemyCharacter = enemy.GetComponent<Character>();
-                        if (enemyCharacter != null && enemyCharacter.stats != null)
-                        {
-                            int dungeonLevel = 1;
-
-                            if (LabyrinthManager.Instance != null)
-                                dungeonLevel = LabyrinthManager.Instance.currentFloorIndex;
-
-                            enemyCharacter.level = dungeonLevel;
-                            enemyCharacter.stats.level = dungeonLevel;
-                            enemyCharacter.ApplyClassToStats();
-                        }
-
-                        RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
-
+                        SpawnEnemy(enemyPrefab, room, spawnPos, 0, false);
                         spawned = true;
                         break;
                     }
                 }
 
                 if (!spawned)
-                {
                     continue;
-                }
             }
         }
+
+        SpawnEliteEnemies(validRooms, maxSpawnAttempts);
+    }
+
+    void SpawnEliteEnemies(List<Room> validRooms, int maxSpawnAttempts)
+    {
+        if (eliteEnemyPrefab == null || validRooms == null || validRooms.Count == 0)
+            return;
+
+        int eliteCount = Random.Range(minElitesPerFloor, maxElitesPerFloor + 1);
+
+        for (int i = 0; i < eliteCount; i++)
+        {
+            bool spawned = false;
+
+            for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
+            {
+                Room room = validRooms[Random.Range(0, validRooms.Count)];
+
+                Vector3 spawnPos = decorator.RandomRoomPosition(room);
+                spawnPos.y = 2.5f;
+
+                if (IsValidSpawn(room, spawnPos, enemyHeight, enemyRadius))
+                {
+                    SpawnEnemy(eliteEnemyPrefab, room, spawnPos, eliteLevelBonus, true);
+                    spawned = true;
+                    break;
+                }
+            }
+
+            if (!spawned)
+                Debug.LogWarning("Failed to spawn an elite enemy.");
+        }
+    }
+
+    void SpawnEnemy(GameObject prefab, Room room, Vector3 spawnPos, int levelBonus, bool isElite)
+    {
+        if (prefab == null)
+            return;
+
+        GameObject enemy = Instantiate(prefab, spawnPos, Quaternion.identity, enemyRoot);
+        enemy.name = isElite ? "Elite " + prefab.name : prefab.name;
+
+        Character enemyCharacter = enemy.GetComponent<Character>();
+        if (enemyCharacter != null && enemyCharacter.stats != null)
+        {
+            int dungeonLevel = 1;
+
+            if (LabyrinthManager.Instance != null)
+                dungeonLevel = LabyrinthManager.Instance.currentFloorIndex;
+
+            int finalLevel = dungeonLevel + levelBonus;
+
+            enemyCharacter.level = finalLevel;
+            enemyCharacter.stats.level = finalLevel;
+            enemyCharacter.ApplyClassToStats();
+        }
+
+        EnemyPerformanceController perf = enemy.GetComponent<EnemyPerformanceController>();
+        if (perf != null)
+            perf.SetActiveState(false);
+
+        if (room != null)
+            room.spawnedEnemies.Add(enemy);
+
+        RegisterOccupiedArea(room, spawnPos, enemyHeight, enemyRadius);
     }
 
     public void RegisterOccupiedArea(Room room, Vector3 position, float height, float radius)
@@ -169,5 +226,4 @@ public class DungeonEntitySpawner : MonoBehaviour
 
         room.occupiedAreas.Add(b);
     }
-
 }

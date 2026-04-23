@@ -34,6 +34,7 @@ public class Room : MonoBehaviour
     public bool visited;
 
     public List<Vector3> plannedDoorwayPositions = new List<Vector3>();
+    public List<GameObject> spawnedEnemies = new List<GameObject>();
 
     public void EnsureDecorationRoots()
     {
@@ -83,6 +84,9 @@ public class Room : MonoBehaviour
 
         if (RoomMapTracker.Instance != null)
             RoomMapTracker.Instance.SetCurrentRoom(this);
+
+        if (RoomEnemyActivityManager.Instance != null)
+            RoomEnemyActivityManager.Instance.SetCurrentRoom(this);
     }
 
     void OnTriggerExit(Collider other)

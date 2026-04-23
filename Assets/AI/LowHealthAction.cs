@@ -8,6 +8,7 @@ using Unity.Properties;
 [NodeDescription(name: "Low Health", story: "Triggers Fleeing when health is low", category: "Action", id: "e7a1cc0dffe4c7fc76834cbbc3cba006")]
 public partial class LowHealthAction : Action
 {
+    [SerializeReference] public BlackboardVariable<GameObject> Agent;
     [SerializeReference] public BlackboardVariable<float> MaxHealth;
     [SerializeReference] public BlackboardVariable<float> Health;
     [SerializeReference] public BlackboardVariable<float> LowHealthThreshold;
@@ -15,6 +16,8 @@ public partial class LowHealthAction : Action
     [SerializeReference] public BlackboardVariable<bool> IsLowHealth;
     [SerializeReference] public BlackboardVariable<Transform> LastThreat;
     [SerializeReference] public BlackboardVariable<Transform> Threat;
+
+    private EnemyPerformanceController perf;
 
     protected override Status OnStart()
     {
@@ -24,11 +27,17 @@ public partial class LowHealthAction : Action
         if (LowHealthThreshold.Value <= 0f)
             LowHealthThreshold.Value = MaxHealth.Value * 0.15f;
 
+        perf = Agent.Value.GetComponent<EnemyPerformanceController>();
+
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
+
+        if (perf != null && !perf.CanRunSense())
+            return Status.Running;
+
         float max = MaxHealth.Value;
         float hp = Health.Value;
 

@@ -27,6 +27,8 @@ public partial class VisionAction : Action
     Transform eyeOrigin;
     Transform player;
 
+    private EnemyPerformanceController perf;
+
     protected override Status OnStart()
     {
         if (Agent?.Value == null)
@@ -40,6 +42,8 @@ public partial class VisionAction : Action
             if (p != null)
                 player = p.transform;
         }
+
+        perf = Agent.Value.GetComponent<EnemyPerformanceController>();
 
         return Status.Running;
     }
@@ -58,6 +62,9 @@ public partial class VisionAction : Action
             if (p != null)
                 player = p.transform;
         }
+
+        if (perf != null && !perf.CanRunSense())
+            return Status.Running;
 
         if (player == null)
         {
