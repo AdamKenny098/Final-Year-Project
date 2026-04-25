@@ -13,7 +13,6 @@ public partial class AgentHealthMonitorAction : Action
     [SerializeReference] public BlackboardVariable<float> MaxHealth;
     [SerializeReference] public BlackboardVariable<bool> IsDead;
     [SerializeReference] public BlackboardVariable<Transform> LastThreat;
-    private EnemyPerformanceController perf;
 
     Entity entity;
 
@@ -33,15 +32,11 @@ public partial class AgentHealthMonitorAction : Action
             if (Health != null) Health.Value = entity.stats.health;
         }
 
-        perf = Agent.Value.GetComponent<EnemyPerformanceController>();
-
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (perf != null && !perf.CanRunSense())
-            return Status.Running;
 
         if (entity == null || entity.stats == null)
             return Status.Failure;

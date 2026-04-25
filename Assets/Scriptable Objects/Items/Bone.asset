@@ -16,6 +16,6 @@ MonoBehaviour:
   maxStack: 100
   icon: {fileID: 21300000, guid: bdb78f2cb28316b46ad332b6857d8756, type: 3}
   rarity: 1
-  value: 10
+  value: 3
   isSellable: 1
   itemId: bone

@@ -17,8 +17,6 @@ public partial class LowHealthAction : Action
     [SerializeReference] public BlackboardVariable<Transform> LastThreat;
     [SerializeReference] public BlackboardVariable<Transform> Threat;
 
-    private EnemyPerformanceController perf;
-
     protected override Status OnStart()
     {
         if (Health == null || MaxHealth == null || LowHealthThreshold == null || IsLowHealth == null)
@@ -27,16 +25,11 @@ public partial class LowHealthAction : Action
         if (LowHealthThreshold.Value <= 0f)
             LowHealthThreshold.Value = MaxHealth.Value * 0.15f;
 
-        perf = Agent.Value.GetComponent<EnemyPerformanceController>();
-
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-
-        if (perf != null && !perf.CanRunSense())
-            return Status.Running;
 
         float max = MaxHealth.Value;
         float hp = Health.Value;

@@ -581,6 +581,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853402280}
   m_CullTransparentMesh: 1
+--- !u!1 &939750528 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3295041211472716204, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+  m_PrefabInstance: {fileID: 5585628258186341181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &939750532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 939750528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e367a0c22802394090166771e3841fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomEnemyActivityManager
 --- !u!114 &949373011 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 786067437221782705, guid: f260ade562775e84f80a35e89aed687a, type: 3}
@@ -2903,6 +2920,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2028682201}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3295041211472716204, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 939750532}
     - targetCorrespondingSourceObject: {fileID: 8725040418064113104, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 480738839}

@@ -60,7 +60,14 @@ public partial class HearingAction : Action
 
         foreach (Collider hit in hits)
         {
+            if (!hit.CompareTag("Player") && !hit.transform.root.CompareTag("Player"))
+                continue;
+
             AudioSource audio = hit.GetComponentInChildren<AudioSource>();
+
+            if (audio == null)
+                audio = hit.GetComponentInParent<AudioSource>();
+
             if (audio == null || !audio.isPlaying)
                 continue;
 
@@ -74,7 +81,7 @@ public partial class HearingAction : Action
                 0.1f
             );
 
-            Debug.Log($"[Hearing] Heard sound from {audio.gameObject.name} at {audio.transform.position}");
+            Debug.Log($"[Hearing] Heard player sound from {audio.gameObject.name} at {audio.transform.position}");
 
             return true;
         }
