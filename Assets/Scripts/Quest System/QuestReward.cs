@@ -6,17 +6,32 @@ public class QuestReward
     public int experience;
     public int gold;
 
-    // Placeholder - hook into inventory later
-    public void Grant()
+    public void Grant(Character playerCharacter, Inventory playerInventory, Item goldItem)
     {
         if (experience > 0)
         {
-            // PlayerStats.AddXP(experience);
+            if (playerCharacter != null)
+            {
+                playerCharacter.AddXP(experience);
+            }
+            else
+            {
+                Debug.LogWarning("[QuestReward] Cannot grant XP because playerCharacter is missing.");
+            }
         }
 
         if (gold > 0)
         {
-            // PlayerInventory.AddGold(gold);
+            if (playerInventory != null && goldItem != null)
+            {
+                playerInventory.AddItem(goldItem, gold);
+            }
+            else
+            {
+                Debug.LogWarning("[QuestReward] Cannot grant gold because playerInventory or goldItem is missing.");
+            }
         }
+
+        Debug.Log($"[QuestReward] Granted {experience} XP and {gold} gold.");
     }
 }

@@ -21,6 +21,11 @@ public class QuestSystem : MonoBehaviour
 
     Dictionary<int, int> floorAreaCounts = new();
 
+    [Header("Reward References")]
+    public Character playerCharacter;
+    public Inventory playerInventory;
+    public Item goldItem;
+
     void Awake()
     {
         if (Instance != null)
@@ -110,7 +115,7 @@ public class QuestSystem : MonoBehaviour
         activeQuests.Remove(quest);
         completedQuests.Add(quest);
 
-        quest.data.reward?.Grant();
+        quest.data.reward?.Grant(playerCharacter, playerInventory, goldItem);
         RefreshUI();
     }
 

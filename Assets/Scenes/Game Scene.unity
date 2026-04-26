@@ -2773,6 +2773,18 @@ PrefabInstance:
       propertyPath: questUI
       value: 
       objectReference: {fileID: 2009473926}
+    - target: {fileID: 2848463907172317861, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      propertyPath: goldItem
+      value: 
+      objectReference: {fileID: 11400000, guid: ebfb25d88399aa2478ab0bed7f4a0e85, type: 2}
+    - target: {fileID: 2848463907172317861, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      propertyPath: playerCharacter
+      value: 
+      objectReference: {fileID: 1687303681}
+    - target: {fileID: 2848463907172317861, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
+      propertyPath: playerInventory
+      value: 
+      objectReference: {fileID: 3922001475770101719}
     - target: {fileID: 3245016317432450793, guid: 8ed30345f3084e54caa8c6beac8834cf, type: 3}
       propertyPath: labyrinthRoot
       value: 
